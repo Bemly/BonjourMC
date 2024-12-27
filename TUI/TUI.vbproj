@@ -7,6 +7,13 @@
         <LangVersion>latest</LangVersion>
         <PublishAot>true</PublishAot>
         <InvariantGlobalization>true</InvariantGlobalization>
+        <Configurations>Release;Debug</Configurations>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+      <DefineDebug>false</DefineDebug>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Launcher\Launcher.vbproj" />
+    </ItemGroup>
 </Project>
