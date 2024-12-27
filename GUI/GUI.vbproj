@@ -8,26 +8,29 @@
         <RootNamespace>GUI</RootNamespace>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+      <DefineDebug>false</DefineDebug>
+    </PropertyGroup>
     <ItemGroup>
-        <Folder Include="Models\"/>
-        <AvaloniaResource Include="Assets\**"/>
+        <Folder Include="Models\" />
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.9"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.9"/>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.9"/>
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.9"/>
+        <PackageReference Include="Avalonia" Version="11.2.3" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.9"/>
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.9"/>
-        <PackageReference Include="Nukepayload2.SourceGenerators.AvaloniaUI" Version="1.0.0"/>
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.3" />
+        <PackageReference Include="Nukepayload2.SourceGenerators.AvaloniaUI" Version="1.0.0" />
     </ItemGroup>
 
     <!--Globbing-->
     <ItemGroup>
-        <Compile Remove="**\*.axaml.vb"/>
+        <Compile Remove="**\*.axaml.vb" />
         <Compile Include="**\*.axaml.vb">
             <DependentUpon>%(Filename)</DependentUpon>
             <SubType>Code</SubType>
