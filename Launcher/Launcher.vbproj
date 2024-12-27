@@ -4,9 +4,34 @@
         <RootNamespace>Launcher</RootNamespace>
         <TargetFramework>net8.0</TargetFramework>
         <LangVersion>latest</LangVersion>
+        <Configurations>Release;Debug</Configurations>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
       <DefineDebug>false</DefineDebug>
     </PropertyGroup>
+    <ItemGroup>
+      <None Remove="Download\Mojang\" />
+      <None Remove="Download\Forge\" />
+      <None Remove="Download\Liteloader\" />
+      <None Remove="Download\Optifine\" />
+      <None Remove="Download\Fabric\" />
+      <None Remove="Download\Neoforge\" />
+      <None Remove="Download\Quilt\" />
+      <None Remove="Download\Authlib\" />
+      <None Remove="Utility\" />
+      <None Remove="Download\" />
+      <None Remove="Model\" />
+      <None Remove="Update\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Utility\" />
+      <Folder Include="Download\" />
+      <Folder Include="Download\Mojang\" />
+      <Folder Include="Model\" />
+      <Folder Include="Update\" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.OpenApi" Version="1.6.23" />
+    </ItemGroup>
 </Project>

@@ -1,9 +1,17 @@
+
+Option Explicit On
+Option Strict On
+
 Imports System
 
+
+' 这个还没有用 openapi nuget包😊
 Public Module Entry
-    Sub Point()
-    End Sub
+	Sub Point()
+		Dim mc = New Download.Mojang.Minecraft()
+	End Sub
 End Module
 
 Public Class Core
+
 End Class

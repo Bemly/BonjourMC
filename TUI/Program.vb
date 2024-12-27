@@ -1,3 +1,7 @@
+
+Option Explicit On
+Option Strict On
+
 Imports System
 Imports Launcher
 

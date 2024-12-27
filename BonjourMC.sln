@@ -9,6 +9,15 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Launcher", "Launcher\Launch
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TUI", "TUI\TUI.vbproj", "{84252E0D-74EB-4A9B-BC64-9B4654D5BF21}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tmp", "tmp", "{9F265D45-493F-4396-A815-2C819FC1BB25}"
+	ProjectSection(SolutionItems) = preProject
+		version_manifest_v2.json = version_manifest_v2.json
+		javaagrs.txt = javaagrs.txt
+		version_manifest.json = version_manifest.json
+		1.21.4.json = 1.21.4.json
+		Bemly.txt = Bemly.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,5 +40,7 @@ Global
 		{84252E0D-74EB-4A9B-BC64-9B4654D5BF21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84252E0D-74EB-4A9B-BC64-9B4654D5BF21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84252E0D-74EB-4A9B-BC64-9B4654D5BF21}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal
