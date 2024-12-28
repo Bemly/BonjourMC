@@ -23,4 +23,9 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GUI\GUI.vbproj" />
+      <ProjectReference Include="..\Launcher\Launcher.vbproj" />
+      <ProjectReference Include="..\TUI\TUI.vbproj" />
+    </ItemGroup>
 </Project>

@@ -25,13 +25,13 @@
       <None Remove="Java\Server\" />
       <None Remove="Bedrock\" />
       <None Remove="China\" />
-      <None Remove="Model_tmp\" />
       <None Remove="Bedrock\Client\" />
       <None Remove="Bedrock\Server\" />
       <None Remove="Java\Client\Download\" />
       <None Remove="Java\Client\Provider\" />
       <None Remove="Java\Client\Download\Mojang\" />
       <None Remove="Res\" />
+      <None Remove="Res\tmp\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Utility\" />
@@ -41,13 +41,13 @@
       <Folder Include="Java\Server\" />
       <Folder Include="Bedrock\" />
       <Folder Include="China\" />
-      <Folder Include="Model_tmp\" />
       <Folder Include="Bedrock\Client\" />
       <Folder Include="Bedrock\Server\" />
       <Folder Include="Java\Client\Download\" />
       <Folder Include="Java\Client\Provider\" />
       <Folder Include="Java\Client\Download\Mojang\" />
       <Folder Include="Res\" />
+      <Folder Include="Res\tmp\" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.OpenApi" Version="1.6.23" />
