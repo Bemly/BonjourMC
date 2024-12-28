@@ -11,7 +11,6 @@
       <DefineDebug>false</DefineDebug>
     </PropertyGroup>
     <ItemGroup>
-      <None Remove="Download\Mojang\" />
       <None Remove="Download\Forge\" />
       <None Remove="Download\Liteloader\" />
       <None Remove="Download\Optifine\" />
@@ -20,16 +19,35 @@
       <None Remove="Download\Quilt\" />
       <None Remove="Download\Authlib\" />
       <None Remove="Utility\" />
-      <None Remove="Download\" />
-      <None Remove="Model\" />
       <None Remove="Update\" />
+      <None Remove="Java\" />
+      <None Remove="Java\Client\" />
+      <None Remove="Java\Server\" />
+      <None Remove="Bedrock\" />
+      <None Remove="China\" />
+      <None Remove="Model_tmp\" />
+      <None Remove="Bedrock\Client\" />
+      <None Remove="Bedrock\Server\" />
+      <None Remove="Java\Client\Download\" />
+      <None Remove="Java\Client\Provider\" />
+      <None Remove="Java\Client\Download\Mojang\" />
+      <None Remove="Res\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Utility\" />
-      <Folder Include="Download\" />
-      <Folder Include="Download\Mojang\" />
-      <Folder Include="Model\" />
       <Folder Include="Update\" />
+      <Folder Include="Java\" />
+      <Folder Include="Java\Client\" />
+      <Folder Include="Java\Server\" />
+      <Folder Include="Bedrock\" />
+      <Folder Include="China\" />
+      <Folder Include="Model_tmp\" />
+      <Folder Include="Bedrock\Client\" />
+      <Folder Include="Bedrock\Server\" />
+      <Folder Include="Java\Client\Download\" />
+      <Folder Include="Java\Client\Provider\" />
+      <Folder Include="Java\Client\Download\Mojang\" />
+      <Folder Include="Res\" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.OpenApi" Version="1.6.23" />
