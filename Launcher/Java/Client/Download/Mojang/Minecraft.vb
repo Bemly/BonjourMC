@@ -9,6 +9,7 @@ Imports System.Text.Json.Serialization
 Imports System.Threading.Tasks
 Imports System.Collections.Generic
 Imports System.IO
+Imports Version = Launcher.Utility.Model.Version
 
 
 ''' <summary>
@@ -19,10 +20,38 @@ Imports System.IO
 Namespace Java.Client.Download.Mojang
 
     Public Class Minecraft
-        Public Sub New()
+        ' is_compatible_mode True = JSON, False = SQLite
+        Private is_compatible_mode As Boolean
+        Private version As Version
+
+        Public Sub New(Optional is_compatible_mode As Boolean = False)
+            ' TODO: delete this test code!
             Console.WriteLine((New Data_provider).get_path)
+            Me.is_compatible_mode = is_compatible_mode
         End Sub
+
+        Public Function switch_mode(is_compatible_mode As Boolean) As Minecraft
+            Throw New NotImplementedException("还不提供转换格式捏🤏")
+            Me.is_compatible_mode = is_compatible_mode
+            Return Me
+        End Function
+
+        Public Function set_version(version As Version) As Minecraft
+            Return Me
+        End Function
     End Class
+
+    Friend Class Provider
+        Private Class Json_adapter
+
+        End Class
+
+        Private Class Sqlite_adapter
+
+        End Class
+
+    End Class
+
 
     Friend Class Data_provider
         ' 外部网络
