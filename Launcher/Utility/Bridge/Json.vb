@@ -12,10 +12,8 @@ Namespace Utility.Bridge
 
 	' TODO: 之后桥接用新的项目来对接，适合裁切内核！
 	' 1 System.Text.Json, 2 Json.Net.Core, 3 Newtonsoft.Json, 4 Bemly.Json
-	' 统一桥来隐藏适配器
+	' 统一桥(共享/静态)来隐藏适配器(单例)
 	Public Class Json
-		Implements I_Json
-
 		Private Shared instance As I_Json
 
 		' 首次加载也有线程安全 gettype具有唯一性
@@ -33,8 +31,7 @@ Namespace Utility.Bridge
 			End SyncLock
 		End Sub
 
-		' @Override
-		Public Function is_json(str As String) As Boolean Implements I_Json.is_json
+		Shared Function is_json(str As String) As Boolean
 			Return instance.is_json(str)
 		End Function
 
@@ -47,7 +44,7 @@ Namespace Utility.Bridge
 		Implements I_Json
 
 		' ==== Singleton Layer ====
-		Shared ReadOnly m_instance As New Json()
+		Shared ReadOnly m_instance As New Newtonsoft_json_adapter()
 
 		Shared Sub New()
 		End Sub
@@ -55,7 +52,7 @@ Namespace Utility.Bridge
 		Private Sub New()
 		End Sub
 
-		Public Shared ReadOnly Property Instance As Json
+		Public Shared ReadOnly Property Instance As Newtonsoft_json_adapter
 			Get
 				Return m_instance
 			End Get

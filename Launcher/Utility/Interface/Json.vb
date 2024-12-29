@@ -16,7 +16,7 @@ Namespace Utility.Interface
         ''' <param name="str">目标字符串</param>
         ''' <returns>JSON 字符串</returns>
         Function is_json(str As String) As Boolean
-	End Interface
+    End Interface
 End Namespace
 
 

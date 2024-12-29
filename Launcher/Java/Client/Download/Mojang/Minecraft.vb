@@ -8,7 +8,7 @@ Imports System.Threading.Tasks
 Imports System.Collections.Generic
 Imports System.IO
 Imports Version = Launcher.Utility.Model.Version
-Imports J = Launcher.Utility.Bridge.Json
+Imports Jsn = Launcher.Utility.Bridge.Json
 
 
 ''' <summary>
@@ -22,9 +22,6 @@ Namespace Java.Client.Download.Mojang
         ' is_compatible_mode True = JSON, False = SQLite
         Private is_compatible_mode As Boolean
         Private version As Version
-
-        ' JSON mode
-        Private manifests_json As J
 
         Public Sub New(Optional is_compatible_mode As Boolean = False)
             Me.is_compatible_mode = is_compatible_mode
@@ -46,7 +43,7 @@ Namespace Java.Client.Download.Mojang
             Dim filepth As String = Path.GetFullPath("../../../../Launcher/Res/tmp/1.21.4.json")
 
             Dim content As String = fetch_web_content(Config.url.domain.mojang_v2 & Config.url.version_manifest.mojang_v2).Result
-            If is_json(content) Then save_file(content, filepth)
+            If Jsn.is_json(content) Then save_file(content, filepth)
         End Sub
 
         Public Sub update_manifest()
@@ -65,21 +62,6 @@ Namespace Java.Client.Download.Mojang
                 response.EnsureSuccessStatusCode()
                 Return Await response.Content.ReadAsStringAsync()
             End Using
-        End Function
-
-        ''' <summary>
-        ''' 同步 不建议使用
-        ''' 判断 字符串 是否是 JSON
-        ''' </summary>
-        ''' <param name="str">目标字符串</param>
-        ''' <returns>JSON 字符串</returns>
-        Private Function is_json(str As String) As Boolean
-            'Try
-            '    JsonDocument.Parse(str)
-            '    Return True
-            'Catch ex As JsonException
-            '    Return False
-            'End Try
         End Function
 
         ''' <summary>
