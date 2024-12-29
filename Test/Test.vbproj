@@ -21,6 +21,9 @@
 <PrivateAssets>all</PrivateAssets>
 </PackageReference>
         <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Json.Net.Core" Version="1.0.33" />
+        <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
     </ItemGroup>
 
     <ItemGroup>

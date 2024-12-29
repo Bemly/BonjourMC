@@ -19,7 +19,6 @@
       <None Remove="Download\Quilt\" />
       <None Remove="Download\Authlib\" />
       <None Remove="Utility\" />
-      <None Remove="Update\" />
       <None Remove="Java\" />
       <None Remove="Java\Client\" />
       <None Remove="Java\Server\" />
@@ -35,10 +34,10 @@
       <None Remove="Utility\Interface\" />
       <None Remove="Java\Client\FIle\" />
       <None Remove="Res\tmp\" />
+      <None Remove="Utility\Bridge\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Utility\" />
-      <Folder Include="Update\" />
       <Folder Include="Java\" />
       <Folder Include="Java\Client\" />
       <Folder Include="Java\Server\" />
@@ -54,8 +53,12 @@
       <Folder Include="Utility\Interface\" />
       <Folder Include="Java\Client\FIle\" />
       <Folder Include="Res\tmp\" />
+      <Folder Include="Utility\Bridge\" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.OpenApi" Version="1.6.23" />
+      <PackageReference Include="Json.Net.Core" Version="1.0.33" />
+      <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 </Project>

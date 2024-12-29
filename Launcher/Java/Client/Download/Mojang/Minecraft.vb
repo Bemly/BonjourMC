@@ -3,13 +3,12 @@ Option Explicit On
 Option Strict On
 
 Imports System
-Imports System.Text.Json
 Imports System.Net.Http
-Imports System.Text.Json.Serialization
 Imports System.Threading.Tasks
 Imports System.Collections.Generic
 Imports System.IO
 Imports Version = Launcher.Utility.Model.Version
+Imports J = Launcher.Utility.Bridge.Json
 
 
 ''' <summary>
@@ -23,6 +22,9 @@ Namespace Java.Client.Download.Mojang
         ' is_compatible_mode True = JSON, False = SQLite
         Private is_compatible_mode As Boolean
         Private version As Version
+
+        ' JSON mode
+        Private manifests_json As J
 
         Public Sub New(Optional is_compatible_mode As Boolean = False)
             Me.is_compatible_mode = is_compatible_mode
@@ -39,22 +41,25 @@ Namespace Java.Client.Download.Mojang
             Return Me
         End Function
 
-        Public Sub get_all_minecraft_manifest()
+        Public Sub update_manifests()
             Dim workpth As String = Path.GetFullPath("../../../../Launcher/Res/tmp/test")
             Dim filepth As String = Path.GetFullPath("../../../../Launcher/Res/tmp/1.21.4.json")
 
-            Dim content As String = get_json_from_url(Config.url.domain.mojang_v2 & Config.url.version_manifest.mojang_v2).Result
-            Console.WriteLine(content)
+            Dim content As String = fetch_web_content(Config.url.domain.mojang_v2 & Config.url.version_manifest.mojang_v2).Result
             If is_json(content) Then save_file(content, filepth)
+        End Sub
+
+        Public Sub update_manifest()
+            'Dim dict As Dictionary(Of String, JsonElement) = JsonSerializer.Deserialize(Of Dictionary(Of String, JsonElement))(str)
         End Sub
 
         ''' <summary>
         ''' 异步
-        ''' 从指定的 URL 获取 JSON 数据
+        ''' 从指定的 URL 获取数据
         ''' </summary>
         ''' <param name="url">目标网址</param>
         ''' <returns>JSON 字符串的异步任务</returns>
-        Private Async Function get_json_from_url(url As String) As Task(Of String)
+        Private Async Function fetch_web_content(url As String) As Task(Of String)
             Using client As New HttpClient()
                 Dim response As HttpResponseMessage = Await client.GetAsync(url)
                 response.EnsureSuccessStatusCode()
@@ -69,12 +74,12 @@ Namespace Java.Client.Download.Mojang
         ''' <param name="str">目标字符串</param>
         ''' <returns>JSON 字符串</returns>
         Private Function is_json(str As String) As Boolean
-            Try
-                JsonDocument.Parse(str)
-                Return True
-            Catch ex As JsonException
-                Return False
-            End Try
+            'Try
+            '    JsonDocument.Parse(str)
+            '    Return True
+            'Catch ex As JsonException
+            '    Return False
+            'End Try
         End Function
 
         ''' <summary>
