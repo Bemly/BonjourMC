@@ -3,13 +3,20 @@ Option Explicit On
 Option Strict On
 
 Imports System
-
+Imports System.IO
+Imports System.Text.Json
+Imports System.Net.Http
+Imports System.Text.Json.Serialization
+Imports System.Threading.Tasks
+Imports System.Collections.Generic
 
 ' 这个还没有用 openapi nuget包😊
 Public Module Entry
-	Sub Point()
-		Dim mc As Java.Client.Download.Mojang.Minecraft = New Java.Client.Download.Mojang.Minecraft()
-	End Sub
+    Sub Point()
+        Console.WriteLine("Core Start!")
+        Dim mc = New Java.Client.Download.Mojang.Minecraft(is_compatible_mode:=True)
+        mc.get_all_minecraft_manifest()
+    End Sub
 End Module
 
 Public Class Core

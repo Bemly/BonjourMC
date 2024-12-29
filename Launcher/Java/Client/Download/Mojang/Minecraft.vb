@@ -13,7 +13,7 @@ Imports Version = Launcher.Utility.Model.Version
 
 
 ''' <summary>
-''' 下载🀄️的jar包
+''' 下载麻将🀄️的jar包
 ''' </summary>
 ''' <param name="id"></param>
 ''' <returns></returns>
@@ -25,8 +25,6 @@ Namespace Java.Client.Download.Mojang
         Private version As Version
 
         Public Sub New(Optional is_compatible_mode As Boolean = False)
-            ' TODO: delete this test code!
-            Console.WriteLine((New Data_provider).get_path)
             Me.is_compatible_mode = is_compatible_mode
         End Sub
 
@@ -37,8 +35,59 @@ Namespace Java.Client.Download.Mojang
         End Function
 
         Public Function set_version(version As Version) As Minecraft
+            Me.version = version
             Return Me
         End Function
+
+        Public Sub get_all_minecraft_manifest()
+            Dim workpth As String = Path.GetFullPath("../../../../Launcher/Res/tmp/test")
+            Dim filepth As String = Path.GetFullPath("../../../../Launcher/Res/tmp/1.21.4.json")
+
+            Dim content As String = get_json_from_url(Config.url.domain.mojang_v2 & Config.url.version_manifest.mojang_v2).Result
+            Console.WriteLine(content)
+            If is_json(content) Then save_file(content, filepth)
+        End Sub
+
+        ''' <summary>
+        ''' 异步
+        ''' 从指定的 URL 获取 JSON 数据
+        ''' </summary>
+        ''' <param name="url">目标网址</param>
+        ''' <returns>JSON 字符串的异步任务</returns>
+        Private Async Function get_json_from_url(url As String) As Task(Of String)
+            Using client As New HttpClient()
+                Dim response As HttpResponseMessage = Await client.GetAsync(url)
+                response.EnsureSuccessStatusCode()
+                Return Await response.Content.ReadAsStringAsync()
+            End Using
+        End Function
+
+        ''' <summary>
+        ''' 同步 不建议使用
+        ''' 判断 字符串 是否是 JSON
+        ''' </summary>
+        ''' <param name="str">目标字符串</param>
+        ''' <returns>JSON 字符串</returns>
+        Private Function is_json(str As String) As Boolean
+            Try
+                JsonDocument.Parse(str)
+                Return True
+            Catch ex As JsonException
+                Return False
+            End Try
+        End Function
+
+        ''' <summary>
+        ''' 异步
+        ''' 存放文件
+        ''' </summary>
+        ''' <param name="str">目标字符串</param>
+        ''' <returns>JSON 字符串</returns>
+        Private Async Sub save_file(str As String, pth As String)
+            Dim dict As String = Path.GetDirectoryName(pth)
+            If Not Directory.Exists(dict) Then Directory.CreateDirectory(dict)
+            Await File.WriteAllTextAsync(pth, str)
+        End Sub
     End Class
 
     Friend Class Provider
@@ -52,57 +101,6 @@ Namespace Java.Client.Download.Mojang
 
     End Class
 
-
-    Friend Class Data_provider
-        ' 外部网络
-        Private Class Internet
-            Dim url As String = Config.url.domain.mojang_v2 & Config.url.version_manifest.mojang_v2
-            Dim str As String = get_json_from_url(url).Result
-
-
-            Public Sub New()
-            End Sub
-
-            ''' <summary>
-            ''' 从指定的 URL 获取 JSON 数据
-            ''' </summary>
-            ''' <param name="url">目标网址</param>
-            ''' <returns>JSON 字符串</returns>
-            Async Function get_json_from_url(url As String) As Task(Of String)
-                Using client As New HttpClient()
-                    Dim response As HttpResponseMessage = Await client.GetAsync(url)
-                    response.EnsureSuccessStatusCode()
-                    Return Await response.Content.ReadAsStringAsync()
-                End Using
-            End Function
-        End Class
-
-        ' 本地暂时
-        Private Class Local
-            Private workpth As String = Path.GetFullPath("../../../../Launcher/Res/tmp/test")
-            Private filepth As String = Path.GetFullPath("../../../../Launcher/Res/1.21.4.json")
-
-            Public Function get_json() As String
-                ' 读取文件内容
-                If File.Exists(filepth) Then
-                    Dim jsonContent As String = File.ReadAllText(filepth)
-                    Console.WriteLine(jsonContent)
-                    Return jsonContent
-                Else
-                    Throw New Exception($"文件未找到: {filepth}")
-                End If
-            End Function
-        End Class
-
-        Public Sub New()
-        End Sub
-
-        ' 提供器
-        Public Function get_path() As String
-            Dim local = New Local()
-            Return local.get_json()
-        End Function
-    End Class
 End Namespace
 
 
