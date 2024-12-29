@@ -6,6 +6,7 @@ Imports System
 Imports Newtonsoft.Json.Schema
 Imports Newtonsoft.Json.Linq
 Imports I_Json = Launcher.Utility.Interface.Json
+Imports Newtonsoft.Json
 
 
 Namespace Utility.Bridge
@@ -14,18 +15,22 @@ Namespace Utility.Bridge
 	' 1 System.Text.Json, 2 Json.Net.Core, 3 Newtonsoft.Json, 4 Bemly.Json
 	' 统一桥(共享/静态)来隐藏适配器(单例)
 	Public Class Json
+		Implements I_Json
+
 		Private Shared instance As I_Json
+		Private Shared mode As Integer = Launcher.Config.api.json.mode
 
 		' 首次加载也有线程安全 gettype具有唯一性
 		Shared Sub New()
 			SyncLock GetType(Json)
 				If instance Is Nothing Then
-					Select Case Launcher.Config.api.json.mode
+					Select Case mode
+						Case 1, 2, 4
+							Throw New NotImplementedException("Not Found Bemly.Json Adapter.")
 						Case 3
 							instance = Newtonsoft_json_adapter.Instance
 						Case Else
-							' TODO: 给我写更多的json兼容格式
-							Throw New NotImplementedException("其他 打咩")
+							Throw New NotImplementedException("前面的蛆以后再来探索吧！打咩")
 					End Select
 				End If
 			End SyncLock
@@ -35,58 +40,75 @@ Namespace Utility.Bridge
 			Return instance.is_json(str)
 		End Function
 
-	End Class
-
-	Friend NotInheritable Class System_text_json_adapter
-	End Class
-
-	Friend NotInheritable Class Newtonsoft_json_adapter
-		Implements I_Json
-
-		' ==== Singleton Layer ====
-		Shared ReadOnly m_instance As New Newtonsoft_json_adapter()
-
-		Shared Sub New()
-		End Sub
-
-		Private Sub New()
-		End Sub
-
-		Public Shared ReadOnly Property Instance As Newtonsoft_json_adapter
-			Get
-				Return m_instance
-			End Get
-		End Property
-		' == Singleton Layer End ==
-
-		Friend Function is_json(str As String) As Boolean Implements I_Json.is_json
-			Try
-				JToken.Parse(str)
-				Return True
-			Catch
-				Return False
-			End Try
+		Shared Function to_json(str As String) As Object
+			Return instance.to_json(str)
 		End Function
+
+		Public Function isJson(str As String) As Boolean Implements I_Json.is_json
+			Return instance.is_json(str)
+		End Function
+
+		Public Function toJson(str As String) As Object Implements I_Json.to_json
+			Return instance.is_json(str)
+		End Function
+
+		Private NotInheritable Class System_text_json_adapter
+			' TODO: Add System.Text.Json Adapter.
+			Shared Sub New()
+				Throw New NotImplementedException()
+			End Sub
+		End Class
+
+
+		Private NotInheritable Class Newtonsoft_json_adapter
+			Implements I_Json
+
+			' ==== Singleton Layer ====
+			Shared ReadOnly m_instance As New Newtonsoft_json_adapter()
+			Shared Sub New()
+			End Sub
+			Private Sub New()
+			End Sub
+
+			Public Shared ReadOnly Property Instance As Newtonsoft_json_adapter
+				Get
+					Return m_instance
+				End Get
+			End Property
+			' == Singleton Layer End ==
+
+			Friend Function is_json(str As String) As Boolean Implements I_Json.is_json
+				Try
+					to_json(str)
+					Return True
+				Catch e As JsonReaderException
+					Return False
+				End Try
+			End Function
+
+			Friend Function to_json(str As String) As Object Implements I_Json.to_json
+				Return JObject.Parse(str)
+			End Function
+		End Class
+
+
+		Private NotInheritable Class Json_net_adapter
+			' TODO: Add Json.Net.Core Adapter.
+			Shared Sub New()
+				Throw New NotImplementedException()
+			End Sub
+		End Class
+
+
+		Private NotInheritable Class Bemly_json_adapter
+			' TODO: Add moe.bemly.json Adapter.
+			Shared Sub New()
+				Throw New NotImplementedException()
+			End Sub
+		End Class
+
 	End Class
 
-	Friend NotInheritable Class Json_net_adapter
-	End Class
-
-	Friend NotInheritable Class Bemly_json_adapter
-		Shared ReadOnly m_instance As New Bemly_json_adapter()
-
-		Shared Sub New()
-		End Sub
-
-		Private Sub New()
-		End Sub
-
-		Public Shared ReadOnly Property Instance As Bemly_json_adapter
-			Get
-				Return m_instance
-			End Get
-		End Property
-	End Class
 End Namespace
 
 

@@ -9,8 +9,8 @@ Imports System.IO
 Public Module Entry
     Sub Point()
         Console.WriteLine("Core Start!")
-        Dim mc = New Java.Client.Download.Mojang.Minecraft(is_compatible_mode:=True)
-		mc.update_manifests()
+		Dim mc = New Java.Client.Download.Mojang.Minecraft(is_compatible_mode:=True)
+		mc.set_version(1, 21, 4).install()
 	End Sub
 End Module
 
@@ -18,8 +18,6 @@ End Module
 Public Class Core
 
 End Class
-
-
 
 ''' <summary>
 ''' 暂时的规范：
