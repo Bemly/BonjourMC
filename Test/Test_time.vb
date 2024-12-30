@@ -9,6 +9,8 @@ Imports System.IO
 Imports System.IO.Enumeration
 Imports FastSearchLibrary
 Imports System.Collections.Generic
+Imports System.Threading.Tasks
+Imports System.Threading
 
 <TestFixture>
 Public Class Test_time
@@ -82,6 +84,28 @@ Public Class Test_time
 		sew.Stop()
 		Console.WriteLine(sew.Elapsed)
 	End Sub
+
+	<Test>
+	Async Function TestAsync() As Task
+		Dim sw = Stopwatch.StartNew()
+		Console.WriteLine($"Before Await: Thread ID = {Thread.CurrentThread.ManagedThreadId}")
+		Await Task.Delay(1000) ' 延迟 1 秒
+		sw.Stop()
+		Console.WriteLine(sw.Elapsed)
+		Console.WriteLine($"After Await: Thread ID = {Thread.CurrentThread.ManagedThreadId}")
+	End Function
+
+	<Test>
+	Sub TestBlocking()
+		Dim sw = Stopwatch.StartNew()
+		Console.WriteLine($"Before Blocking: Thread ID = {Thread.CurrentThread.ManagedThreadId}")
+		Thread.Sleep(1000) ' 阻塞当前线程 1 秒
+		sw.Stop()
+		Console.WriteLine(sw.Elapsed)
+		Console.WriteLine($"After Blocking: Thread ID = {Thread.CurrentThread.ManagedThreadId}")
+	End Sub
+
+
 
 End Class
 

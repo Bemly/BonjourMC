@@ -6,10 +6,14 @@ Imports System
 Imports System.Net.Http
 Imports System.Threading.Tasks
 Imports System.Collections.Generic
+Imports System.Collections.Concurrent
 Imports System.IO
+Imports Launcher.Utility.Model.Mojang.Minecraft
+Imports Launcher.Utility.Bridge.Crypto
 Imports Version = Launcher.Utility.Model.Version
 Imports Jsn = Launcher.Utility.Bridge.Json
 Imports Fetch = Launcher.Utility.Bridge.Download
+
 
 ''' <summary>
 ''' 下载麻将🀄️的jar包
@@ -27,6 +31,8 @@ Namespace Java.Client.Download.Mojang
 		' 暂不整合到 Configuration 中
 		Private location As String
 		Private version_pth As String
+		Private libraries_pth As String
+		Private assets_pth As String
 		Private manifests_pth As String
 		Private manifests_url As String
 		Private manifest_pth As String
@@ -36,10 +42,10 @@ Namespace Java.Client.Download.Mojang
 			Me.is_compatible_mode = is_compatible_mode
 			Me.location = Path.GetFullPath(Config.file.mc, Environment.CurrentDirectory)
 			Me.version_pth = location & "versions/"
+			Me.libraries_pth = location & "libraries/"
+			Me.assets_pth = location & "assets/"
 			Me.manifests_pth = version_pth & "version_manifest_v2.json"
 			Me.manifests_url = Config.url.domain.mojang_v2 & Config.url.version_manifest.mojang_v2
-			Me.manifest_pth = $"{ version_pth }{ version }/{ version }.json"
-			Me.vanilla = $"{ version_pth }{ version }/{ version }.jar"
 		End Sub
 
 		Public Function switch_mode(ByVal is_compatible_mode As Boolean) As Minecraft
@@ -49,7 +55,10 @@ Namespace Java.Client.Download.Mojang
 		End Function
 
 		Public Function set_version(ByVal version As Version) As Minecraft
+			' [fix] 赋值version之后才绑定
 			Me.version = version
+			Me.manifest_pth = $"{ version_pth }{ version }/{ version }.json"
+			Me.vanilla = $"{ version_pth }{ version }/{ version }.jar"
 			Return Me
 		End Function
 
@@ -69,9 +78,10 @@ Namespace Java.Client.Download.Mojang
 		End Sub
 
 		Public Sub pull_manifest()
+			' 前置条件：访问历史版本清单
 			If Not File.Exists(manifests_pth) Then pull_manifests()
 			Dim str = File.ReadAllText(manifests_pth)
-			' TODO: 此处关系有问题，需要重新画图😭或者自己实现一套😠
+			' TODO: 此处关系有问题，需要重新画图😭或者自己实现一套
 			Dim arr = CType(Jsn.to_json(str), Newtonsoft.Json.Linq.JObject)("versions")
 			Dim i = 0
 			' 遍历所需版本
@@ -85,26 +95,120 @@ Namespace Java.Client.Download.Mojang
 
 		' TODO: [bugs] Downcasting Not Secure!!!!! Plz redesign Class model!😠
 		Public Sub pull_vanilla(ByVal obj As Newtonsoft.Json.Linq.JObject)
+			If version Is Nothing Then Throw New NotSupportedException()
 			Dim url As String = obj("downloads")("client")("url").ToString()
 			Console.WriteLine(url)
 			Fetch.save_web_stream(url, vanilla).Wait()
 		End Sub
 
 		Public Sub pull_libraries(ByVal obj As Newtonsoft.Json.Linq.JObject)
+			' Not Normal Producer-Consumer Model.
+			' 生产者填充队列
+			Dim queue = New ConcurrentQueue(Of Libraries)()
+			For Each i In obj("libraries")
+				Dim artifact = i("downloads")("artifact")
+				Dim pth = artifact("path").ToString()
+				Dim sha1 = artifact("sha1").ToString()
+				Dim size = artifact("size").ToString()
+				Dim url = artifact("url").ToString()
+				Dim name = i("name").ToString()
+				Dim os = ""
+				If i("rules") IsNot Nothing Then
+					os = i("rules")(0)("os")("name").ToString()
+				End If
+				queue.Enqueue(New Libraries(pth, sha1, size, url, name, os))
+			Next
 
+			' 消费者处理队列
+			Dim tasks(Config.download_thread_count) As Task
+			For t = 0 To Config.download_thread_count
+				tasks(t) = Task.Run(Function() pull_libraries(queue))
+			Next
+
+			Task.WaitAll(tasks)
+
+			Console.WriteLine("[libraries] Complete.")
 		End Sub
 
-		Public Sub pull_assets(ByVal obj As Newtonsoft.Json.Linq.JObject)
+		' TODO: 之后会和Download Bridge 合并 避免 异步->同步->异步
+		Public Async Function pull_libraries(ByVal queue As ConcurrentQueue(Of Libraries)) As Task
+			Dim library = New Libraries()
 
+			While Not queue.IsEmpty
+				' 短路左侧可以修改右侧的引用值
+				If queue.TryDequeue(library) AndAlso
+					Not library.is_empty AndAlso library.is_target_os(Config.os) Then
+					Dim pth = libraries_pth & library.path ' TODO: Use Path.Combine
+					Dim count = 0
+					While True
+						count += 1
+						' 标记玄学错误
+						Try
+							Await Fetch.save_web_stream(library.url, pth)
+						Catch ex As Exception
+							Console.WriteLine($"[libraries] { library.name }: {ex}! Retry { count }.")
+							Continue While
+						End Try
+
+						' 下载有误
+						If Not SHA1(pth, library.sha1) Then
+							Console.WriteLine($"[libraries] { library.name }: SHA1 inconsistent! Retry { count }.")
+							Continue While
+						End If
+
+						' 重试次数过多
+						' TODO: 暂未实现错误处理 后续丢给 Bridge.Download
+						If count > Config.error_retry_count Then
+							Throw New TimeoutException("[libraries] Download Time Out.")
+						End If
+
+						' 成功结束
+						Exit While
+					End While
+					Console.WriteLine($"[libraries] { library.name }: Downloaded.")
+				Else
+					Console.WriteLine($"[libraries] { library.name }: Not Match Current OS. Skip.")
+				End If
+			End While
+		End Function
+
+		Public Sub pull_assets(ByVal obj As Newtonsoft.Json.Linq.JObject)
+			' Not Normal Producer-Consumer Model.
+			' 生产者填充队列
+			Dim queue = New ConcurrentQueue(Of Assets)()
+			For Each i In obj("libraries")
+				Dim artifact = i("downloads")("artifact")
+				Dim pth = artifact("path").ToString()
+				Dim sha1 = artifact("sha1").ToString()
+				Dim size = artifact("size").ToString()
+				Dim url = artifact("url").ToString()
+				Dim name = i("name").ToString()
+				Dim os = ""
+				If i("rules") IsNot Nothing Then
+					os = i("rules")(0)("os")("name").ToString()
+				End If
+				queue.Enqueue(New Libraries(pth, sha1, size, url, name, os))
+			Next
+
+			' 消费者处理队列
+			Dim tasks(Config.download_thread_count) As Task
+			For t = 0 To Config.download_thread_count
+				tasks(t) = Task.Run(Function() pull_libraries(queue))
+			Next
+
+			Task.WaitAll(tasks)
+
+			Console.WriteLine("[libraries] Complete.")
 		End Sub
 
 		Public Sub install()
+			' 前置条件：访问当前版本清单
 			If Not File.Exists(manifest_pth) Then pull_manifest()
 			Dim str = File.ReadAllText(manifest_pth)
 			Dim obj = CType(Jsn.to_json(str), Newtonsoft.Json.Linq.JObject)
 			If Not File.Exists(vanilla) Then pull_vanilla(obj)
 			' TODO: 之后使用 Queue 队列来检查和下载
-			If check_libraries() Then pull_libraries(obj)
+			'If check_libraries() Then pull_libraries(obj)
 			If check_assets() Then pull_assets(obj)
 		End Sub
 
