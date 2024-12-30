@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tmp", "tmp", "{AB465A78-391
 		tmp\1.21.4.json = tmp\1.21.4.json
 		tmp\javaagrs.txt = tmp\javaagrs.txt
 		tmp\Bemly.txt = tmp\Bemly.txt
+		tmp\FastSearchLibraryNetCore.dll = tmp\FastSearchLibraryNetCore.dll
 	EndProjectSection
 EndProject
 Global

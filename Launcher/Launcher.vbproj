@@ -33,9 +33,8 @@
       <None Remove="Utility\Model\" />
       <None Remove="Utility\Interface\" />
       <None Remove="Java\Client\FIle\" />
-      <None Remove="Res\tmp\" />
       <None Remove="Utility\Bridge\" />
-      <None Remove="Res\tmp\minecraft\versions\1.21.4\" />
+      <None Remove="Res\tmp\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Utility\" />
@@ -53,9 +52,8 @@
       <Folder Include="Utility\Model\" />
       <Folder Include="Utility\Interface\" />
       <Folder Include="Java\Client\FIle\" />
-      <Folder Include="Res\tmp\" />
       <Folder Include="Utility\Bridge\" />
-      <Folder Include="Res\tmp\minecraft\versions\1.21.4\" />
+      <Folder Include="Res\tmp\" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.OpenApi" Version="1.6.23" />

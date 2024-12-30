@@ -18,16 +18,16 @@ Namespace Utility.Bridge
 		Implements I_Json
 
 		Private Shared instance As I_Json
-		Private Shared mode As Integer = Launcher.Config.api.json.mode
+		Private Shared mode As String = Launcher.Config.api.json_mode
 
 		' 首次加载也有线程安全 gettype具有唯一性
 		Shared Sub New()
 			SyncLock GetType(Json)
 				If instance Is Nothing Then
 					Select Case mode
-						Case 1, 2, 4
+						Case "System", "JsonNet", "Bemly_"
 							Throw New NotImplementedException("Not Found Bemly.Json Adapter.")
-						Case 3
+						Case "Newtonsoft"
 							instance = Newtonsoft_json_adapter.Instance
 						Case Else
 							Throw New NotImplementedException("前面的蛆以后再来探索吧！打咩")
@@ -44,14 +44,17 @@ Namespace Utility.Bridge
 			Return instance.to_json(str)
 		End Function
 
-		Public Function isJson(str As String) As Boolean Implements I_Json.is_json
+		Public Function is_json_inst(str As String) As Boolean Implements I_Json.is_json
 			Return instance.is_json(str)
 		End Function
 
-		Public Function toJson(str As String) As Object Implements I_Json.to_json
+		Public Function to_json_inst(str As String) As Object Implements I_Json.to_json
 			Return instance.is_json(str)
 		End Function
 
+
+
+		' ****** Adapter Segment ******
 		Private NotInheritable Class System_text_json_adapter
 			' TODO: Add System.Text.Json Adapter.
 			Shared Sub New()
@@ -70,7 +73,7 @@ Namespace Utility.Bridge
 			Private Sub New()
 			End Sub
 
-			Public Shared ReadOnly Property Instance As Newtonsoft_json_adapter
+			Friend Shared ReadOnly Property Instance As Newtonsoft_json_adapter
 				Get
 					Return m_instance
 				End Get

@@ -5,19 +5,15 @@ Option Strict On
 Imports System
 Imports System.IO
 
-' 这个还没有用 openapi nuget包😊
+
 Public Module Entry
     Sub Point()
         Console.WriteLine("Core Start!")
 		Dim mc = New Java.Client.Download.Mojang.Minecraft(is_compatible_mode:=True)
-		mc.set_version(1, 21, 4).install()
+		'mc.set_version(1, 21, 4)
 	End Sub
 End Module
 
-' 沟槽的VB.NET变量竟然不区分大小写，我服了，全是命名冲突
-Public Class Core
-
-End Class
 
 ''' <summary>
 ''' 暂时的规范：
@@ -34,10 +30,15 @@ End Class
 ''' - Utility -> Interface / Models / Bridge(adapter)
 ''' TODO: 加入OpenAPI 和 vbnet的注释 相互 解析
 ''' </summary>
+Public Class Core
 
+End Class
+
+
+' 沟槽的VB.NET变量竟然不区分大小写，我服了，全是命名冲突
+' 常量命名是例外，均为全小写+下划线区分
 Public Class Config
 
-	' TODO: URL访问地址 常量 之后迁移
 	Public Class url
 
 		Public Class domain
@@ -52,15 +53,31 @@ Public Class Config
 			Public Const mojang_v2 As String = "mc/game/version_manifest_v2.json"
 		End Class
 
+	End Class
 
+	' TODO: 之后用实例新建(Instance <- Models -> SQLite)
+	Public Class file
+		'Public Class path
+		'	Public Const glob As String = "../../../../Launcher/Res/tmp/"
+		'	Public Const java As String = glob & "java/"
+		'End Class
+
+		'Public Class mc
+		'	Public Const path As String = file.path.java & "mc/"
+		'End Class
+
+		Public Const glob As String = "../../../../Launcher/Res/tmp/"
+		Public Const java As String = glob & "java/"
+		Public Const mc As String = glob & "mc/"
 	End Class
 
 	Public Class api
 
-		Public Class json
-			' 1 System.Text.Json, 2 Json.Net.Core, 3 Newtonsoft.Json, 4 Bemly.Json
-			Public Const mode As Integer = 3
-		End Class
+		' 1 System.Text.Json, 2 Json.Net.Core, 3 Newtonsoft.Json, 4 Bemly.Json
+		Public Const json_mode As String = "Newtonsoft"
+
+		' 1 System.Net.Http, 2 Bemly.Net, 3 PCL download, 4 ...
+		Public Const net_mode As String = "System"
 
 	End Class
 
