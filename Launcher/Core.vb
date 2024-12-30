@@ -9,8 +9,10 @@ Imports System.IO
 Public Module Entry
     Sub Point()
         Console.WriteLine("Core Start!")
-		Dim mc = New Java.Client.Download.Mojang.Minecraft(is_compatible_mode:=True)
-		mc.set_version(1, 21, 4).install()
+		'Dim mc = New Java.Client.Download.Mojang.Minecraft(is_compatible_mode:=True)
+		'mc.set_version(1, 21, 4).install()
+		Dim mc = New Java.Client.Setup()
+
 	End Sub
 End Module
 
@@ -45,6 +47,7 @@ Public Class Config
 			Public Const mojang_v1 As String = "https://piston-meta.mojang.com/"
 			Public Const mojang_v2 As String = "https://launchermeta.mojang.com/"
 			Public Const bmcl As String = "https://bmclapi2.bangbang93.com/"
+			Public Const mojang_res As String = "https://resources.download.minecraft.net/"
 		End Class
 
 
@@ -67,7 +70,7 @@ Public Class Config
 		'End Class
 
 		Public Const glob As String = "../../../../Launcher/Res/tmp/"
-		Public Const java As String = glob & "java/"
+		Public Const java As String = glob & "jre.bundle/Contents/Home/bin/java"
 		Public Const mc As String = glob & "mc/"
 	End Class
 
@@ -81,8 +84,9 @@ Public Class Config
 
 	End Class
 
-	Public Const download_thread_count = 6
-	Public Const error_retry_count = 5
+	' TODO: 之后加上动态延时重连和动态线程下载
+	Public Const download_thread_count = 128
+	Public Const error_retry_count = 20
 	Public Const os = "osx"
 
 End Class

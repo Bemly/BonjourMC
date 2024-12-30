@@ -32,10 +32,11 @@ Namespace Java.Client.Download.Mojang
 		Private location As String
 		Private version_pth As String
 		Private libraries_pth As String
-		Private assets_pth As String
 		Private manifests_pth As String
 		Private manifests_url As String
 		Private manifest_pth As String
+		Private assets_pth As String
+		Private assets_manifest As String
 		Private vanilla As String
 
 		Public Sub New(Optional ByVal is_compatible_mode As Boolean = False)
@@ -43,7 +44,8 @@ Namespace Java.Client.Download.Mojang
 			Me.location = Path.GetFullPath(Config.file.mc, Environment.CurrentDirectory)
 			Me.version_pth = location & "versions/"
 			Me.libraries_pth = location & "libraries/"
-			Me.assets_pth = location & "assets/"
+			Me.assets_pth = location & "assets/objects/"
+			Me.assets_manifest = location & "assets/indexes/"
 			Me.manifests_pth = version_pth & "version_manifest_v2.json"
 			Me.manifests_url = Config.url.domain.mojang_v2 & Config.url.version_manifest.mojang_v2
 		End Sub
@@ -95,7 +97,6 @@ Namespace Java.Client.Download.Mojang
 
 		' TODO: [bugs] Downcasting Not Secure!!!!! Plz redesign Class model!😠
 		Public Sub pull_vanilla(ByVal obj As Newtonsoft.Json.Linq.JObject)
-			If version Is Nothing Then Throw New NotSupportedException()
 			Dim url As String = obj("downloads")("client")("url").ToString()
 			Console.WriteLine(url)
 			Fetch.save_web_stream(url, vanilla).Wait()
@@ -146,13 +147,15 @@ Namespace Java.Client.Download.Mojang
 						Try
 							Await Fetch.save_web_stream(library.url, pth)
 						Catch ex As Exception
+							Task.Delay(1000).Wait()
 							Console.WriteLine($"[libraries] { library.name }: {ex}! Retry { count }.")
 							Continue While
 						End Try
 
 						' 下载有误
 						If Not SHA1(pth, library.sha1) Then
-							Console.WriteLine($"[libraries] { library.name }: SHA1 inconsistent! Retry { count }.")
+							Await Task.Delay(1000)
+							Console.WriteLine($"[libraries] { library.name }: SHA1({ library.sha1 }) inconsistent! Retry { count }.")
 							Continue While
 						End If
 
@@ -165,41 +168,86 @@ Namespace Java.Client.Download.Mojang
 						' 成功结束
 						Exit While
 					End While
-					Console.WriteLine($"[libraries] { library.name }: Downloaded.")
+					'Console.WriteLine($"[libraries] { library.name }: Downloaded.")
 				Else
 					Console.WriteLine($"[libraries] { library.name }: Not Match Current OS. Skip.")
 				End If
 			End While
 		End Function
 
-		Public Sub pull_assets(ByVal obj As Newtonsoft.Json.Linq.JObject)
-			' Not Normal Producer-Consumer Model.
-			' 生产者填充队列
+		Public Sub pull_assets(ByVal json As Newtonsoft.Json.Linq.JObject)
+			' 下载资产清单文件
+			Dim pth = $"{assets_manifest}{json("assets")}.json"
+			If Not File.Exists(pth) Then
+				Fetch.save_web_stream(json("assetIndex")("url").ToString(), pth).Wait()
+			End If
+			Console.WriteLine($"[Assets] {json("assets")} manifest: Downloaded.")
+
+			' 拉取资产清单文件
+			Dim obj = CType(Jsn.to_json(File.ReadAllText(pth)), Newtonsoft.Json.Linq.JObject)
+			obj = CType(obj("objects"), Newtonsoft.Json.Linq.JObject)
+
 			Dim queue = New ConcurrentQueue(Of Assets)()
-			For Each i In obj("libraries")
-				Dim artifact = i("downloads")("artifact")
-				Dim pth = artifact("path").ToString()
-				Dim sha1 = artifact("sha1").ToString()
-				Dim size = artifact("size").ToString()
-				Dim url = artifact("url").ToString()
-				Dim name = i("name").ToString()
-				Dim os = ""
-				If i("rules") IsNot Nothing Then
-					os = i("rules")(0)("os")("name").ToString()
-				End If
-				queue.Enqueue(New Libraries(pth, sha1, size, url, name, os))
+			For Each i As Newtonsoft.Json.Linq.JProperty In obj.Properties()
+				Dim path = i.Name.ToString()
+				Dim hash = i.Value("hash").ToString()
+				Dim size = i.Value("size").ToString()
+				queue.Enqueue(New Assets(path, hash, size))
 			Next
 
-			' 消费者处理队列
+			' 下载清单内容
 			Dim tasks(Config.download_thread_count) As Task
 			For t = 0 To Config.download_thread_count
-				tasks(t) = Task.Run(Function() pull_libraries(queue))
+				tasks(t) = Task.Run(Function() pull_assets(queue))
 			Next
 
 			Task.WaitAll(tasks)
 
-			Console.WriteLine("[libraries] Complete.")
+			Console.WriteLine("[Assets] Complete.")
 		End Sub
+
+		Public Async Function pull_assets(ByVal queue As ConcurrentQueue(Of Assets)) As Task
+			Dim asset = New Assets()
+
+			While Not queue.IsEmpty
+				' 短路左侧可以修改右侧的引用值
+				If queue.TryDequeue(asset) AndAlso Not asset.is_empty Then
+					Dim pth = $"{assets_pth}{asset.hash.Substring(0, 2)}/{asset.hash}"
+					Dim url = $"{Config.url.domain.mojang_res}{asset.hash.Substring(0, 2)}/{asset.hash}"
+					Dim count = 0
+					While True
+						count += 1
+						' 标记玄学错误
+						Try
+							Await Fetch.save_web_stream(url, pth)
+						Catch ex As Exception
+							Console.WriteLine($"[Assets] { asset.path }: {ex}! Retry { count }.")
+							Task.Delay(1000).Wait()
+							Continue While
+						End Try
+
+						' 下载有误
+						If Not SHA1(pth, asset.hash) Then
+							Console.WriteLine($"[Assets] { asset.path }: SHA1({ asset.hash }) inconsistent! Retry { count }.")
+							Await Task.Delay(1000)
+							Continue While
+						End If
+
+						' 重试次数过多
+						' TODO: 暂未实现错误处理 后续丢给 Bridge.Download
+						If count > Config.error_retry_count Then
+							Throw New TimeoutException("[Assets] Download Time Out.")
+						End If
+
+						' 成功结束
+						Exit While
+					End While
+					'Console.WriteLine($"[Assets] { asset.path }: Downloaded.")
+				Else
+					Console.WriteLine($"[Assets] { asset.path }: Not Match Current OS. Skip.")
+				End If
+			End While
+		End Function
 
 		Public Sub install()
 			' 前置条件：访问当前版本清单
@@ -208,7 +256,7 @@ Namespace Java.Client.Download.Mojang
 			Dim obj = CType(Jsn.to_json(str), Newtonsoft.Json.Linq.JObject)
 			If Not File.Exists(vanilla) Then pull_vanilla(obj)
 			' TODO: 之后使用 Queue 队列来检查和下载
-			'If check_libraries() Then pull_libraries(obj)
+			If check_libraries() Then pull_libraries(obj)
 			If check_assets() Then pull_assets(obj)
 		End Sub
 

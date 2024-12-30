@@ -45,6 +45,20 @@ Public Class Test_file
 		If res = "a7e5a6024bfd3cd614625aa05629adf760020304" Then Assert.Pass()
 		Assert.Fail()
 	End Sub
+
+	<Test>
+	Public Sub test_get_json_key()
+		Dim str = File.ReadAllText("/Users/bemly/Projects/BonjourMC/tmp/1.21.4.json")
+		Dim obj As JObject = CType(JObject.Parse(str)("libraries")(0), JObject)
+		For Each prop As JProperty In obj.Properties()
+			Console.WriteLine($"Key: {prop.Name}, Value: {prop.Value}")
+			If prop.Name = "rules" Then
+				Console.WriteLine(prop.Value(0)("action"))
+			End If
+		Next
+
+		Console.WriteLine(obj)
+	End Sub
 End Class
 
 
