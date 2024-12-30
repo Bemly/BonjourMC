@@ -36,19 +36,19 @@ Namespace Utility.Bridge
 			End SyncLock
 		End Sub
 
-		Shared Function is_json(str As String) As Boolean
+		Shared Function is_json(ByVal str As String) As Boolean
 			Return instance.is_json(str)
 		End Function
 
-		Shared Function to_json(str As String) As Object
+		Shared Function to_json(ByVal str As String) As Object
 			Return instance.to_json(str)
 		End Function
 
-		Public Function is_json_inst(str As String) As Boolean Implements I_Json.is_json
+		Public Function is_json_inst(ByVal str As String) As Boolean Implements I_Json.is_json
 			Return instance.is_json(str)
 		End Function
 
-		Public Function to_json_inst(str As String) As Object Implements I_Json.to_json
+		Public Function to_json_inst(ByVal str As String) As Object Implements I_Json.to_json
 			Return instance.is_json(str)
 		End Function
 
@@ -80,7 +80,7 @@ Namespace Utility.Bridge
 			End Property
 			' == Singleton Layer End ==
 
-			Friend Function is_json(str As String) As Boolean Implements I_Json.is_json
+			Friend Function is_json(ByVal str As String) As Boolean Implements I_Json.is_json
 				Try
 					to_json(str)
 					Return True
@@ -89,7 +89,7 @@ Namespace Utility.Bridge
 				End Try
 			End Function
 
-			Friend Function to_json(str As String) As Object Implements I_Json.to_json
+			Friend Function to_json(ByVal str As String) As Object Implements I_Json.to_json
 				Return JObject.Parse(str)
 			End Function
 		End Class

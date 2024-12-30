@@ -9,7 +9,7 @@ Imports System.Threading.Tasks
 Namespace Utility.Interface
 
     Public Interface Download
-        Function save_web_stream(url As String, pth As String) As Task
+        Function save_web_stream(ByVal url As String, ByVal pth As String) As Task
     End Interface
 End Namespace
 

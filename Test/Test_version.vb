@@ -59,7 +59,7 @@ Public Class Test_version
         }
 
         ' 降序
-        versions_v2.Sort(Function(v1 As Version, v2 As Version) v2.CompareTo(v1))
+        versions_v2.Sort(Function(ByVal v1 As Version, ByVal v2 As Version) v2.CompareTo(v1))
         For Each v In versions_v2
             Console.WriteLine(v.ToString())
         Next

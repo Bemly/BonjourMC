@@ -76,4 +76,35 @@ Public Class Tests
 		Console.WriteLine(Path.GetFullPath("../../../../Launcher/Res/tmp"))
 	End Sub
 
+	Structure Libraries
+		Public p As String
+		Public ReadOnly x As String
+		Shared y As Integer = 20
+
+		Public Sub New(ByVal x As String)
+			Me.x = x
+		End Sub
+
+		'/Users/bemly/Projects/BonjourMC/Test/Unit_test_core.vb(21,21): Error BC30629: 结构不能声明没有参数的非共享 "Sub New"。 (BC30629) (Test)
+		'Private Sub New()
+		'End Sub
+	End Structure
+
+	''' <summary>
+	'''  readonly 只能在构造函数里面复制 不能在With语句里面赋值
+	''' </summary>
+	<Test>
+	Public Sub test_struct()
+		Dim a = New Libraries("a")
+		Dim b = New Libraries()
+		'/Users/bemly/Projects/BonjourMC/Test/Unit_test_core.vb(49,49): Error BC30064: '"ReadOnly" 变量不能作为赋值目标。 (BC30064) (Test)
+		'Dim c = New Libraries With {.p = "bb", .x = "aa"}
+		Dim c = New Libraries With {.p = "bb"}
+		Console.WriteLine($"b.x:{ b.x = "" }")
+		Console.WriteLine("a.x:" & a.x)
+		Console.WriteLine("Libraries.y:" & Libraries.y)
+		Console.WriteLine("c.p:" & c.p)
+		Console.WriteLine($"a.p:{ a.p = "" }")
+	End Sub
+
 End Class

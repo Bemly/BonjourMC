@@ -34,11 +34,12 @@ Namespace Utility.Bridge
 			End SyncLock
 		End Sub
 
-		Shared Function save_web_stream(url As String, pth As String) As Task
+		Shared Function save_web_stream(ByVal url As String, ByVal pth As String) As Task
 			Return instance.save_web_stream(url, pth)
 		End Function
 
-		Public Function save_web_stream_inst(url As String, pth As String) As Task Implements I_dl.save_web_stream
+		Public Function save_web_stream_inst(ByVal url As String,
+				ByVal pth As String) As Task Implements I_dl.save_web_stream
 			Return instance.save_web_stream(url, pth)
 		End Function
 
@@ -69,7 +70,7 @@ Namespace Utility.Bridge
 			''' <param name="url">网站地址</param>
 			''' <param name="pth">本地路径</param>
 			''' <returns>异步返回</returns>
-			Friend Async Function save_web_stream(url As String, pth As String) As Task Implements I_dl.save_web_stream
+			Friend Async Function save_web_stream(ByVal url As String, ByVal pth As String) As Task Implements I_dl.save_web_stream
 				Using client As New HttpClient()
 					' 获取远程文件流
 					Using response As HttpResponseMessage =

@@ -32,7 +32,7 @@ Namespace Java.Client.Download.Mojang
 		Private manifest_pth As String
 		Private vanilla As String
 
-		Public Sub New(Optional is_compatible_mode As Boolean = False)
+		Public Sub New(Optional ByVal is_compatible_mode As Boolean = False)
 			Me.is_compatible_mode = is_compatible_mode
 			Me.location = Path.GetFullPath(Config.file.mc, Environment.CurrentDirectory)
 			Me.version_pth = location & "versions/"
@@ -42,23 +42,24 @@ Namespace Java.Client.Download.Mojang
 			Me.vanilla = $"{ version_pth }{ version }/{ version }.jar"
 		End Sub
 
-		Public Function switch_mode(is_compatible_mode As Boolean) As Minecraft
+		Public Function switch_mode(ByVal is_compatible_mode As Boolean) As Minecraft
 			Throw New NotImplementedException("还不提供转换格式捏🤏")
 			Me.is_compatible_mode = is_compatible_mode
 			Return Me
 		End Function
 
-		Public Function set_version(version As Version) As Minecraft
+		Public Function set_version(ByVal version As Version) As Minecraft
 			Me.version = version
 			Return Me
 		End Function
 
-		Public Function set_version(version As String) As Minecraft
+		Public Function set_version(ByVal version As String) As Minecraft
 			set_version(New Version(version))
 			Return Me
 		End Function
 
-		Public Function set_version(major As Integer, minor As Integer, patch As Integer) As Minecraft
+		Public Function set_version(ByVal major As Integer, ByVal minor As Integer,
+									ByVal patch As Integer) As Minecraft
 			set_version(New Version(major, minor, patch))
 			Return Me
 		End Function
@@ -83,17 +84,17 @@ Namespace Java.Client.Download.Mojang
 		End Sub
 
 		' TODO: [bugs] Downcasting Not Secure!!!!! Plz redesign Class model!😠
-		Public Sub pull_vanilla(obj As Newtonsoft.Json.Linq.JObject)
+		Public Sub pull_vanilla(ByVal obj As Newtonsoft.Json.Linq.JObject)
 			Dim url As String = obj("downloads")("client")("url").ToString()
 			Console.WriteLine(url)
 			Fetch.save_web_stream(url, vanilla).Wait()
 		End Sub
 
-		Public Sub pull_libraries(obj As Newtonsoft.Json.Linq.JObject)
+		Public Sub pull_libraries(ByVal obj As Newtonsoft.Json.Linq.JObject)
 
 		End Sub
 
-		Public Sub pull_assets(obj As Newtonsoft.Json.Linq.JObject)
+		Public Sub pull_assets(ByVal obj As Newtonsoft.Json.Linq.JObject)
 
 		End Sub
 
@@ -114,17 +115,6 @@ Namespace Java.Client.Download.Mojang
 		Public Function check_assets() As Boolean
 			Return True
 		End Function
-
-	End Class
-
-	Friend Class Provider
-		Private Class Json_adapter
-
-		End Class
-
-		Private Class Sqlite_adapter
-
-		End Class
 
 	End Class
 

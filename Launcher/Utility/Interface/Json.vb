@@ -18,9 +18,9 @@ Namespace Utility.Interface
         ''' </summary>
         ''' <param name="str">目标字符串</param>
         ''' <returns>JSON 字符串</returns>
-        Function is_json(str As String) As Boolean
+        Function is_json(ByVal str As String) As Boolean
         'Function to_json(str As String) As
-        Function to_json(str As String) As Object
+        Function to_json(ByVal str As String) As Object
     End Interface
 End Namespace
 
