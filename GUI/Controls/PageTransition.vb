@@ -3,6 +3,7 @@ Option Strict On
 
 Imports System
 Imports System.Collections.Generic
+Imports System.Diagnostics
 Imports Avalonia
 Imports Avalonia.Animation
 Imports Avalonia.Animation.Easings
@@ -16,23 +17,42 @@ Namespace Controls
 
     ''' <summary>
     ''' Content host that animates page transitions with PCL-CE exact timing.
-    ''' Fade old page out, swap content, fade new page in with staggered elements.
+    ''' Uses custom PageContent property to avoid ContentControl auto-replace.
     ''' </summary>
     Public Class PageTransition
         Inherits ContentControl
 
+        ' Display layer — single Border that holds the current page
+        Private ReadOnly _display As New Border() With {.Background = Brushes.Transparent}
+
+        ' Animation state
         Private _is_animating As Boolean = False
         Private _last_content As Object = Nothing
         Private _pending_content As Object = Nothing
 
+        ' Styled Property for page content (avoids ContentControl auto-replace)
+        Public Shared ReadOnly PageContentProperty As StyledProperty(Of Object) =
+            AvaloniaProperty.Register(Of PageTransition, Object)("PageContent", Nothing)
+
+        Public Property PageContent As Object
+            Get
+                Return GetValue(PageContentProperty)
+            End Get
+            Set(ByVal value As Object)
+                SetValue(PageContentProperty, value)
+            End Set
+        End Property
+
         Public Sub New()
             ClipToBounds = True
+            ' Set fixed Content — the display layer, never changes
+            Content = _display
         End Sub
 
         Protected Overrides Sub OnPropertyChanged(ByVal change As AvaloniaPropertyChangedEventArgs)
             MyBase.OnPropertyChanged(change)
 
-            If change.Property IsNot ContentProperty Then Return
+            If change.Property IsNot PageContentProperty Then Return
 
             Dim new_content = change.NewValue
             If new_content Is Nothing Then Return
@@ -48,13 +68,12 @@ Namespace Controls
             Dim new_control = TryCast(new_content, Control)
             If new_control Is Nothing Then Return
 
-            Dim old_control = TryCast(change.OldValue, Control)
+            Dim old_control = TryCast(_display.Child, Control)
 
             If old_control IsNot Nothing Then
-                ' Transition between pages
                 _is_animating = True
 
-                ' Fade old page out
+                ' Fade old page out (80ms)
                 animate_fade(old_control, 0.0, 80)
 
                 ' After fade out, swap content and fade new page in
@@ -62,24 +81,48 @@ Namespace Controls
                 swap_timer.Interval = TimeSpan.FromMilliseconds(90)
                 AddHandler swap_timer.Tick, Sub(sender, e)
                                                 swap_timer.Stop()
-                                                Content = new_control
+                                                ' Swap content
+                                                _display.Child = new_control
+                                                ' Animate new page in
                                                 animate_page_enter(new_control)
                                                 _is_animating = False
 
                                                 ' Process pending
-                                                If _pending_content IsNot Nothing Then
-                                                    Dim pending = _pending_content
-                                                    _pending_content = Nothing
-                                                    _last_content = pending
-                                                    Content = pending
-                                                    animate_page_enter(TryCast(pending, Control))
-                                                End If
+                                                process_pending()
                                             End Sub
                 swap_timer.Start()
             Else
-                ' First load — just animate in
+                ' First load — just set content and animate in
+                _display.Child = new_control
                 animate_page_enter(new_control)
             End If
+        End Sub
+
+        Private Sub process_pending()
+            If _pending_content Is Nothing Then Return
+            Dim pending = _pending_content
+            _pending_content = Nothing
+            _last_content = pending
+            Dim new_control = TryCast(pending, Control)
+            If new_control Is Nothing Then Return
+
+            _is_animating = True
+            ' Fade current out
+            Dim old_control = TryCast(_display.Child, Control)
+            If old_control IsNot Nothing Then
+                animate_fade(old_control, 0.0, 80)
+            End If
+
+            Dim swap_timer As New DispatcherTimer()
+            swap_timer.Interval = TimeSpan.FromMilliseconds(90)
+            AddHandler swap_timer.Tick, Sub(sender, e)
+                                            swap_timer.Stop()
+                                            _display.Child = new_control
+                                            animate_page_enter(new_control)
+                                            _is_animating = False
+                                            process_pending()
+                                        End Sub
+            swap_timer.Start()
         End Sub
 
         ''' <summary>

@@ -93,7 +93,7 @@
                  Content Area
                  ============================================================ -->
             <Panel Grid.Row="1">
-                <ctrl:PageTransition Content="{Binding selected_page}" Margin="0"/>
+                <ctrl:PageTransition PageContent="{Binding selected_page}" Margin="0"/>
             </Panel>
         </Grid>
     </Border>
