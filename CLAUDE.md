@@ -69,8 +69,8 @@ dotnet test             # 运行测试
 
 ### 窗口透明
 
-- **Mac**：`TransparencyLevelHint="Transparent"` + `ExtendClientAreaToDecorationsHint="True"` 都可用
-- **Windows**：**不要使用** `TransparencyLevelHint="Transparent"`，会导致窗口变白/不透明。只用 `ExtendClientAreaToDecorationsHint="True"` 即可
+- **Mac**：`TransparencyLevelHint="Transparent"` + `ExtendClientAreaToDecorationsHint="True"` 都可用，阴影效果正常
+- **Windows**：透明效果不工作（Avalonia 已知限制），`TransparencyLevelHint` 和 `ExtendClientAreaToDecorationsHint` 都无法实现透明。PCL-CE 用 WPF + DWM 原生 API 实现透明，与 Avalonia 机制不同
 - 标题栏拖拽：`WindowDecorations="None"` 时，需要手动处理 `PointerPressed` 实现拖拽。注意按钮点击会冒泡到标题栏，需向上遍历视觉树检测是否有 Command 属性，避免按钮被拖拽拦截
 
 ## Windows 远程调试
