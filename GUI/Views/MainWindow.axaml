@@ -16,8 +16,7 @@
         WindowDecorations="None"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaTitleBarHeightHint="-1"
-        Background="Transparent"
-        TransparencyLevelHint="Transparent">
+        Background="Transparent">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
