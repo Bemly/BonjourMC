@@ -67,6 +67,38 @@ dotnet test             # 运行测试
 - `VersionEntry` 等绑定到 AXAML 的类必须用属性（Property），不能用字段（Field）
 - `For Each` 循环变量在 `Option Strict On` 下需要显式类型声明
 
+### 窗口透明
+
+- **Mac**：`TransparencyLevelHint="Transparent"` + `ExtendClientAreaToDecorationsHint="True"` 都可用
+- **Windows**：**不要使用** `TransparencyLevelHint="Transparent"`，会导致窗口变白/不透明。只用 `ExtendClientAreaToDecorationsHint="True"` 即可
+- 标题栏拖拽：`WindowDecorations="None"` 时，需要手动处理 `PointerPressed` 实现拖拽。注意按钮点击会冒泡到标题栏，需向上遍历视觉树检测是否有 Command 属性，避免按钮被拖拽拦截
+
+## Windows 远程调试
+
+Windows 测试机：`192.168.1.113`，用户 `admin`，密码 `2328`
+
+```bash
+# SSH 连接
+sshpass -p 2328 ssh admin@192.168.1.113
+
+# 复制文件到 Windows
+sshpass -p 2328 scp <本地文件> admin@192.168.1.113:"C:/Users/admin/Projects/BonjourMC/<路径>"
+
+# 编译
+sshpass -p 2328 ssh admin@192.168.1.113 "C:\Users\admin\AppData\Local\Microsoft\dotnet\dotnet.exe build C:\Users\admin\Projects\BonjourMC\GUI\GUI.vbproj -c Debug"
+
+# 在用户桌面会话中启动 GUI（必须用 schtasks，SSH 直接运行的窗口看不到）
+sshpass -p 2328 ssh admin@192.168.1.113 'schtasks /create /tn "BonjourMC" /tr "C:\Users\admin\Projects\BonjourMC\GUI\bin\Debug\net8.0\GUI.exe" /sc once /st 00:00 /ru admin /it /f && schtasks /run /tn "BonjourMC" && schtasks /delete /tn "BonjourMC" /f'
+
+# 杀掉 GUI 进程
+sshpass -p 2328 ssh admin@192.168.1.113 "taskkill /F /IM GUI.exe"
+
+# 读取调试日志
+sshpass -p 2328 ssh admin@192.168.1.113 "type C:\Users\admin\Projects\BonjourMC\GUI\bin\Debug\net8.0\bonjourmc_debug.log"
+```
+
+**注意**：通过 SSH 直接运行 GUI 程序，窗口不会显示在用户桌面上。必须使用 `schtasks /it` 参数在用户的交互式会话中启动。
+
 ## 依赖
 
 | 包 | 版本 | 用途 |
