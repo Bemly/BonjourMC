@@ -56,6 +56,7 @@ dotnet test             # 运行测试
 - ViewLocator 命名约定：`GUI.ViewModels.XxxViewModel` → `GUI.Views.XxxView`
 - 所有页面 ViewModel 放在 `GUI.ViewModels` 命名空间下（扁平结构，不嵌套）
 - GUI 中访问 Launcher 类需要 `Imports Launcher`
+- **每个新功能必须加入 `Debug.WriteLine` 调试日志**，格式为 `[ClassName] message`，用于运行时排查问题
 
 ## Avalonia 注意事项
 

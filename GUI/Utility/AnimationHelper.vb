@@ -537,11 +537,13 @@ Namespace Animations
         ''' <summary>
         ''' Animate a SolidColorBrush's Color property.
         ''' The brush must be an instance brush (not shared from resources).
+        ''' If name is provided, the animation is registered for cancellation.
         ''' </summary>
         Public Sub color(ByVal brush As SolidColorBrush, ByVal to_color As Color,
                          Optional ByVal duration_ms As Integer = 200,
                          Optional ByVal delay_ms As Integer = 0,
-                         Optional ByVal easing As Easing = Nothing)
+                         Optional ByVal easing As Easing = Nothing,
+                         Optional ByVal name As String = Nothing)
             If easing Is Nothing Then easing = ease_out_fluent
             Dim anim = New Animation()
             anim.Duration = TimeSpan.FromMilliseconds(duration_ms)
