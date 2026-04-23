@@ -2,6 +2,7 @@ Option Explicit On
 Option Strict On
 
 Imports System
+Imports System.Windows.Input
 Imports Avalonia
 Imports Avalonia.Animation
 Imports Avalonia.Controls
@@ -39,6 +40,12 @@ Namespace Controls
 
         Public Shared ReadOnly ColorTypeProperty As StyledProperty(Of RadioColorType) =
             AvaloniaProperty.Register(Of MyRadioButton, RadioColorType)("ColorType", RadioColorType.White)
+
+        Public Shared ReadOnly LogoScaleProperty As StyledProperty(Of Double) =
+            AvaloniaProperty.Register(Of MyRadioButton, Double)("LogoScale", 1.0)
+
+        Public Shared ReadOnly CommandProperty As StyledProperty(Of ICommand) =
+            AvaloniaProperty.Register(Of MyRadioButton, ICommand)("Command", Nothing)
 
         Public Property Text As String
             Get
@@ -86,6 +93,36 @@ Namespace Controls
             End Set
         End Property
 
+        Public Property LogoScale As Double
+            Get
+                Return GetValue(LogoScaleProperty)
+            End Get
+            Set(ByVal value As Double)
+                SetValue(LogoScaleProperty, value)
+                If PART_Logo IsNot Nothing Then
+                    PART_Logo.RenderTransform = New ScaleTransform(value, value)
+                End If
+            End Set
+        End Property
+
+        Public Property Command As ICommand
+            Get
+                Return GetValue(CommandProperty)
+            End Get
+            Set(ByVal value As ICommand)
+                SetValue(CommandProperty, value)
+            End Set
+        End Property
+
+        Public Property IsChecked As Boolean
+            Get
+                Return Checked
+            End Get
+            Set(ByVal value As Boolean)
+                Checked = value
+            End Set
+        End Property
+
         Public Sub New()
             InitializeComponent()
         End Sub
@@ -94,6 +131,9 @@ Namespace Controls
             MyBase.OnAttachedToVisualTree(e)
             If PART_Logo IsNot Nothing Then
                 PART_Logo.Fill = _fill_brush
+                If LogoScale <> 1.0 Then
+                    PART_Logo.RenderTransform = New ScaleTransform(LogoScale, LogoScale)
+                End If
                 If Not String.IsNullOrEmpty(Logo) Then
                     Try
                         PART_Logo.Data = Geometry.Parse(Logo)
@@ -229,6 +269,9 @@ Namespace Controls
             If Not _is_mouse_down Then Return
             _is_mouse_down = False
             SetChecked(True, True, True)
+            If Command IsNot Nothing AndAlso Command.CanExecute(Nothing) Then
+                Command.Execute(Nothing)
+            End If
         End Sub
     End Class
 

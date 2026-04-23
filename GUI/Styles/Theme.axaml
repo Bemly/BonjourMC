@@ -3,10 +3,10 @@
         xmlns:controls="using:GUI.Controls">
 
     <!-- ============================================================
-         PCL-CE Style Color Palette + Resources
+         PCL-CE Style Color Palette (exact match from Application.xaml)
          ============================================================ -->
     <Styles.Resources>
-        <!-- Primary Blue Scale -->
+        <!-- Primary Blue Scale (ColorBrush1-8) -->
         <Color x:Key="Color1">#343d4a</Color>
         <Color x:Key="Color2">#0b5bcb</Color>
         <Color x:Key="Color3">#1370f3</Color>
@@ -16,7 +16,7 @@
         <Color x:Key="Color7">#e0eafd</Color>
         <Color x:Key="Color8">#eaf2fe</Color>
 
-        <!-- Gray Scale -->
+        <!-- Gray Scale (ColorBrushGray1-8) -->
         <Color x:Key="ColorGray1">#404040</Color>
         <Color x:Key="ColorGray2">#737373</Color>
         <Color x:Key="ColorGray3">#8c8c8c</Color>
@@ -29,18 +29,18 @@
         <!-- Semantic Colors -->
         <Color x:Key="ColorRed">#ff4c4c</Color>
         <Color x:Key="ColorRedDark">#ce2111</Color>
+        <Color x:Key="ColorRedBack">#80fbdddd</Color>
         <Color x:Key="ColorGreen">#4CAF50</Color>
         <Color x:Key="ColorGreenDark">#388E3C</Color>
         <Color x:Key="ColorOrange">#f39c12</Color>
 
-        <!-- Background Colors -->
+        <!-- Background Colors (PCL-CE exact) -->
         <Color x:Key="ColorBg">#fbfbfb</Color>
         <Color x:Key="ColorBgCard">#ffffff</Color>
-        <Color x:Key="ColorBgSidebar">#1a1a2e</Color>
-        <Color x:Key="ColorBgSidebarHover">#252540</Color>
-        <Color x:Key="ColorBgSidebarSelected">#2d2d44</Color>
+        <Color x:Key="ColorBgTransparent">#d2fbfbfb</Color>
+        <Color x:Key="ColorBgSemiTransparent">#01eaf2fe</Color>
 
-        <!-- Primary Brushes -->
+        <!-- Primary Brushes (ColorBrush1-8) -->
         <SolidColorBrush x:Key="Brush1" Color="{StaticResource Color1}"/>
         <SolidColorBrush x:Key="Brush2" Color="{StaticResource Color2}"/>
         <SolidColorBrush x:Key="Brush3" Color="{StaticResource Color3}"/>
@@ -50,7 +50,15 @@
         <SolidColorBrush x:Key="Brush7" Color="{StaticResource Color7}"/>
         <SolidColorBrush x:Key="Brush8" Color="{StaticResource Color8}"/>
 
-        <!-- Gray Brushes -->
+        <!-- Background Brushes (ColorBrushBg0, Bg1, etc.) -->
+        <SolidColorBrush x:Key="BrushBg0" Color="{StaticResource Color5}"/>
+        <SolidColorBrush x:Key="BrushBg1" Color="#bee0eafd"/>
+        <SolidColorBrush x:Key="BrushBg" Color="{StaticResource ColorBg}"/>
+        <SolidColorBrush x:Key="BrushBgCard" Color="{StaticResource ColorBgCard}"/>
+        <SolidColorBrush x:Key="BrushBgTransparent" Color="{StaticResource ColorBgTransparent}"/>
+        <SolidColorBrush x:Key="BrushBgSemiTransparent" Color="{StaticResource ColorBgSemiTransparent}"/>
+
+        <!-- Gray Brushes (ColorBrushGray1-8) -->
         <SolidColorBrush x:Key="BrushGray1" Color="{StaticResource ColorGray1}"/>
         <SolidColorBrush x:Key="BrushGray2" Color="{StaticResource ColorGray2}"/>
         <SolidColorBrush x:Key="BrushGray3" Color="{StaticResource ColorGray3}"/>
@@ -63,29 +71,38 @@
         <!-- Semantic Brushes -->
         <SolidColorBrush x:Key="BrushRed" Color="{StaticResource ColorRed}"/>
         <SolidColorBrush x:Key="BrushRedDark" Color="{StaticResource ColorRedDark}"/>
+        <SolidColorBrush x:Key="BrushRedBack" Color="{StaticResource ColorRedBack}"/>
         <SolidColorBrush x:Key="BrushGreen" Color="{StaticResource ColorGreen}"/>
         <SolidColorBrush x:Key="BrushGreenDark" Color="{StaticResource ColorGreenDark}"/>
         <SolidColorBrush x:Key="BrushOrange" Color="{StaticResource ColorOrange}"/>
 
-        <!-- Background Brushes -->
-        <SolidColorBrush x:Key="BrushBg" Color="{StaticResource ColorBg}"/>
-        <SolidColorBrush x:Key="BrushBgCard" Color="{StaticResource ColorBgCard}"/>
+        <!-- Special Brushes (PCL-CE exact) -->
+        <SolidColorBrush x:Key="BrushHalfWhite" Color="#55ffffff"/>
+        <SolidColorBrush x:Key="BrushSemiWhite" Color="#bbffffff"/>
+        <SolidColorBrush x:Key="BrushWhite" Color="#ffffff"/>
+        <SolidColorBrush x:Key="BrushTransparent" Color="#00ffffff"/>
+
+        <!-- Sidebar Colors (dark theme for sidebar) -->
+        <Color x:Key="ColorBgSidebar">#1a1a2e</Color>
+        <Color x:Key="ColorBgSidebarHover">#252540</Color>
+        <Color x:Key="ColorBgSidebarSelected">#2d2d44</Color>
         <SolidColorBrush x:Key="BrushBgSidebar" Color="{StaticResource ColorBgSidebar}"/>
         <SolidColorBrush x:Key="BrushBgSidebarHover" Color="{StaticResource ColorBgSidebarHover}"/>
         <SolidColorBrush x:Key="BrushBgSidebarSelected" Color="{StaticResource ColorBgSidebarSelected}"/>
     </Styles.Resources>
 
     <!-- ============================================================
-         Button Styles
+         Button Styles (PCL-CE style)
          ============================================================ -->
 
     <!-- Primary Button (Blue, PCL-CE ColorBrush3) -->
     <Style Selector="Button.primary">
         <Setter Property="Background" Value="{StaticResource Brush3}"/>
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="CornerRadius" Value="3"/>
         <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
@@ -100,9 +117,10 @@
     <Style Selector="Button.danger">
         <Setter Property="Background" Value="{StaticResource BrushRed}"/>
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="CornerRadius" Value="3"/>
         <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
@@ -114,9 +132,10 @@
     <Style Selector="Button.success">
         <Setter Property="Background" Value="{StaticResource BrushGreen}"/>
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="CornerRadius" Value="3"/>
         <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
@@ -124,13 +143,14 @@
         <Setter Property="Background" Value="{StaticResource BrushGreenDark}"/>
     </Style>
 
-    <!-- Ghost Button (No background) -->
+    <!-- Ghost Button (No background, PCL-CE style) -->
     <Style Selector="Button.ghost">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource Brush3}"/>
-        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="CornerRadius" Value="3"/>
         <Setter Property="Padding" Value="16,8"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Normal"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="{StaticResource Brush6}"/>
@@ -141,46 +161,60 @@
     </Style>
 
     <!-- ============================================================
-         TextBox Style
+         TextBox Style (PCL-CE style)
          ============================================================ -->
     <Style Selector="TextBox">
-        <Setter Property="CornerRadius" Value="6"/>
-        <Setter Property="Padding" Value="10,8"/>
-        <Setter Property="Background" Value="{StaticResource BrushBgCard}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BrushGray5}"/>
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="Padding" Value="5,0"/>
+        <Setter Property="MinHeight" Value="28"/>
+        <Setter Property="Background" Value="{StaticResource BrushHalfWhite}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushBg0}"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{StaticResource Brush1}"/>
     </Style>
     <Style Selector="TextBox:focus">
         <Setter Property="BorderBrush" Value="{StaticResource Brush3}"/>
+        <Setter Property="Background" Value="{StaticResource Brush7}"/>
+    </Style>
+    <Style Selector="TextBox:pointerover">
+        <Setter Property="BorderBrush" Value="{StaticResource Brush4}"/>
+        <Setter Property="Background" Value="{StaticResource Brush7}"/>
     </Style>
 
     <!-- ============================================================
-         ComboBox Style
+         ComboBox Style (PCL-CE style)
          ============================================================ -->
     <Style Selector="ComboBox">
-        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="Background" Value="{StaticResource BrushHalfWhite}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushBg0}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontSize" Value="13"/>
     </Style>
 
     <!-- ============================================================
-         ScrollBar Style
+         ScrollBar Style (PCL-CE thin scrollbar)
          ============================================================ -->
     <Style Selector="ScrollViewer ScrollBar">
         <Setter Property="Width" Value="8"/>
     </Style>
 
     <!-- ============================================================
-         Navigation Radio Button (Title Bar Tabs)
+         Navigation Radio Button (Title Bar Tabs, PCL-CE style)
          ============================================================ -->
     <Style Selector="RadioButton.nav">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="#b0c4de"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="14,6"/>
-        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Padding" Value="2,0"/>
+        <Setter Property="CornerRadius" Value="13.5"/>
+        <Setter Property="MinHeight" Value="27"/>
+        <Setter Property="MaxHeight" Value="27"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Margin" Value="1,0"/>
+        <Setter Property="Margin" Value="5,0"/>
         <Setter Property="GroupName" Value="nav"/>
         <Setter Property="Template">
             <ControlTemplate>
@@ -197,16 +231,16 @@
         </Setter>
     </Style>
     <Style Selector="RadioButton.nav:pointerover">
-        <Setter Property="Background" Value="#20ffffff"/>
-        <Setter Property="Foreground" Value="White"/>
-    </Style>
-    <Style Selector="RadioButton.nav:checked">
         <Setter Property="Background" Value="#30ffffff"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
+    <Style Selector="RadioButton.nav:checked">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="{StaticResource Brush3}"/>
+    </Style>
 
     <!-- ============================================================
-         Sidebar Item Button
+         Sidebar Item Button (PCL-CE style)
          ============================================================ -->
     <Style Selector="Button.sidebar-item">
         <Setter Property="Background" Value="Transparent"/>
@@ -243,14 +277,14 @@
     </Style>
 
     <!-- ============================================================
-         Window Control Buttons (Title Bar)
+         Window Control Buttons (Title Bar, PCL-CE style)
          ============================================================ -->
     <Style Selector="Button.window-control">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="#b0c4de"/>
         <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Width" Value="36"/>
-        <Setter Property="Height" Value="32"/>
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="28"/>
         <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -270,15 +304,15 @@
         </Setter>
     </Style>
     <Style Selector="Button.window-control:pointerover">
-        <Setter Property="Background" Value="#20ffffff"/>
+        <Setter Property="Background" Value="#30ffffff"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
     <Style Selector="Button.window-control:pressed">
-        <Setter Property="Background" Value="#30ffffff"/>
+        <Setter Property="Background" Value="#40ffffff"/>
     </Style>
 
     <!-- ============================================================
-         MyButton Styles
+         MyButton Styles (PCL-CE style)
          ============================================================ -->
     <Style Selector="controls|MyButton">
         <Setter Property="Background" Value="Transparent"/>
@@ -288,7 +322,7 @@
     </Style>
 
     <!-- ============================================================
-         MyIconButton Styles
+         MyIconButton Styles (PCL-CE style)
          ============================================================ -->
     <Style Selector="controls|MyIconButton">
         <Setter Property="Background" Value="Transparent"/>
@@ -297,7 +331,7 @@
     </Style>
 
     <!-- ============================================================
-         MyRadioButton Styles
+         MyRadioButton Styles (PCL-CE style)
          ============================================================ -->
     <Style Selector="controls|MyRadioButton">
         <Setter Property="Background" Value="#01eaf2fe"/>
@@ -308,7 +342,7 @@
     </Style>
 
     <!-- ============================================================
-         MyListItem Styles
+         MyListItem Styles (PCL-CE style)
          ============================================================ -->
     <Style Selector="controls|MyListItem">
         <Setter Property="Background" Value="Transparent"/>
@@ -317,7 +351,7 @@
     </Style>
 
     <!-- ============================================================
-         MyExtraButton Styles
+         MyExtraButton Styles (PCL-CE style)
          ============================================================ -->
     <Style Selector="controls|MyExtraButton">
         <Setter Property="Background" Value="Transparent"/>

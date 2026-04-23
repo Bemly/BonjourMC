@@ -4,13 +4,13 @@
         xmlns:ctrl="using:GUI.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="560"
+        mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="500"
         x:Class="GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="BonjourMC"
-        Width="900" Height="560"
-        MinWidth="700" MinHeight="450"
+        Width="850" Height="500"
+        MinWidth="810" MinHeight="470"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         TransparencyLevelHint="AcrylicBlur">
@@ -23,8 +23,8 @@
         <StyleInclude Source="/Styles/Theme.axaml"/>
     </Window.Styles>
 
-    <!-- Main container with shadow -->
-    <Border CornerRadius="12" Background="#fbfbfb" ClipToBounds="True">
+    <!-- Main container with shadow (PCL-CE style) -->
+    <Border CornerRadius="6" Background="#fbfbfb" ClipToBounds="True" Margin="10">
         <Border.Effect>
             <DropShadowEffect BlurRadius="20" OffsetY="0" Opacity="0.3" Color="#000000"/>
         </Border.Effect>
@@ -32,39 +32,67 @@
         <Grid RowDefinitions="48,*">
 
             <!-- ============================================================
-                 Title Bar (48px, PCL-CE style)
+                 Title Bar (48px, PCL-CE style with ColorBrush3 background)
                  ============================================================ -->
-            <Border Grid.Row="0" Background="{StaticResource Brush3}" CornerRadius="12,12,0,0">
+            <Border Grid.Row="0" Background="{StaticResource Brush3}" CornerRadius="6,6,0,0">
                 <Grid ColumnDefinitions="Auto,*,Auto">
-                    <!-- Logo -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8"
-                                Margin="16,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="⛏" FontSize="18" VerticalAlignment="Center"/>
-                        <TextBlock Text="BonjourMC" FontSize="14" FontWeight="Bold"
-                                   Foreground="White" VerticalAlignment="Center"/>
+                    <!-- Logo Area (PCL + CE badge) -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="0"
+                                Margin="19,0,0,0" VerticalAlignment="Center">
+                        <!-- PCL Logo (SVG Path matching PCL-CE exactly) -->
+                        <Path Data="M26,29 v-25 h6 a7,7 180 0 1 0,14 h-6 M62.5,6.5 a10,11.5 180 1 0 0,18 M71,2.5 v24.5 h13.5"
+                              Stretch="Fill" Width="39" Height="20"
+                              Stroke="White" StrokeThickness="2.2"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                              IsHitTestVisible="False"/>
+                        <!-- CE Badge -->
+                        <Border Background="White" CornerRadius="5" Width="20" Height="18"
+                                Margin="10,0,0,0" VerticalAlignment="Center">
+                            <Path Fill="{StaticResource Brush3}"
+                                  Data="M3.1709 11.6098c-0.0423,-0.1524 -0.0783,-0.2985 -0.1079,-0.4382 -0.0297,-0.1397 -0.0551,-0.3048 -0.0762,-0.4953 -0.0212,-0.1905 -0.036,-0.4212 -0.0445,-0.6921 -0.0085,-0.2709 -0.0127,-0.6011 -0.0127,-0.9906 0,-0.3979 0.0042,-0.7324 0.0127,-1.0033 0.0085,-0.2709 0.0233,-0.5017 0.0445,-0.6922 0.0211,-0.1905 0.0465,-0.3577 0.0762,-0.5016 0.0296,-0.1439 0.0656,-0.2836 0.1079,-0.4191 0.2286,-0.7281 0.6054,-1.2658 1.1303,-1.6129 0.5249,-0.3471 1.1684,-0.5207 1.9304,-0.5207 0.6943,0 1.2954,0.1587 1.8034,0.4762 0.508,0.3175 0.8932,0.7684 1.1557,1.3526 0,0 -0.0169,0.0212 -0.0508,0.0635l-0.8001 0.381c-0.0169,0.0169 -0.0381,0.0127 -0.0635,-0.0127 -0.1947,-0.3979 -0.453,-0.7176 -0.7747,-0.9589 -0.3217,-0.2413 -0.7451,-0.3619 -1.27,-0.3619 -0.5334,0 -0.9673,0.1249 -1.3017,0.3746 -0.3345,0.2498 -0.5906,0.6118 -0.7684,1.0859 -0.0254,0.1016 -0.0508,0.2117 -0.0762,0.3302 -0.0254,0.1185 -0.0444,0.2625 -0.0571,0.4318 -0.0127,0.1693 -0.0233,0.3831 -0.0318,0.6413 -0.0085,0.2583 -0.0127,0.5737 -0.0127,0.9462 0,0.3725 0.0042,0.6858 0.0127,0.9398 0.0085,0.254 0.0191,0.4657 0.0318,0.635 0.0127,0.1693 0.0317,0.3154 0.0571,0.4381 0.0254,0.1228 0.0508,0.2308 0.0762,0.3239 0.1778,0.4741 0.4339,0.8361 0.7684,1.0858 0.3344,0.2498 0.7683,0.3747 1.3017,0.3747 0.5249,0 0.9483,-0.1207 1.27,-0.362 0.3217,-0.2413 0.58,-0.5609 0.7747,-0.9588 0.0254,-0.0254 0.0466,-0.0296 0.0635,-0.0127l0.8001 0.3937c0,0 0.0169,0.0212 0.0508,0.0635 -0.2625,0.5842 -0.6477,1.035 -1.1557,1.3525 -0.508,0.3175 -1.1091,0.4763 -1.8034,0.4763 -0.762,0 -1.4055,-0.1757 -1.9304,-0.5271 -0.5249,-0.3513 -0.9017,-0.8868 -1.1303,-1.6065 M11.4792 4.4343c0,-0.0254 0.0127,-0.0381 0.0381,-0.0381l5.715 0c0.0254,0 0.0381,0.0127 0.0381,0.0381l0 0.8763c0,0.0254 -0.0127,0.0381 -0.0381,0.0381l-4.5339 0c-0.1185,0 -0.1778,0.0635 -0.1778,0.1905l0 2.794c0,0.1185 0.0593,0.1778 0.1778,0.1778l3.8481 0c0.0254,0 0.0381,0.0127 0.0381,0.0381l0 0.8763c0,0.0254 -0.0127,0.0381 -0.0381,0.0381l-3.8481 0c-0.1185,0 -0.1778,0.0635 -0.1778,0.1905l0 2.8956c0,0.1185 0.0593,0.1778 0.1778,0.1778l4.5339 0c0.0254,0 0.0381,0.0127 0.0381,0.0381l0 0.889c0,0.0254 -0.0127,0.0381 -0.0381,0.0381l-5.715 0c-0.0254,0 -0.0381,-0.0127 -0.0381,-0.0381l0 -9.2202z"
+                                  Stretch="Uniform"/>
+                        </Border>
                     </StackPanel>
 
-                    <!-- Navigation Tabs -->
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2"
+                    <!-- Navigation Tabs (PCL-CE style with icons) -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10"
                                 HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <RadioButton Classes="nav" Content="⌂ Home"
-                                     IsChecked="True"
-                                     Command="{Binding navigate_home_command}"/>
-                        <RadioButton Classes="nav" Content="⬇ Versions"
-                                     Command="{Binding navigate_versions_command}"/>
-                        <RadioButton Classes="nav" Content="⚙ Settings"
-                                     Command="{Binding navigate_settings_command}"/>
-                        <RadioButton Classes="nav" Content="📋 Logs"
-                                     Command="{Binding navigate_logs_command}"/>
+                        <!-- 启动 (Start) -->
+                        <ctrl:MyRadioButton Text="启动" IsChecked="True"
+                                             LogoScale="0.9"
+                                             Logo="M52.1,164.5c-1.4,0-3.1-0.5-4.2-1.3c-2.6-1.7-4-4.2-4-7V43.8c0-2.9,1.6-5.8,4.1-7c1.2-0.8,2.7-1.2,4.1-1.2c1.5,0,2.9,0.4,4.2,1.2L153.1,93c0,0,0.1,0,0.1,0.1c2.6,1.7,4,4.2,4,7c0,3-1.7,5.8-4.2,7.1l-96.8,56.2C55.1,164,53.5,164.5,52.1,164.5z M60.4,142.1l72.1-42.1L60.4,58.2V142.1z"
+                                             Command="{Binding navigate_home_command}"/>
+                        <!-- 下载 (Download) -->
+                        <ctrl:MyRadioButton Text="下载"
+                                             LogoScale="0.9"
+                                             Logo="M955 610h-59c-15 0-29 13-29 29v196c0 15-13 29-29 29h-649c-15 0-29-13-29-29v-196c0-15-13-29-29-29h-59c-15 0-29 13-29 29V905c0 43 35 78 78 78h787c43 0 78-35 78-78V640c0-15-13-29-29-29zM492 740c11 11 29 11 41 0l265-265c11-11 11-29 0-41l-41-41c-11-11-29-11-41 0l-110 110c-11 11-33 3-33-13V68C571 53 555 39 541 39h-59c-15 0-29 13-29 29v417c0 17-21 25-33 13l-110-110c-11-11-29-11-41 0L226 433c-11 11-11 29 0 41L492 740z"
+                                             Command="{Binding navigate_versions_command}"/>
+                        <!-- 设置 (Settings) -->
+                        <ctrl:MyRadioButton Text="设置"
+                                             LogoScale="1.1"
+                                             Logo="M940.4 463.7L773.3 174.2c-17.3-30-49.2-48.4-83.8-48.4H340.2c-34.6 0-66.5 18.5-83.8 48.4L89.2 463.7c-17.3 30-17.3 66.9 0 96.8L256.4 850c17.3 30 49.2 48.4 83.8 48.4h349.2c34.6 0 66.5-18.5 83.8-48.4l167.2-289.5c17.3-29.9 17.3-66.8 0-96.8z m-94.6 96.8L725.9 768.1c-17.3 30-49.2 48.4-83.8 48.4H387.5c-34.6 0-66.5-18.5-83.8-48.4L183.9 560.5c-17.3-30-17.3-66.9 0-96.8l119.8-207.5c17.3-30 49.2-48.4 83.8-48.4h254.6c34.6 0 66.5 18.5 83.8 48.4l119.8 207.5c17.3 30 17.3 66.9 0.1 96.8z M522.3 321.2c-2.5-0.1-5-0.2-7.5-0.2-119.9 0-214 110.3-186.3 235 15.8 70.9 71.5 126.6 142.4 142.4 17.5 3.9 34.7 5.4 51.4 4.7 102.1-3.9 183.6-87.9 183.6-191 0.1-103-81.5-187-183.6-190.9z m68.6 269.1c-18.5 18-43 28.9-68.6 30.7l-6 0.3c-30.2 0.4-58.6-11.4-79.7-33-19.5-20.1-30.7-47-30.9-75-0.3-29.6 11.1-57.4 32-78.3 20.6-20.6 48-32 77.2-32 2.5 0 5 0.1 7.5 0.3 26.7 1.8 51.5 13.2 70.5 32.5 19.6 20 30.8 46.9 31.2 74.9 0.2 30.2-11.5 58.6-33.2 79.6z"
+                                             Command="{Binding navigate_settings_command}"/>
+                        <!-- 日志 (Logs) -->
+                        <ctrl:MyRadioButton Text="工具"
+                                             LogoScale="1"
+                                             Logo="M623.0016 208.5376c-103.6288-103.6288-269.4144-103.6288-352.256-20.736L415.744 332.8512 332.8 415.7952 187.8016 270.6944c-82.944 82.944-82.944 248.6784 20.736 352.3072 66.56 66.6112 158.9248 88.32 276.8896 64.9728l13.2608-2.7648 198.656 198.656a41.472 41.472 0 0 0 54.7328 3.4304l3.8912-3.4304 127.8976-127.8976a41.472 41.472 0 0 0 3.4304-54.7328l-3.4304-3.8912-198.656-198.656c27.648-124.3648 6.912-221.0816-62.208-290.1504z m-253.2352-9.6256l1.1776-0.4096c64.9728-20.736 150.6304-3.4816 208.0768 54.016 50.6368 50.5344 67.4816 121.7024 48.128 220.16l-2.56 12.4928-7.4752 33.28 208.1792 208.1792-98.6624 98.6112-208.128-208.128-33.28 7.3728c-105.0624 23.3472-180.0192 7.2704-232.704-45.4656-55.04-54.9376-73.216-135.68-56.5248-199.5264l2.9696-9.728L332.8 503.6544 503.7056 332.8 369.7664 198.912z"
+                                             Command="{Binding navigate_logs_command}"/>
                     </StackPanel>
 
-                    <!-- Window Controls -->
+                    <!-- Window Controls (PCL-CE style) -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="0"
-                                Margin="0,0,8,0" VerticalAlignment="Center">
-                        <Button Classes="window-control" Content="—"
-                                Command="{Binding minimize_command}"/>
-                        <Button Classes="window-control" Content="✕"
-                                Command="{Binding close_command}"/>
+                                Margin="0,0,12,0" VerticalAlignment="Center">
+                        <!-- Help button (hidden by default in PCL-CE) -->
+                        <!-- Minimize button -->
+                        <ctrl:MyIconButton Width="28" Height="28" Margin="0,0,4,0"
+                                            ButtonTheme="White" LogoScale="0.72"
+                                            Logo="F1 M0,0 h15 v2 h-15 v-2 Z"
+                                            Command="{Binding minimize_command}"/>
+                        <!-- Close button -->
+                        <ctrl:MyIconButton Width="28" Height="28"
+                                            ButtonTheme="White" LogoScale="0.72"
+                                            Logo="F1 M2,0 L0,2 8,10 0,18 2,20 10,12 18,20 20,18 12,10 20,2 18,0 10,8 2,0Z"
+                                            Command="{Binding close_command}"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -75,28 +103,30 @@
             <Grid Grid.Row="1" ColumnDefinitions="200,*">
 
                 <!-- Left Sidebar -->
-                <Border Grid.Column="0" Background="{StaticResource BrushBgSidebar}"
-                        CornerRadius="0,0,0,12">
+                <Border Grid.Column="0" Background="#d2fbfbfb"
+                        CornerRadius="0,0,0,6">
                     <StackPanel Margin="0,20,0,0">
                         <!-- User Avatar Area -->
                         <StackPanel Margin="20,0,20,24" Spacing="8">
                             <Border Width="56" Height="56" CornerRadius="12"
-                                    Background="#2d2d44" HorizontalAlignment="Center">
-                                <TextBlock Text="⛏" FontSize="28"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    Background="#e0eafd" HorizontalAlignment="Center">
+                                <Path Data="M52.1,164.5c-1.4,0-3.1-0.5-4.2-1.3c-2.6-1.7-4-4.2-4-7V43.8c0-2.9,1.6-5.8,4.1-7c1.2-0.8,2.7-1.2,4.1-1.2c1.5,0,2.9,0.4,4.2,1.2L153.1,93c0,0,0.1,0,0.1,0.1c2.6,1.7,4,4.2,4,7c0,3-1.7,5.8-4.2,7.1l-96.8,56.2C55.1,164,53.5,164.5,52.1,164.5z M60.4,142.1l72.1-42.1L60.4,58.2V142.1z"
+                                      Fill="{StaticResource Brush3}" Stretch="Uniform"
+                                      Width="28" Height="28"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <TextBlock Text="{Binding username}"
                                        FontSize="14" FontWeight="SemiBold"
-                                       Foreground="White" HorizontalAlignment="Center"/>
+                                       Foreground="{StaticResource Brush1}" HorizontalAlignment="Center"/>
                             <TextBlock Text="BonjourMC Player"
-                                       FontSize="11" Foreground="#888888"
+                                       FontSize="11" Foreground="{StaticResource BrushGray3}"
                                        HorizontalAlignment="Center"/>
                         </StackPanel>
 
                         <!-- Sidebar Divider -->
-                        <Border Height="1" Background="#2a2a40" Margin="20,0,20,16"/>
+                        <Border Height="1" Background="{StaticResource BrushGray6}" Margin="20,0,20,16"/>
 
-                        <!-- Navigation Items (Visual, binds to same VMs) -->
+                        <!-- Navigation Items (PCL-CE style) -->
                         <StackPanel Spacing="2" Margin="12,0">
                             <Button Classes="sidebar-item" Content="⌂  Home"
                                     Command="{Binding navigate_home_command}"/>

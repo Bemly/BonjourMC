@@ -2,6 +2,7 @@ Option Explicit On
 Option Strict On
 
 Imports System
+Imports System.Windows.Input
 Imports Avalonia
 Imports Avalonia.Animation
 Imports Avalonia.Controls
@@ -45,6 +46,9 @@ Namespace Controls
         Public Shared ReadOnly ButtonThemeProperty As StyledProperty(Of IconTheme) =
             AvaloniaProperty.Register(Of MyIconButton, IconTheme)("ButtonTheme", IconTheme.Color)
 
+        Public Shared ReadOnly CommandProperty As StyledProperty(Of ICommand) =
+            AvaloniaProperty.Register(Of MyIconButton, ICommand)("Command", Nothing)
+
         Public Property Logo As String
             Get
                 Return GetValue(LogoProperty)
@@ -79,6 +83,15 @@ Namespace Controls
             Set(ByVal value As IconTheme)
                 SetValue(ButtonThemeProperty, value)
                 RefreshAnim()
+            End Set
+        End Property
+
+        Public Property Command As ICommand
+            Get
+                Return GetValue(CommandProperty)
+            End Get
+            Set(ByVal value As ICommand)
+                SetValue(CommandProperty, value)
             End Set
         End Property
 
@@ -173,6 +186,9 @@ Namespace Controls
                 If PART_Back IsNot Nothing Then
                     AnimationHelper.scale_to(PART_Back, 1.05, 250, 0, AnimationHelper.ease_out_back_weak)
                     AnimationHelper.scale_delta(PART_Back, -0.05, 250, 0, AnimationHelper.ease_out_fluent_strong)
+                End If
+                If Command IsNot Nothing AndAlso Command.CanExecute(Nothing) Then
+                    Command.Execute(Nothing)
                 End If
             End If
             RefreshAnim()
