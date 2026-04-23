@@ -8,7 +8,6 @@ Imports Avalonia
 Imports Avalonia.Animation
 Imports Avalonia.Animation.Easings
 Imports Avalonia.Controls
-Imports Avalonia.Controls.Presenters
 Imports Avalonia.Media
 Imports Avalonia.Styling
 Imports Avalonia.Threading
@@ -25,8 +24,8 @@ Namespace Controls
 
         ' Dual-layer rendering
         Private ReadOnly _grid As New Grid()
-        Private ReadOnly _old_layer As New ContentPresenter()
-        Private ReadOnly _new_layer As New ContentPresenter()
+        Private ReadOnly _old_layer As New Border()
+        Private ReadOnly _new_layer As New Border()
 
         ' Animation state
         Private _is_animating As Boolean = False
@@ -84,13 +83,13 @@ Namespace Controls
             Dim new_control = TryCast(new_content, Control)
             If new_control Is Nothing Then Return
 
-            Dim old_control = TryCast(_old_layer.Content, Control)
+            Dim old_control = TryCast(_old_layer.Child, Control)
 
             If old_control IsNot Nothing Then
                 _is_animating = True
 
                 ' Put new page in new layer (invisible)
-                _new_layer.Content = new_control
+                _new_layer.Child = new_control
                 _new_layer.Opacity = 0
 
                 ' Animate old page out
@@ -106,7 +105,7 @@ Namespace Controls
                 swap_timer.Start()
             Else
                 ' First load — just animate in
-                _old_layer.Content = new_control
+                _old_layer.Child = new_control
                 _old_layer.Opacity = 1
                 animate_page_enter(new_control)
             End If
@@ -114,9 +113,9 @@ Namespace Controls
 
         Private Sub perform_swap(ByVal new_control As Control)
             ' Move new content to old layer
-            _old_layer.Content = new_control
+            _old_layer.Child = new_control
             _old_layer.Opacity = 1
-            _new_layer.Content = Nothing
+            _new_layer.Child = Nothing
             _new_layer.Opacity = 0
 
             ' Animate new page in
