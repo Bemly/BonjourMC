@@ -19,6 +19,11 @@ Namespace Views
         Public Sub New()
             InitializeComponent()
 
+            ' Set transparency hint only on Mac (Windows has issues with it)
+            If Not OperatingSystem.IsWindows() Then
+                TransparencyLevelHint = New WindowTransparencyLevel() {WindowTransparencyLevel.Transparent}
+            End If
+
             ' Make title bar draggable (WindowDecorations="None" removes native drag)
             Dim title_bar = Me.FindControl(Of Border)("PART_TitleBar")
             Debug.WriteLine($"[MainWindow] title_bar found: {title_bar IsNot Nothing}")
