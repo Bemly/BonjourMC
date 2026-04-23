@@ -78,6 +78,7 @@ Namespace Views
 
             ' Apply initial transform for open animation (PCL-CE: -4°, translateY 60)
             Dim transform_group As New TransformGroup()
+            transform_group.Children.Add(New ScaleTransform(1, 1))
             transform_group.Children.Add(New RotateTransform(-4))
             transform_group.Children.Add(New TranslateTransform(0, 60))
             RenderTransform = transform_group

@@ -1,4 +1,5 @@
 ﻿Imports System.Diagnostics
+Imports System.IO
 Imports Avalonia
 Imports Avalonia.Controls.ApplicationLifetimes
 Imports Avalonia.Markup.Xaml
@@ -11,12 +12,29 @@ Partial Public Class App
     Inherits Application
 
     Public Overrides Sub Initialize()
+        ' Setup file logging for cross-platform debugging
+        setup_file_logging()
+
         Debug.WriteLine("[App] Initialize: setting up ReactiveUI scheduler")
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance
         Debug.WriteLine("[App] Initialize: loading XAML")
         AvaloniaXamlLoader.Load(Me)
         Debug.WriteLine("[App] Initialize: done")
     End Sub
+
+    Private Sub setup_file_logging()
+        Try
+            Dim log_path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bonjourmc_debug.log")
+            Dim writer As New StreamWriter(log_path, False)
+            writer.AutoFlush = True
+            Dim listener As New TextWriterTraceListener(writer)
+            Trace.Listeners.Add(listener)
+            Debug.WriteLine($"[App] Log file: {log_path}")
+        Catch ex As Exception
+            ' Ignore logging setup errors
+        End Try
+    End Sub
+End Class
 
     Public Overrides Sub OnFrameworkInitializationCompleted()
         Debug.WriteLine("[App] OnFrameworkInitializationCompleted: start")
