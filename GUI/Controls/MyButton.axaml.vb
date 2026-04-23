@@ -8,6 +8,7 @@ Imports Avalonia.Controls
 Imports Avalonia.Input
 Imports Avalonia.Media
 Imports Avalonia.Styling
+Imports Avalonia.Threading
 Imports GUI.Animations
 
 Namespace Controls
@@ -25,6 +26,7 @@ Namespace Controls
         ' State
         Private _is_mouse_down As Boolean = False
         Private _uuid As String = Guid.NewGuid().ToString("N").Substring(0, 8)
+        Private ReadOnly _hover_timer As New DispatcherTimer() With {.Interval = TimeSpan.FromMilliseconds(50)}
 
         ' Styled Properties
         Public Shared ReadOnly TextProperty As StyledProperty(Of String) =
@@ -54,6 +56,13 @@ Namespace Controls
 
         Public Sub New()
             InitializeComponent()
+            AddHandler _hover_timer.Tick, Sub(s, ev)
+                                              If Not IsPointerOver Then
+                                                  _hover_timer.Stop()
+                                                  RefreshColor()
+                                                  RefreshBackground()
+                                              End If
+                                          End Sub
         End Sub
 
         Protected Overrides Sub OnAttachedToVisualTree(ByVal e As VisualTreeAttachmentEventArgs)
@@ -78,6 +87,7 @@ Namespace Controls
                     Case 2 : target_color = Color.Parse("#ff4c4c")
                     Case Else : target_color = Color.Parse("#1370f3")
                 End Select
+                AnimationHelper.color(_border_brush, target_color, 100)
             Else
                 Select Case ColorType
                     Case 0 : target_color = Color.Parse("#343d4a")
@@ -85,8 +95,8 @@ Namespace Controls
                     Case 2 : target_color = Color.Parse("#ce2111")
                     Case Else : target_color = Color.Parse("#343d4a")
                 End Select
+                AnimationHelper.color(_border_brush, target_color, 200)
             End If
-            _border_brush.Color = target_color
         End Sub
 
         Private Sub RefreshBackground()
@@ -98,21 +108,24 @@ Namespace Controls
                 Else
                     target_color = Color.Parse("#e0eafd")
                 End If
+                AnimationHelper.color(_bg_brush, target_color, 100)
             Else
                 target_color = Color.FromArgb(85, 255, 255, 255)
+                AnimationHelper.color(_bg_brush, target_color, 200)
             End If
-            _bg_brush.Color = target_color
         End Sub
 
         ' Pointer events on the background border
         Protected Overrides Sub OnPointerEntered(ByVal e As PointerEventArgs)
             MyBase.OnPointerEntered(e)
+            _hover_timer.Start()
             RefreshColor()
             RefreshBackground()
         End Sub
 
         Protected Overrides Sub OnPointerExited(ByVal e As PointerEventArgs)
             MyBase.OnPointerExited(e)
+            _hover_timer.Stop()
             RefreshColor()
             RefreshBackground()
             If _is_mouse_down Then

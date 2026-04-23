@@ -8,6 +8,7 @@ Imports Avalonia.Controls
 Imports Avalonia.Input
 Imports Avalonia.Media
 Imports Avalonia.Styling
+Imports Avalonia.Threading
 Imports GUI.Animations
 
 Namespace Controls
@@ -37,6 +38,7 @@ Namespace Controls
         Private _is_hovered As Boolean = False
         Private _is_height_animating As Boolean = False
         Private _uuid As String = Guid.NewGuid().ToString("N").Substring(0, 8)
+        Private ReadOnly _hover_timer As New DispatcherTimer() With {.Interval = TimeSpan.FromMilliseconds(50)}
 
         ' Styled Properties
         Public Shared ReadOnly TitleProperty As StyledProperty(Of String) =
@@ -84,6 +86,18 @@ Namespace Controls
             Padding = New Thickness(20)
             Margin = New Thickness(0, 0, 0, 12)
             ClipToBounds = False
+
+            AddHandler _hover_timer.Tick, Sub(s, ev)
+                                              If _is_hovered AndAlso Not IsPointerOver Then
+                                                  _is_hovered = False
+                                                  _hover_timer.Stop()
+                                                  _shadow_effect.Opacity = DropShadowIdleOpacity
+                                                  _title_brush.Color = Color.Parse("#343d4a")
+                                                  If _swap_path IsNot Nothing Then
+                                                      _swap_brush.Color = Color.Parse("#343d4a")
+                                                  End If
+                                              End If
+                                          End Sub
 
             _shadow_effect = New DropShadowEffect() With {
                 .BlurRadius = 12,
@@ -137,16 +151,23 @@ Namespace Controls
             End If
         End Sub
 
-        ' --- Hover (direct color set, no animation to prevent stuck state) ---
+        ' --- Hover Animation (with timer fallback to prevent stuck state) ---
         Protected Overrides Sub OnPointerEntered(ByVal e As PointerEventArgs)
             MyBase.OnPointerEntered(e)
             If _is_hovered Then Return
             _is_hovered = True
+            _hover_timer.Start()
 
-            _shadow_effect.Opacity = DropShadowHoverOpacity
-            _title_brush.Color = Color.Parse("#0b5bcb")
+            ' Shadow: 0.07 → 0.4, 90ms
+            AnimationHelper.fade(Me, 1.0, 90)
+            animate_shadow(DropShadowHoverOpacity, 90)
+
+            ' Title color: Brush1 → Brush2, 90ms
+            AnimationHelper.color(_title_brush, Color.Parse("#0b5bcb"), 90)
+
+            ' Swap arrow color, 90ms
             If _swap_path IsNot Nothing Then
-                _swap_brush.Color = Color.Parse("#0b5bcb")
+                AnimationHelper.color(_swap_brush, Color.Parse("#0b5bcb"), 90)
             End If
         End Sub
 
@@ -154,11 +175,17 @@ Namespace Controls
             MyBase.OnPointerExited(e)
             If Not _is_hovered Then Return
             _is_hovered = False
+            _hover_timer.Stop()
 
-            _shadow_effect.Opacity = DropShadowIdleOpacity
-            _title_brush.Color = Color.Parse("#343d4a")
+            ' Shadow: 0.4 → 0.07, 90ms
+            animate_shadow(DropShadowIdleOpacity, 90)
+
+            ' Title color: Brush2 → Brush1, 90ms
+            AnimationHelper.color(_title_brush, Color.Parse("#343d4a"), 90)
+
+            ' Swap arrow color, 90ms
             If _swap_path IsNot Nothing Then
-                _swap_brush.Color = Color.Parse("#343d4a")
+                AnimationHelper.color(_swap_brush, Color.Parse("#343d4a"), 90)
             End If
         End Sub
 

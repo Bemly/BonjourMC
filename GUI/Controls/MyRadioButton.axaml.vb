@@ -10,6 +10,7 @@ Imports Avalonia.Controls.Shapes
 Imports Avalonia.Input
 Imports Avalonia.Media
 Imports Avalonia.Styling
+Imports Avalonia.Threading
 Imports GUI.Animations
 
 Namespace Controls
@@ -23,6 +24,7 @@ Namespace Controls
 
         Private _is_mouse_down As Boolean = False
         Private _uuid As String = Guid.NewGuid().ToString("N").Substring(0, 8)
+        Private ReadOnly _hover_timer As New DispatcherTimer() With {.Interval = TimeSpan.FromMilliseconds(50)}
 
         Public Enum RadioColorType
             White = 0
@@ -125,6 +127,14 @@ Namespace Controls
 
         Public Sub New()
             InitializeComponent()
+            AddHandler _hover_timer.Tick, Sub(s, ev)
+                                              If Not IsPointerOver Then
+                                                  _hover_timer.Stop()
+                                                  If Not Checked Then
+                                                      If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#01eaf2fe"), 120)
+                                                  End If
+                                              End If
+                                          End Sub
         End Sub
 
         Protected Overrides Sub OnAttachedToVisualTree(ByVal e As VisualTreeAttachmentEventArgs)
@@ -197,11 +207,11 @@ Namespace Controls
                     ElseIf IsPointerOver Then
                         _fill_brush.Color = Colors.White
                         _text_brush.Color = Colors.White
-                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.FromArgb(50, 234, 242, 254)
+                        If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.FromArgb(50, 234, 242, 254), 120)
                     Else
                         _fill_brush.Color = Colors.White
                         _text_brush.Color = Colors.White
-                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#01eaf2fe")
+                        If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#01eaf2fe"), 120)
                     End If
 
                 Case RadioColorType.Highlight
@@ -218,22 +228,24 @@ Namespace Controls
                     ElseIf IsPointerOver Then
                         _fill_brush.Color = Color.Parse("#1370f3")
                         _text_brush.Color = Color.Parse("#1370f3")
-                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#e0eafd")
+                        If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#e0eafd"), 120)
                     Else
                         _fill_brush.Color = Color.Parse("#1370f3")
                         _text_brush.Color = Color.Parse("#1370f3")
-                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#01eaf2fe")
+                        If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#01eaf2fe"), 120)
                     End If
             End Select
         End Sub
 
         Protected Overrides Sub OnPointerEntered(ByVal e As PointerEventArgs)
             MyBase.OnPointerEntered(e)
+            _hover_timer.Start()
             If Not Checked Then RefreshColor(True)
         End Sub
 
         Protected Overrides Sub OnPointerExited(ByVal e As PointerEventArgs)
             MyBase.OnPointerExited(e)
+            _hover_timer.Stop()
             _is_mouse_down = False
             If Not Checked Then RefreshColor(True)
         End Sub
