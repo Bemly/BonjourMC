@@ -78,7 +78,6 @@ Namespace Controls
                     Case 2 : target_color = Color.Parse("#ff4c4c")
                     Case Else : target_color = Color.Parse("#1370f3")
                 End Select
-                AnimationHelper.color(_border_brush, target_color, 100)
             Else
                 Select Case ColorType
                     Case 0 : target_color = Color.Parse("#343d4a")
@@ -86,9 +85,8 @@ Namespace Controls
                     Case 2 : target_color = Color.Parse("#ce2111")
                     Case Else : target_color = Color.Parse("#343d4a")
                 End Select
-                ' Set directly on exit to prevent stuck hover
-                _border_brush.Color = target_color
             End If
+            _border_brush.Color = target_color
         End Sub
 
         Private Sub RefreshBackground()
@@ -100,12 +98,10 @@ Namespace Controls
                 Else
                     target_color = Color.Parse("#e0eafd")
                 End If
-                AnimationHelper.color(_bg_brush, target_color, 100)
             Else
                 target_color = Color.FromArgb(85, 255, 255, 255)
-                ' Set directly on exit to prevent stuck hover
-                _bg_brush.Color = target_color
             End If
+            _bg_brush.Color = target_color
         End Sub
 
         ' Pointer events on the background border

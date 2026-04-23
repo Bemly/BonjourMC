@@ -137,22 +137,16 @@ Namespace Controls
             End If
         End Sub
 
-        ' --- Hover Animation (PCL-CE: 90ms) ---
+        ' --- Hover (direct color set, no animation to prevent stuck state) ---
         Protected Overrides Sub OnPointerEntered(ByVal e As PointerEventArgs)
             MyBase.OnPointerEntered(e)
             If _is_hovered Then Return
             _is_hovered = True
 
-            ' Shadow: 0.07 → 0.4, 90ms
-            AnimationHelper.fade(Me, 1.0, 90) ' ensure visible
-            animate_shadow(DropShadowHoverOpacity, 90)
-
-            ' Title color: Brush1 → Brush2, 90ms
-            AnimationHelper.color(_title_brush, Color.Parse("#0b5bcb"), 90)
-
-            ' Swap arrow color, 90ms
+            _shadow_effect.Opacity = DropShadowHoverOpacity
+            _title_brush.Color = Color.Parse("#0b5bcb")
             If _swap_path IsNot Nothing Then
-                AnimationHelper.color(_swap_brush, Color.Parse("#0b5bcb"), 90)
+                _swap_brush.Color = Color.Parse("#0b5bcb")
             End If
         End Sub
 
@@ -161,13 +155,8 @@ Namespace Controls
             If Not _is_hovered Then Return
             _is_hovered = False
 
-            ' Shadow: 0.4 → 0.07, 90ms
-            animate_shadow(DropShadowIdleOpacity, 90)
-
-            ' Title color: set directly (no animation) to prevent stuck hover on fast mouse movement
+            _shadow_effect.Opacity = DropShadowIdleOpacity
             _title_brush.Color = Color.Parse("#343d4a")
-
-            ' Swap arrow color
             If _swap_path IsNot Nothing Then
                 _swap_brush.Color = Color.Parse("#343d4a")
             End If

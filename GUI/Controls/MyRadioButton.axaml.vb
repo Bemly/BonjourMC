@@ -193,17 +193,12 @@ Namespace Controls
                             If PART_Back IsNot Nothing Then _bg_brush.Color = Colors.White
                         End If
                     ElseIf _is_mouse_down Then
-                        If animate Then
-                            AnimationHelper.color(_bg_brush, Color.FromArgb(120, 234, 242, 254), 60)
-                        End If
+                        _bg_brush.Color = Color.FromArgb(120, 234, 242, 254)
                     ElseIf IsPointerOver Then
-                        If animate Then
-                            AnimationHelper.color(_fill_brush, Colors.White, 90)
-                            AnimationHelper.color(_text_brush, Colors.White, 90)
-                            If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.FromArgb(50, 234, 242, 254), 90)
-                        End If
+                        _fill_brush.Color = Colors.White
+                        _text_brush.Color = Colors.White
+                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.FromArgb(50, 234, 242, 254)
                     Else
-                        ' Set directly to prevent stuck hover on fast mouse movement
                         _fill_brush.Color = Colors.White
                         _text_brush.Color = Colors.White
                         If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#01eaf2fe")
@@ -221,13 +216,10 @@ Namespace Controls
                             If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#1370f3")
                         End If
                     ElseIf IsPointerOver Then
-                        If animate Then
-                            AnimationHelper.color(_fill_brush, Color.Parse("#1370f3"), 90)
-                            AnimationHelper.color(_text_brush, Color.Parse("#1370f3"), 90)
-                            If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#e0eafd"), 90)
-                        End If
+                        _fill_brush.Color = Color.Parse("#1370f3")
+                        _text_brush.Color = Color.Parse("#1370f3")
+                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#e0eafd")
                     Else
-                        ' Set directly to prevent stuck hover on fast mouse movement
                         _fill_brush.Color = Color.Parse("#1370f3")
                         _text_brush.Color = Color.Parse("#1370f3")
                         If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#01eaf2fe")
