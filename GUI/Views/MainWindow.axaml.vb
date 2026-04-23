@@ -21,17 +21,55 @@ Namespace Views
 
             ' Make title bar draggable (WindowDecorations="None" removes native drag)
             Dim title_bar = Me.FindControl(Of Border)("PART_TitleBar")
+            Debug.WriteLine($"[MainWindow] title_bar found: {title_bar IsNot Nothing}")
             If title_bar IsNot Nothing Then
                 AddHandler title_bar.PointerPressed, Sub(sender, e)
+                                                         Debug.WriteLine("[MainWindow] title_bar PointerPressed -> BeginMoveDrag")
                                                          BeginMoveDrag(e)
                                                      End Sub
             End If
 
-            ' Make resize grip work
+            ' Make resize grip work (manual resize since WindowDecorations="None" may not support native drag)
             Dim resize_grip = Me.FindControl(Of Border)("PART_ResizeGrip")
+            Debug.WriteLine($"[MainWindow] resize_grip found: {resize_grip IsNot Nothing}")
             If resize_grip IsNot Nothing Then
+                Dim is_resizing As Boolean = False
+                Dim resize_start_pos As Point
+                Dim resize_start_size As Size
+
                 AddHandler resize_grip.PointerPressed, Sub(sender, e)
-                                                           BeginResizeDrag(WindowEdge.SouthEast, e)
+                                                           Dim props = e.GetCurrentPoint(resize_grip).Properties
+                                                           If props.IsLeftButtonPressed Then
+                                                               is_resizing = True
+                                                               resize_start_pos = e.GetPosition(Nothing)
+                                                               resize_start_size = New Size(Width, Height)
+                                                               Debug.WriteLine($"[MainWindow] resize START: pos={resize_start_pos}, size={resize_start_size}")
+                                                               e.Handled = True
+                                                           End If
+                                                       End Sub
+
+                AddHandler PointerMoved, Sub(sender, e)
+                                             If is_resizing Then
+                                                 Dim current_pos = e.GetPosition(Nothing)
+                                                 Dim delta_x = current_pos.X - resize_start_pos.X
+                                                 Dim delta_y = current_pos.Y - resize_start_pos.Y
+                                                 Dim new_width = Math.Max(MinWidth, resize_start_size.Width + delta_x)
+                                                 Dim new_height = Math.Max(MinHeight, resize_start_size.Height + delta_y)
+                                                 Width = new_width
+                                                 Height = new_height
+                                                 Debug.WriteLine($"[MainWindow] resize: {new_width}x{new_height}")
+                                             End If
+                                         End Sub
+
+                AddHandler PointerReleased, Sub(sender, e)
+                                                If is_resizing Then
+                                                    is_resizing = False
+                                                    Debug.WriteLine($"[MainWindow] resize END: {Width}x{Height}")
+                                                End If
+                                            End Sub
+
+                AddHandler resize_grip.PointerEntered, Sub(sender, e)
+                                                           Debug.WriteLine("[MainWindow] resize_grip PointerEntered")
                                                        End Sub
             End If
 

@@ -26,6 +26,7 @@
     </Window.Styles>
 
     <!-- Main container with shadow (PCL-CE style) -->
+    <Grid>
     <Border CornerRadius="6" Background="#fbfbfb" ClipToBounds="True" Margin="10">
         <Border.Effect>
             <DropShadowEffect BlurRadius="20" OffsetY="0" Opacity="0.3" Color="#000000"/>
@@ -102,19 +103,19 @@
             <!-- ============================================================
                  Content Area
                  ============================================================ -->
-            <!-- Content Area -->
-            <ctrl:PageTransition Grid.Row="1"
-                                 Content="{Binding selected_page}"
-                                 Margin="0"/>
-
-            <!-- Resize grip (bottom-right corner) -->
-            <Border Name="PART_ResizeGrip" Grid.Row="1"
-                    Width="16" Height="16"
-                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Cursor="BottomRightCorner"
-                    Background="Transparent"
-                    IsHitTestVisible="True"
-                    Margin="0,0,2,2"/>
+            <Panel Grid.Row="1">
+                <ctrl:PageTransition Content="{Binding selected_page}" Margin="0"/>
+            </Panel>
         </Grid>
     </Border>
+
+    <!-- Resize grip (bottom-right corner of window, outside main Border) -->
+    <Border Name="PART_ResizeGrip"
+            Width="40" Height="40"
+            HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Cursor="BottomRightCorner"
+            Background="#02000000"
+            IsHitTestVisible="True"
+            Margin="0,0,0,0"/>
+    </Grid>
 </Window>
