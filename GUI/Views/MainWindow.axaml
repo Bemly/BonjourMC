@@ -104,7 +104,7 @@
     <Border Name="PART_ResizeGrip"
             Width="40" Height="40"
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
-            Cursor="SizeNWSE"
+            Cursor="SizeAll"
             Background="#02000000"
             IsHitTestVisible="True"
             Margin="0,0,0,0"/>
