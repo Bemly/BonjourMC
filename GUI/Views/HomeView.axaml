@@ -51,7 +51,7 @@
                                   FontSize="14" MinHeight="36"/>
                         <TextBlock Text="{Binding status_text}" FontSize="12"
                                    Foreground="{StaticResource BrushGray3}"
-                                   IsVisible="{Binding !status_text, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+                                   IsVisible="{Binding status_text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                     </StackPanel>
                 </StackPanel>
             </ctrl:Card>
