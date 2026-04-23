@@ -16,102 +16,45 @@ Imports GUI.Animations
 Namespace Controls
 
     ''' <summary>
-    ''' Content host that animates page transitions with PCL-CE exact timing.
-    ''' Uses a Panel as the visual container and PageContent property for binding.
+    ''' Content host that animates page enter transitions with PCL-CE exact timing.
     ''' </summary>
     Public Class PageTransition
-        Inherits UserControl
+        Inherits ContentControl
 
-        ' Display panel — holds current and transitioning pages
-        Private ReadOnly _panel As New Panel()
-
-        ' Animation state
-        Private _is_animating As Boolean = False
         Private _last_content As Object = Nothing
-        Private _pending_content As Object = Nothing
-
-        ' Styled Property for page content
-        Public Shared ReadOnly PageContentProperty As StyledProperty(Of Object) =
-            AvaloniaProperty.Register(Of PageTransition, Object)("PageContent", Nothing)
-
-        Public Property PageContent As Object
-            Get
-                Return GetValue(PageContentProperty)
-            End Get
-            Set(ByVal value As Object)
-                SetValue(PageContentProperty, value)
-            End Set
-        End Property
 
         Public Sub New()
             ClipToBounds = True
-            Content = _panel
         End Sub
 
         Protected Overrides Sub OnPropertyChanged(ByVal change As AvaloniaPropertyChangedEventArgs)
             MyBase.OnPropertyChanged(change)
 
-            If change.Property IsNot PageContentProperty Then Return
+            If change.Property IsNot ContentProperty Then Return
 
             Dim new_content = change.NewValue
             If new_content Is Nothing Then Return
             If new_content Is _last_content Then Return
-
-            ' If animating, queue the new content
-            If _is_animating Then
-                _pending_content = new_content
-                Return
-            End If
-
             _last_content = new_content
-            Dim new_control = TryCast(new_content, Control)
-            If new_control Is Nothing Then Return
 
-            transition_to(new_control)
-        End Sub
+            ' Content is ViewModel — ViewLocator creates the View, which is Presenter.Child
+            ' Wait for layout to complete, then get the actual rendered control
+            Dispatcher.UIThread.Post(Sub()
+                                         Dim actual_control As Control = Nothing
+                                         If Me.Presenter IsNot Nothing Then
+                                             actual_control = TryCast(Me.Presenter.Child, Control)
+                                         End If
+                                         If actual_control Is Nothing Then
+                                             Debug.WriteLine("[PageTransition] Presenter.Child is Nothing")
+                                             Return
+                                         End If
 
-        Private Sub transition_to(ByVal new_control As Control)
-            Dim old_control As Control = Nothing
-            If _panel.Children.Count > 0 Then
-                old_control = TryCast(_panel.Children(_panel.Children.Count - 1), Control)
-            End If
-
-            If old_control IsNot Nothing Then
-                _is_animating = True
-
-                ' Add new page on top (invisible)
-                new_control.Opacity = 0
-                _panel.Children.Add(new_control)
-
-                ' Fade old page out
-                animate_fade(old_control, 0.0, 80)
-
-                ' After fade out, remove old page and animate new page in
-                Dim swap_timer As New DispatcherTimer()
-                swap_timer.Interval = TimeSpan.FromMilliseconds(90)
-                AddHandler swap_timer.Tick, Sub(sender, e)
-                                                swap_timer.Stop()
-                                                _panel.Children.Remove(old_control)
-                                                animate_page_enter(new_control)
-                                                _is_animating = False
-                                                process_pending()
-                                            End Sub
-                swap_timer.Start()
-            Else
-                ' First load — just add and animate in
-                _panel.Children.Add(new_control)
-                animate_page_enter(new_control)
-            End If
-        End Sub
-
-        Private Sub process_pending()
-            If _pending_content Is Nothing Then Return
-            Dim pending = _pending_content
-            _pending_content = Nothing
-            _last_content = pending
-            Dim new_control = TryCast(pending, Control)
-            If new_control Is Nothing Then Return
-            transition_to(new_control)
+                                         Debug.WriteLine($"[PageTransition] Animating {actual_control.GetType().Name}")
+                                         actual_control.Opacity = 0
+                                         Dispatcher.UIThread.Post(Sub()
+                                                                      animate_page_enter(actual_control)
+                                                                  End Sub, DispatcherPriority.Render)
+                                     End Sub, DispatcherPriority.Render)
         End Sub
 
         ''' <summary>
@@ -119,6 +62,7 @@ Namespace Controls
         ''' </summary>
         Private Sub animate_fade(ByVal ctrl As Control, ByVal target_opacity As Double, ByVal duration_ms As Integer)
             Dim start_opacity = ctrl.Opacity
+            Debug.WriteLine($"[PageTransition] animate_fade: {ctrl.GetType().Name} from {start_opacity} to {target_opacity}, {duration_ms}ms")
             Dim sw As New Stopwatch()
             sw.Start()
 
@@ -133,6 +77,7 @@ Namespace Controls
                                            timer.Stop()
                                            ctrl.Opacity = target_opacity
                                            sw.Stop()
+                                           Debug.WriteLine($"[PageTransition] animate_fade complete: {ctrl.GetType().Name} Opacity={ctrl.Opacity}")
                                        End If
                                    End Sub
             timer.Start()
@@ -143,10 +88,10 @@ Namespace Controls
         ''' </summary>
         Private Sub animate_page_enter(ByVal page As Control)
             If page Is Nothing Then Return
-            page.Opacity = 0
 
             Dim elements As New List(Of Control)()
             collect_animatable_children(page, elements, 0)
+            Debug.WriteLine($"[PageTransition] animate_page_enter: {page.GetType().Name}, found {elements.Count} animatable elements")
 
             If elements.Count > 0 Then
                 page.Opacity = 1
@@ -188,12 +133,22 @@ Namespace Controls
                     delay += 25
                 Next
             Else
-                animate_fade(page, 1.0, 200)
+                animate_fade(page, 1.0, 300)
             End If
         End Sub
 
         Private Sub collect_animatable_children(ByVal parent As Control, ByVal result As List(Of Control), ByVal depth As Integer)
             If depth > 3 Then Return
+
+            ' Handle ContentControl/UserControl — recurse into Content
+            Dim cc = TryCast(parent, ContentControl)
+            If cc IsNot Nothing Then
+                Dim content = TryCast(cc.Content, Control)
+                If content IsNot Nothing Then
+                    collect_animatable_children(content, result, depth + 1)
+                End If
+                Return
+            End If
 
             Dim panel = TryCast(parent, Panel)
             If panel IsNot Nothing Then
