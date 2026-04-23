@@ -312,9 +312,9 @@
     </Style>
 
     <!-- ============================================================
-         MyButton Styles (PCL-CE style)
+         PclButton Styles (PCL-CE style)
          ============================================================ -->
-    <Style Selector="controls|MyButton">
+    <Style Selector="controls|PclButton">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="CornerRadius" Value="3"/>
         <Setter Property="Padding" Value="16,8"/>
@@ -322,18 +322,18 @@
     </Style>
 
     <!-- ============================================================
-         MyIconButton Styles (PCL-CE style)
+         PclIconButton Styles (PCL-CE style)
          ============================================================ -->
-    <Style Selector="controls|MyIconButton">
+    <Style Selector="controls|PclIconButton">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="CornerRadius" Value="1000"/>
         <Setter Property="Cursor" Value="Hand"/>
     </Style>
 
     <!-- ============================================================
-         MyRadioButton Styles (PCL-CE style)
+         PclRadioButton Styles (PCL-CE style)
          ============================================================ -->
-    <Style Selector="controls|MyRadioButton">
+    <Style Selector="controls|PclRadioButton">
         <Setter Property="Background" Value="#01eaf2fe"/>
         <Setter Property="CornerRadius" Value="13.5"/>
         <Setter Property="MinHeight" Value="27"/>
@@ -342,18 +342,18 @@
     </Style>
 
     <!-- ============================================================
-         MyListItem Styles (PCL-CE style)
+         PclListItem Styles (PCL-CE style)
          ============================================================ -->
-    <Style Selector="controls|MyListItem">
+    <Style Selector="controls|PclListItem">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Height" Value="42"/>
         <Setter Property="Cursor" Value="Hand"/>
     </Style>
 
     <!-- ============================================================
-         MyExtraButton Styles (PCL-CE style)
+         PclExtraButton Styles (PCL-CE style)
          ============================================================ -->
-    <Style Selector="controls|MyExtraButton">
+    <Style Selector="controls|PclExtraButton">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Cursor" Value="Hand"/>
     </Style>

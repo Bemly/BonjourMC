@@ -186,8 +186,8 @@ Namespace Controls
 
         Private Function is_card_element(ByVal ctrl As Control) As Boolean
             If TypeOf ctrl Is Card Then Return True
-            If TypeOf ctrl Is MyListItem Then Return True
-            If TypeOf ctrl Is MyButton Then Return True
+            If TypeOf ctrl Is PclListItem Then Return True
+            If TypeOf ctrl Is PclButton Then Return True
             If TypeOf ctrl Is Button Then Return True
             If TypeOf ctrl Is Border Then
                 Dim border = CType(ctrl, Border)

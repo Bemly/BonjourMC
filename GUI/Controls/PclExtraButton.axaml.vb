@@ -15,10 +15,10 @@ Imports GUI.Animations
 Namespace Controls
 
     ''' <summary>
-    ''' PCL-CE MyExtraButton style — floating action button with show/hide scale bounce,
+    ''' PCL-CE PclExtraButton style — floating action button with show/hide scale bounce,
     ''' click squash, and ripple effect.
     ''' </summary>
-    Partial Public Class MyExtraButton
+    Partial Public Class PclExtraButton
         Inherits UserControl
 
         ' Instance brushes
@@ -31,10 +31,10 @@ Namespace Controls
 
         ' Styled Properties
         Public Shared ReadOnly LogoProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of MyExtraButton, String)("Logo", "")
+            AvaloniaProperty.Register(Of PclExtraButton, String)("Logo", "")
 
         Public Shared ReadOnly ShowProperty As StyledProperty(Of Boolean) =
-            AvaloniaProperty.Register(Of MyExtraButton, Boolean)("Show", False)
+            AvaloniaProperty.Register(Of PclExtraButton, Boolean)("Show", False)
 
         Public Property Logo As String
             Get

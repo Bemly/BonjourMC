@@ -15,7 +15,7 @@ Imports GUI.Animations
 
 Namespace Controls
 
-    Partial Public Class MyRadioButton
+    Partial Public Class PclRadioButton
         Inherits UserControl
 
         Private ReadOnly _bg_brush As New SolidColorBrush(Color.Parse("#01eaf2fe"))
@@ -32,22 +32,22 @@ Namespace Controls
         End Enum
 
         Public Shared ReadOnly TextProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of MyRadioButton, String)("Text", "")
+            AvaloniaProperty.Register(Of PclRadioButton, String)("Text", "")
 
         Public Shared ReadOnly CheckedProperty As StyledProperty(Of Boolean) =
-            AvaloniaProperty.Register(Of MyRadioButton, Boolean)("Checked", False)
+            AvaloniaProperty.Register(Of PclRadioButton, Boolean)("Checked", False)
 
         Public Shared ReadOnly LogoProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of MyRadioButton, String)("Logo", "")
+            AvaloniaProperty.Register(Of PclRadioButton, String)("Logo", "")
 
         Public Shared ReadOnly ColorTypeProperty As StyledProperty(Of RadioColorType) =
-            AvaloniaProperty.Register(Of MyRadioButton, RadioColorType)("ColorType", RadioColorType.White)
+            AvaloniaProperty.Register(Of PclRadioButton, RadioColorType)("ColorType", RadioColorType.White)
 
         Public Shared ReadOnly LogoScaleProperty As StyledProperty(Of Double) =
-            AvaloniaProperty.Register(Of MyRadioButton, Double)("LogoScale", 1.0)
+            AvaloniaProperty.Register(Of PclRadioButton, Double)("LogoScale", 1.0)
 
         Public Shared ReadOnly CommandProperty As StyledProperty(Of ICommand) =
-            AvaloniaProperty.Register(Of MyRadioButton, ICommand)("Command", Nothing)
+            AvaloniaProperty.Register(Of PclRadioButton, ICommand)("Command", Nothing)
 
         Public Property Text As String
             Get
@@ -177,7 +177,7 @@ Namespace Controls
                 If panel IsNot Nothing Then
                     If value Then
                         For Each child In panel.Children
-                            Dim rb = TryCast(child, MyRadioButton)
+                            Dim rb = TryCast(child, PclRadioButton)
                             If rb IsNot Nothing AndAlso rb IsNot Me AndAlso rb.Checked Then
                                 rb.SetChecked(False, False, animate)
                             End If
