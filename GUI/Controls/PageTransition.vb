@@ -17,13 +17,13 @@ Namespace Controls
 
     ''' <summary>
     ''' Content host that animates page transitions with PCL-CE exact timing.
-    ''' Uses custom PageContent property to avoid ContentControl auto-replace.
+    ''' Uses custom PageContent property and Panel-based display to avoid ContentControl auto-replace.
     ''' </summary>
     Public Class PageTransition
         Inherits ContentControl
 
-        ' Display layer — single Border that holds the current page
-        Private ReadOnly _display As New Border() With {.Background = Brushes.Transparent}
+        ' Display panel — holds current and transitioning pages
+        Private ReadOnly _panel As New Panel()
 
         ' Animation state
         Private _is_animating As Boolean = False
@@ -45,8 +45,8 @@ Namespace Controls
 
         Public Sub New()
             ClipToBounds = True
-            ' Set fixed Content — the display layer, never changes
-            Content = _display
+            ' Set fixed Content — the display panel, never changes
+            Content = _panel
         End Sub
 
         Protected Overrides Sub OnPropertyChanged(ByVal change As AvaloniaPropertyChangedEventArgs)
@@ -68,35 +68,44 @@ Namespace Controls
             Dim new_control = TryCast(new_content, Control)
             If new_control Is Nothing Then Return
 
-            Dim old_control = TryCast(_display.Child, Control)
+            Dim old_control = get_current_page()
 
             If old_control IsNot Nothing Then
                 _is_animating = True
 
-                ' Fade old page out (80ms)
+                ' Add new page to panel (on top, invisible)
+                new_control.Opacity = 0
+                _panel.Children.Add(new_control)
+
+                ' Fade old page out
                 animate_fade(old_control, 0.0, 80)
 
-                ' After fade out, swap content and fade new page in
+                ' After fade out, remove old page and animate new page in
                 Dim swap_timer As New DispatcherTimer()
                 swap_timer.Interval = TimeSpan.FromMilliseconds(90)
                 AddHandler swap_timer.Tick, Sub(sender, e)
                                                 swap_timer.Stop()
-                                                ' Swap content
-                                                _display.Child = new_control
+                                                ' Remove old page
+                                                _panel.Children.Remove(old_control)
                                                 ' Animate new page in
                                                 animate_page_enter(new_control)
                                                 _is_animating = False
-
-                                                ' Process pending
                                                 process_pending()
                                             End Sub
                 swap_timer.Start()
             Else
-                ' First load — just set content and animate in
-                _display.Child = new_control
+                ' First load — just add and animate in
+                _panel.Children.Add(new_control)
                 animate_page_enter(new_control)
             End If
         End Sub
+
+        Private Function get_current_page() As Control
+            If _panel.Children.Count > 0 Then
+                Return TryCast(_panel.Children(_panel.Children.Count - 1), Control)
+            End If
+            Return Nothing
+        End Function
 
         Private Sub process_pending()
             If _pending_content Is Nothing Then Return
@@ -106,9 +115,12 @@ Namespace Controls
             Dim new_control = TryCast(pending, Control)
             If new_control Is Nothing Then Return
 
+            Dim old_control = get_current_page()
             _is_animating = True
-            ' Fade current out
-            Dim old_control = TryCast(_display.Child, Control)
+
+            new_control.Opacity = 0
+            _panel.Children.Add(new_control)
+
             If old_control IsNot Nothing Then
                 animate_fade(old_control, 0.0, 80)
             End If
@@ -117,7 +129,9 @@ Namespace Controls
             swap_timer.Interval = TimeSpan.FromMilliseconds(90)
             AddHandler swap_timer.Tick, Sub(sender, e)
                                             swap_timer.Stop()
-                                            _display.Child = new_control
+                                            If old_control IsNot Nothing Then
+                                                _panel.Children.Remove(old_control)
+                                            End If
                                             animate_page_enter(new_control)
                                             _is_animating = False
                                             process_pending()
