@@ -70,6 +70,8 @@
         <SolidColorBrush x:Key="BrushBg" Color="{StaticResource ColorBg}"/>
         <SolidColorBrush x:Key="BrushBgCard" Color="{StaticResource ColorBgCard}"/>
         <SolidColorBrush x:Key="BrushBgSidebar" Color="{StaticResource ColorBgSidebar}"/>
+        <SolidColorBrush x:Key="BrushBgSidebarHover" Color="{StaticResource ColorBgSidebarHover}"/>
+        <SolidColorBrush x:Key="BrushBgSidebarSelected" Color="{StaticResource ColorBgSidebarSelected}"/>
     </Styles.Resources>
 
     <!-- ============================================================
