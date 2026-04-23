@@ -111,7 +111,7 @@
             <Border Name="PART_ResizeGrip" Grid.Row="1"
                     Width="16" Height="16"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Cursor="SizeNorthwestSouthwest"
+                    Cursor="BottomRightCorner"
                     Background="Transparent"
                     IsHitTestVisible="True"
                     Margin="0,0,2,2"/>
