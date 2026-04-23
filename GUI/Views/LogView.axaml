@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GUI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
+             x:Class="GUI.Views.LogView"
+             x:DataType="vm:LogViewModel">
+
+    <Grid RowDefinitions="Auto,*" Margin="20">
+        <!-- 工具栏 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+            <TextBlock Text="Game Output" FontSize="16" FontWeight="SemiBold"
+                       VerticalAlignment="Center"/>
+            <Button Content="Clear"
+                    Command="{Binding clear_command}"
+                    FontSize="12" Padding="12,4"/>
+            <Button Content="Kill Game"
+                    Command="{Binding kill_command}"
+                    IsEnabled="{Binding is_game_running}"
+                    Background="#f44336" Foreground="White"
+                    FontSize="12" Padding="12,4"
+                    CornerRadius="4"/>
+        </StackPanel>
+
+        <!-- 日志输出 -->
+        <TextBox Grid.Row="1"
+                 Text="{Binding log_text, Mode=OneWay}"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 FontFamily="Consolas, Menlo, monospace"
+                 FontSize="12"
+                 Background="#1e1e2e"
+                 Foreground="#d4d4d4"
+                 Padding="12"
+                 CornerRadius="6"
+                 Watermark="Game output will appear here..."/>
+    </Grid>
+</UserControl>

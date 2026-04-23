@@ -13,8 +13,11 @@
       <DefineDebug>false</DefineDebug>
     </PropertyGroup>
     <ItemGroup>
-        <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Launcher\Launcher.vbproj" />
     </ItemGroup>
 
 

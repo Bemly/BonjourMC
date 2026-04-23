@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GUI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
+             x:Class="GUI.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" Margin="30" MaxWidth="500">
+            <TextBlock Text="Settings" FontSize="24" FontWeight="Bold"/>
+
+            <!-- 玩家名 -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Player Name" FontWeight="SemiBold"/>
+                <TextBox Text="{Binding username, Mode=TwoWay}"
+                         Watermark="Enter your username"/>
+            </StackPanel>
+
+            <!-- 内存分配 -->
+            <StackPanel Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="Memory Allocation" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding memory_mb, StringFormat='{}{0} MB'}"
+                               Foreground="Gray" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Slider Minimum="512" Maximum="16384"
+                        Value="{Binding memory_mb, Mode=TwoWay}"
+                        TickFrequency="512" IsSnapToTickEnabled="True"
+                        Width="300"/>
+            </StackPanel>
+
+            <!-- Java 路径 -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Java Path" FontWeight="SemiBold"/>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox Text="{Binding java_path, Mode=TwoWay}"
+                             Watermark="Auto-detect (leave empty)"/>
+                    <Button Grid.Column="1" Content="Browse"
+                            Margin="8,0,0,0" Padding="12,6"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- 游戏目录 -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Game Directory" FontWeight="SemiBold"/>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox Text="{Binding game_dir, Mode=TwoWay}"
+                             Watermark="Default (use .minecraft)"/>
+                    <Button Grid.Column="1" Content="Browse"
+                            Margin="8,0,0,0" Padding="12,6"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- 窗口尺寸 -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Window Size" FontWeight="SemiBold"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBox Text="{Binding window_width, Mode=TwoWay}"
+                             Width="80"/>
+                    <TextBlock Text="x" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding window_height, Mode=TwoWay}"
+                             Width="80"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 保存按钮 -->
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Content="Save Settings"
+                        Command="{Binding save_command}"
+                        Background="#4CAF50" Foreground="White"
+                        Padding="20,8" CornerRadius="6"/>
+                <TextBlock Text="{Binding status_text}"
+                           Foreground="Gray" VerticalAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

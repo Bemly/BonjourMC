@@ -11,6 +11,8 @@ Public Module Entry
         Console.WriteLine("Core Start!")
 		'Dim mc = New Java.Client.Download.Mojang.Minecraft(is_compatible_mode:=True)
 		'mc.set_version(1, 21, 4).install()
+
+		' TODO: 其实启动还没有写好
 		Dim mc = New Java.Client.Setup()
 
 	End Sub
@@ -88,5 +90,12 @@ Public Class Config
 	Public Const download_thread_count = 128
 	Public Const error_retry_count = 20
 	Public Const os = "osx"
+
+	Public Class settings
+		Public Const default_memory_mb As Integer = 4096
+		Public Const default_window_width As Integer = 854
+		Public Const default_window_height As Integer = 480
+		Public Const default_username As String = "Player"
+	End Class
 
 End Class

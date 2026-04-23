@@ -1,4 +1,4 @@
-﻿
+
 Option Explicit On
 Option Strict On
 
@@ -38,6 +38,14 @@ Namespace Utility.Bridge
 			Return instance.save_web_stream(url, pth)
 		End Function
 
+		''' <summary>
+		''' 带进度报告的下载
+		''' </summary>
+		Shared Function save_web_stream(ByVal url As String, ByVal pth As String,
+				ByVal progress As IProgress(Of Long)) As Task
+			Return DirectCast(instance, System_net_adapter).save_web_stream(url, pth, progress)
+		End Function
+
 		Public Function save_web_stream_inst(ByVal url As String,
 				ByVal pth As String) As Task Implements I_dl.save_web_stream
 			Return instance.save_web_stream(url, pth)
@@ -67,24 +75,49 @@ Namespace Utility.Bridge
 			''' <summary>
 			''' 异步多线程获取 URL 数据，确保 200 时 放入指定路径(流下载,不直接读取)
 			''' </summary>
-			''' <param name="url">网站地址</param>
-			''' <param name="pth">本地路径</param>
-			''' <returns>异步返回</returns>
 			Friend Async Function save_web_stream(ByVal url As String, ByVal pth As String) As Task Implements I_dl.save_web_stream
 				Using client As New HttpClient()
-					' 获取远程文件流
 					Using response As HttpResponseMessage =
 						Await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead)
 						response.EnsureSuccessStatusCode()
 
-						' 确保目标目录存在
 						Dim dict As String = Path.GetDirectoryName(pth)
 						If Not Directory.Exists(dict) Then Directory.CreateDirectory(dict)
 
-						' 读取文件流并保存到本地
 						Using remoteStream As Stream = Await response.Content.ReadAsStreamAsync(),
 							localStream As FileStream = File.Create(pth)
 							Await remoteStream.CopyToAsync(localStream)
+						End Using
+					End Using
+				End Using
+			End Function
+
+			''' <summary>
+			''' 带进度报告的异步下载
+			''' </summary>
+			Friend Async Function save_web_stream(ByVal url As String, ByVal pth As String,
+					ByVal progress As IProgress(Of Long)) As Task
+				Using client As New HttpClient()
+					Using response As HttpResponseMessage =
+						Await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead)
+						response.EnsureSuccessStatusCode()
+
+						Dim dict As String = Path.GetDirectoryName(pth)
+						If Not Directory.Exists(dict) Then Directory.CreateDirectory(dict)
+
+						Using remoteStream As Stream = Await response.Content.ReadAsStreamAsync(),
+							localStream As FileStream = File.Create(pth)
+							Dim buffer(8191) As Byte
+							Dim totalBytes As Long = 0
+							Dim bytesRead As Integer
+							Do
+								bytesRead = Await remoteStream.ReadAsync(buffer, 0, buffer.Length)
+								If bytesRead > 0 Then
+									Await localStream.WriteAsync(buffer, 0, bytesRead)
+									totalBytes += bytesRead
+									progress?.Report(totalBytes)
+								End If
+							Loop While bytesRead > 0
 						End Using
 					End Using
 				End Using
@@ -95,5 +128,3 @@ Namespace Utility.Bridge
 
 
 End Namespace
-
-
