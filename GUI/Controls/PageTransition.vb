@@ -3,10 +3,12 @@ Option Strict On
 
 Imports System
 Imports System.Collections.Generic
+Imports System.Diagnostics
 Imports Avalonia
 Imports Avalonia.Animation
 Imports Avalonia.Animation.Easings
 Imports Avalonia.Controls
+Imports Avalonia.Controls.Presenters
 Imports Avalonia.Media
 Imports Avalonia.Styling
 Imports Avalonia.Threading
@@ -16,65 +18,136 @@ Namespace Controls
 
     ''' <summary>
     ''' Content host that animates page transitions with PCL-CE exact timing.
-    ''' Left panel: staggered translateX from -25, 300ms OutBack, 7-15ms stagger.
-    ''' Right panel: staggered translateY from -16, 350ms OutBack, 25ms stagger.
+    ''' Uses dual-layer ContentPresenter to keep old page visible during exit animation.
     ''' </summary>
     Public Class PageTransition
         Inherits ContentControl
 
+        ' Dual-layer rendering
+        Private ReadOnly _grid As New Grid()
+        Private ReadOnly _old_layer As New ContentPresenter()
+        Private ReadOnly _new_layer As New ContentPresenter()
+
+        ' Animation state
         Private _is_animating As Boolean = False
         Private _last_content As Object = Nothing
+        Private _pending_content As Object = Nothing
+        Private _exit_timers As New List(Of DispatcherTimer)()
+        Private _enter_timers As New List(Of DispatcherTimer)()
+
+        ' Styled Property for page content (avoids ContentControl auto-replace)
+        Public Shared ReadOnly PageContentProperty As StyledProperty(Of Object) =
+            AvaloniaProperty.Register(Of PageTransition, Object)("PageContent", Nothing)
+
+        Public Property PageContent As Object
+            Get
+                Return GetValue(PageContentProperty)
+            End Get
+            Set(ByVal value As Object)
+                SetValue(PageContentProperty, value)
+            End Set
+        End Property
 
         Public Sub New()
             ClipToBounds = True
-        End Sub
 
-        Private Sub add_setter(ByVal kf As KeyFrame, ByVal [property] As AvaloniaProperty, ByVal value As Object)
-            kf.Setters.Add(New Setter([property], value))
+            ' Build dual-layer structure
+            _old_layer.Opacity = 1
+            _new_layer.Opacity = 0
+            _grid.Children.Add(_old_layer)
+            _grid.Children.Add(_new_layer)
+
+            ' Set fixed Content — never changes
+            Content = _grid
         End Sub
 
         Protected Overrides Sub OnPropertyChanged(ByVal change As AvaloniaPropertyChangedEventArgs)
             MyBase.OnPropertyChanged(change)
 
-            If change.Property IsNot ContentProperty Then Return
+            If change.Property IsNot PageContentProperty Then Return
 
             Dim new_content = change.NewValue
             If new_content Is Nothing Then Return
-            If _is_animating Then Return
             If new_content Is _last_content Then Return
+
+            ' If animating, queue the new content
+            If _is_animating Then
+                _pending_content = new_content
+                Return
+            End If
+
             _last_content = new_content
+            start_transition(new_content)
+        End Sub
 
-            Dim old_control = TryCast(change.OldValue, Control)
+        Private Sub start_transition(ByVal new_content As Object)
             Dim new_control = TryCast(new_content, Control)
+            If new_control Is Nothing Then Return
 
-            If old_control IsNot Nothing AndAlso new_control IsNot Nothing Then
+            Dim old_control = TryCast(_old_layer.Content, Control)
+
+            If old_control IsNot Nothing Then
                 _is_animating = True
+
+                ' Put new page in new layer (invisible)
+                _new_layer.Content = new_control
+                _new_layer.Opacity = 0
 
                 ' Animate old page out
                 animate_page_exit(old_control)
 
-                ' Delay 110ms (PCL-CE pattern), then swap and animate in
-                Dim timer As New DispatcherTimer()
-                timer.Interval = TimeSpan.FromMilliseconds(110)
-                AddHandler timer.Tick, Sub(sender, e)
-                                           timer.Stop()
-                                           ' Show new page at opacity 0, then animate in
-                                           new_control.Opacity = 0
-                                           Dispatcher.UIThread.Post(Sub()
-                                                                        new_control.Opacity = 1
-                                                                        animate_page_enter(new_control)
-                                                                        _is_animating = False
-                                                                    End Sub, DispatcherPriority.Render)
-                                       End Sub
-                timer.Start()
-            ElseIf new_control IsNot Nothing Then
+                ' After exit animation, swap layers
+                Dim swap_timer As New DispatcherTimer()
+                swap_timer.Interval = TimeSpan.FromMilliseconds(110)
+                AddHandler swap_timer.Tick, Sub(sender, e)
+                                                swap_timer.Stop()
+                                                perform_swap(new_control)
+                                            End Sub
+                swap_timer.Start()
+            Else
                 ' First load — just animate in
+                _old_layer.Content = new_control
+                _old_layer.Opacity = 1
                 animate_page_enter(new_control)
             End If
         End Sub
 
+        Private Sub perform_swap(ByVal new_control As Control)
+            ' Move new content to old layer
+            _old_layer.Content = new_control
+            _old_layer.Opacity = 1
+            _new_layer.Content = Nothing
+            _new_layer.Opacity = 0
+
+            ' Animate new page in
+            animate_page_enter(new_control)
+
+            ' Done animating
+            _is_animating = False
+
+            ' Process pending content if any
+            If _pending_content IsNot Nothing Then
+                Dim pending = _pending_content
+                _pending_content = Nothing
+                _last_content = pending
+                start_transition(pending)
+            End If
+        End Sub
+
+        Private Sub cancel_all_animations()
+            For Each t In _exit_timers
+                t.Stop()
+            Next
+            _exit_timers.Clear()
+            For Each t In _enter_timers
+                t.Stop()
+            Next
+            _enter_timers.Clear()
+        End Sub
+
         ''' <summary>
         ''' Animate page exit: per-element fade out + slide up (PCL-CE: 70ms per element, 15ms stagger).
+        ''' Uses Transitions for smooth, interruptible animations.
         ''' </summary>
         Private Sub animate_page_exit(ByVal page As Control)
             Dim elements As New List(Of Control)()
@@ -83,36 +156,65 @@ Namespace Controls
             If elements.Count > 0 Then
                 Dim delay = 0
                 For Each elem As Control In elements
-                    Dim anim As New Animation()
-                    anim.Duration = TimeSpan.FromMilliseconds(70)
-                    anim.Delay = TimeSpan.FromMilliseconds(delay)
-                    anim.FillMode = FillMode.Forward
-                    anim.Easing = AnimationHelper.ease_in_fluent
+                    ' Add transition for opacity
+                    Dim opacity_transition As New DoubleTransition()
+                    opacity_transition.Property = Visual.OpacityProperty
+                    opacity_transition.Duration = TimeSpan.FromMilliseconds(70)
+                    opacity_transition.Delay = TimeSpan.FromMilliseconds(delay)
+                    opacity_transition.Easing = AnimationHelper.ease_in_fluent
 
-                    ensure_translate_transform(elem)
+                    If elem.Transitions Is Nothing Then
+                        elem.Transitions = New Transitions()
+                    End If
+                    elem.Transitions.Add(opacity_transition)
 
-                    Dim kf0 As New KeyFrame() With {.Cue = New Cue(0)}
-                    add_setter(kf0, OpacityProperty, elem.Opacity)
-                    add_setter(kf0, TranslateTransform.YProperty, get_translate_y(elem))
-                    anim.Children.Add(kf0)
+                    ' Set target value (transition animates automatically)
+                    elem.Opacity = 0
 
-                    Dim kf1 As New KeyFrame() With {.Cue = New Cue(1)}
-                    add_setter(kf1, OpacityProperty, 0.0)
-                    add_setter(kf1, TranslateTransform.YProperty, get_translate_y(elem) - 6)
-                    anim.Children.Add(kf1)
-
-                    Dim token = anim.RunAsync(elem)
                     delay += 15
                 Next
+
+                ' Clean up transitions after animation completes
+                Dim cleanup_timer As New DispatcherTimer()
+                cleanup_timer.Interval = TimeSpan.FromMilliseconds(delay + 100)
+                AddHandler cleanup_timer.Tick, Sub(sender, e)
+                                                   cleanup_timer.Stop()
+                                                   For Each elem As Control In elements
+                                                       If elem.Transitions IsNot Nothing Then
+                                                           elem.Transitions.Clear()
+                                                       End If
+                                                   Next
+                                               End Sub
+                cleanup_timer.Start()
+                _exit_timers.Add(cleanup_timer)
             Else
-                ' Simple fade out
-                AnimationHelper.fade(page, 0.0, 70, 0, AnimationHelper.ease_in_fluent)
+                ' Simple fade out using transition
+                Dim fade_transition As New DoubleTransition()
+                fade_transition.Property = Visual.OpacityProperty
+                fade_transition.Duration = TimeSpan.FromMilliseconds(70)
+                fade_transition.Easing = AnimationHelper.ease_in_fluent
+                If page.Transitions Is Nothing Then
+                    page.Transitions = New Transitions()
+                End If
+                page.Transitions.Add(fade_transition)
+                page.Opacity = 0
+
+                Dim cleanup_timer As New DispatcherTimer()
+                cleanup_timer.Interval = TimeSpan.FromMilliseconds(100)
+                AddHandler cleanup_timer.Tick, Sub(sender, e)
+                                                   cleanup_timer.Stop()
+                                                   If page.Transitions IsNot Nothing Then
+                                                       page.Transitions.Clear()
+                                                   End If
+                                               End Sub
+                cleanup_timer.Start()
+                _exit_timers.Add(cleanup_timer)
             End If
         End Sub
 
         ''' <summary>
         ''' Animate page enter: per-element staggered fade + slide (PCL-CE exact timing).
-        ''' Right panel: opacity 100ms OutFluent + translateY 350ms OutBack, 25ms stagger.
+        ''' Uses Transitions for smooth, interruptible animations.
         ''' </summary>
         Private Sub animate_page_enter(ByVal page As Control)
             page.Opacity = 0
@@ -131,43 +233,91 @@ Namespace Controls
                     set_translate_y(elem, -16)
 
                     ' Fade in: 100ms OutFluent(Weak)
-                    Dim fade_anim As New Animation()
-                    fade_anim.Duration = TimeSpan.FromMilliseconds(100)
-                    fade_anim.Delay = TimeSpan.FromMilliseconds(delay)
-                    fade_anim.FillMode = FillMode.Forward
-                    fade_anim.Easing = AnimationHelper.ease_out_fluent_weak
-                    Dim fade_kf0 As New KeyFrame() With {.Cue = New Cue(0)}
-                    add_setter(fade_kf0, OpacityProperty, 0.0)
-                    fade_anim.Children.Add(fade_kf0)
-                    Dim fade_kf1 As New KeyFrame() With {.Cue = New Cue(1)}
-                    add_setter(fade_kf1, OpacityProperty, 1.0)
-                    fade_anim.Children.Add(fade_kf1)
-                    Dim token1 = fade_anim.RunAsync(elem)
+                    Dim fade_transition As New DoubleTransition()
+                    fade_transition.Property = Visual.OpacityProperty
+                    fade_transition.Duration = TimeSpan.FromMilliseconds(100)
+                    fade_transition.Delay = TimeSpan.FromMilliseconds(delay)
+                    fade_transition.Easing = AnimationHelper.ease_out_fluent_weak
 
-                    ' Slide down: 5px in 250ms OutFluent
-                    Dim slide1 As New Animation()
-                    slide1.Duration = TimeSpan.FromMilliseconds(250)
-                    slide1.Delay = TimeSpan.FromMilliseconds(delay)
-                    slide1.FillMode = FillMode.Forward
-                    slide1.Easing = AnimationHelper.ease_out_fluent
-                    Dim slide1_kf0 As New KeyFrame() With {.Cue = New Cue(0)}
-                    add_setter(slide1_kf0, TranslateTransform.YProperty, -16.0)
-                    slide1.Children.Add(slide1_kf0)
-                    Dim slide1_kf1 As New KeyFrame() With {.Cue = New Cue(1)}
-                    add_setter(slide1_kf1, TranslateTransform.YProperty, -11.0) ' -16 + 5 = -11
-                    slide1.Children.Add(slide1_kf1)
-                    Dim token2 = slide1.RunAsync(elem)
+                    If elem.Transitions Is Nothing Then
+                        elem.Transitions = New Transitions()
+                    End If
+                    elem.Transitions.Add(fade_transition)
+                    elem.Opacity = 1
 
-                    ' Continue to 0: 350ms OutBack
-                    AnimationHelper.delayed_code(Sub()
-                                                     AnimationHelper.translate_y(elem, 11, 350, 0, AnimationHelper.ease_out_back)
-                                                 End Sub, delay + 250)
+                    ' Slide down phase 1: -16 → -11, 250ms OutFluent
+                    ' Use timer to set up slide transition after fade starts
+                    Dim slide_timer As New DispatcherTimer()
+                    slide_timer.Interval = TimeSpan.FromMilliseconds(delay)
+                    Dim captured_elem = elem
+                    AddHandler slide_timer.Tick, Sub(sender, e)
+                                                     slide_timer.Stop()
+                                                     ' Add translate transition
+                                                     Dim translate_transition As New DoubleTransition()
+                                                     translate_transition.Property = TranslateTransform.YProperty
+                                                     translate_transition.Duration = TimeSpan.FromMilliseconds(250)
+                                                     translate_transition.Easing = AnimationHelper.ease_out_fluent
+
+                                                     captured_elem.Transitions.Add(translate_transition)
+                                                     set_translate_y(captured_elem, -11)
+
+                                                     ' Phase 2: -11 → 0, 350ms OutBack
+                                                     Dim phase2_timer As New DispatcherTimer()
+                                                     phase2_timer.Interval = TimeSpan.FromMilliseconds(250)
+                                                     AddHandler phase2_timer.Tick, Sub(s2, e2)
+                                                                                      phase2_timer.Stop()
+                                                                                      Dim translate2 As New DoubleTransition()
+                                                                                      translate2.Property = TranslateTransform.YProperty
+                                                                                      translate2.Duration = TimeSpan.FromMilliseconds(350)
+                                                                                      translate2.Easing = AnimationHelper.ease_out_back
+
+                                                                                      captured_elem.Transitions.Add(translate2)
+                                                                                      set_translate_y(captured_elem, 0)
+                                                                                  End Sub
+                                                     phase2_timer.Start()
+                                                     _enter_timers.Add(phase2_timer)
+                                                 End Sub
+                    slide_timer.Start()
+                    _enter_timers.Add(slide_timer)
 
                     delay += 25
                 Next
+
+                ' Clean up transitions after all animations complete
+                Dim cleanup_timer As New DispatcherTimer()
+                cleanup_timer.Interval = TimeSpan.FromMilliseconds(delay + 600)
+                AddHandler cleanup_timer.Tick, Sub(sender, e)
+                                                   cleanup_timer.Stop()
+                                                   For Each elem As Control In elements
+                                                       If elem.Transitions IsNot Nothing Then
+                                                           elem.Transitions.Clear()
+                                                       End If
+                                                   Next
+                                               End Sub
+                cleanup_timer.Start()
+                _enter_timers.Add(cleanup_timer)
             Else
-                ' No animatable elements — simple fade in
-                AnimationHelper.fade(page, 1.0, 200, 0, AnimationHelper.ease_out_fluent)
+                ' No animatable elements — simple fade in using transition
+                Dim fade_transition As New DoubleTransition()
+                fade_transition.Property = Visual.OpacityProperty
+                fade_transition.Duration = TimeSpan.FromMilliseconds(200)
+                fade_transition.Easing = AnimationHelper.ease_out_fluent
+                If page.Transitions Is Nothing Then
+                    page.Transitions = New Transitions()
+                End If
+                page.Transitions.Add(fade_transition)
+                page.Opacity = 1
+
+                Dim cleanup_timer As New DispatcherTimer()
+                cleanup_timer.Interval = TimeSpan.FromMilliseconds(300)
+                AddHandler cleanup_timer.Tick, Sub(sender, e)
+                                                   cleanup_timer.Stop()
+                                                   If page.Transitions IsNot Nothing Then
+                                                       page.Transitions.Clear()
+                                                   End If
+                                               End Sub
+                cleanup_timer.Start()
+                _enter_timers.Add(cleanup_timer)
             End If
         End Sub
 
@@ -230,13 +380,18 @@ Namespace Controls
 
         ''' <summary>
         ''' Determine if a control should be treated as an animatable element.
+        ''' Extended to recognize Button and styled Border elements.
         ''' </summary>
         Private Function is_card_element(ByVal ctrl As Control) As Boolean
             If TypeOf ctrl Is Card Then Return True
             If TypeOf ctrl Is MyListItem Then Return True
             If TypeOf ctrl Is MyButton Then Return True
+            If TypeOf ctrl Is Button Then Return True
             If TypeOf ctrl Is Border Then
                 Dim border = CType(ctrl, Border)
+                ' Card-like Border: has CornerRadius and Background
+                If border.CornerRadius.TopLeft > 0 AndAlso border.Background IsNot Nothing Then Return True
+                ' Tagged as card
                 If border.Tag IsNot Nothing AndAlso border.Tag.ToString() = "card" Then Return True
             End If
             Return False
