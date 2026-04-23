@@ -86,7 +86,6 @@ Namespace Controls
 
         ''' <summary>
         ''' Animate page enter: whole-page fade + subtle slide.
-        ''' Single element animation for maximum smoothness.
         ''' </summary>
         Private Sub animate_page_enter(ByVal page As Control)
             If page Is Nothing Then Return
@@ -104,7 +103,6 @@ Namespace Controls
             tick = Sub()
                        Dim elapsed = sw.ElapsedMilliseconds
                        Dim progress = Math.Min(1.0, elapsed / CDbl(duration_ms))
-                       ' OutCubic easing
                        Dim eased = 1 - (1 - progress) * (1 - progress) * (1 - progress)
 
                        page.Opacity = eased
