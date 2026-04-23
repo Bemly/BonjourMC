@@ -10,6 +10,7 @@ Imports Avalonia.Controls.Shapes
 Imports Avalonia.Input
 Imports Avalonia.Media
 Imports Avalonia.Styling
+Imports Avalonia.Threading
 Imports GUI.Animations
 
 Namespace Controls
@@ -27,6 +28,7 @@ Namespace Controls
         ' State
         Private _is_mouse_down As Boolean = False
         Private _uuid As String = Guid.NewGuid().ToString("N").Substring(0, 8)
+        Private ReadOnly _hover_timer As New DispatcherTimer() With {.Interval = TimeSpan.FromMilliseconds(50)}
 
         Public Enum IconTheme
             Color = 0
@@ -97,6 +99,20 @@ Namespace Controls
 
         Public Sub New()
             InitializeComponent()
+            ' Use transitions for smooth, interruptible hover animations
+            _fill_brush.Transitions = New Transitions() From {
+                New ColorTransition() With {.Property = SolidColorBrush.ColorProperty, .Duration = TimeSpan.FromMilliseconds(120)}
+            }
+            _bg_brush.Transitions = New Transitions() From {
+                New ColorTransition() With {.Property = SolidColorBrush.ColorProperty, .Duration = TimeSpan.FromMilliseconds(120)}
+            }
+            AddHandler _hover_timer.Tick, Sub(s, ev)
+                                              If Not IsPointerOver Then
+                                                  _hover_timer.Stop()
+                                                  ' Force-reset colors directly (transition animates smoothly)
+                                                  apply_idle_colors()
+                                              End If
+                                          End Sub
         End Sub
 
         Protected Overrides Sub OnAttachedToVisualTree(ByVal e As VisualTreeAttachmentEventArgs)
@@ -119,51 +135,57 @@ Namespace Controls
             RefreshAnim()
         End Sub
 
+        Private Sub apply_idle_colors()
+            Select Case ButtonTheme
+                Case IconTheme.Color
+                    _fill_brush.Color = Color.Parse("#4890f5")
+                    _bg_brush.Color = Color.FromArgb(0, 255, 255, 255)
+                Case IconTheme.White
+                    _fill_brush.Color = Color.FromRgb(234, 242, 254)
+                    _bg_brush.Color = Color.FromArgb(0, 255, 255, 255)
+                Case IconTheme.Black
+                    _fill_brush.Color = Color.FromArgb(160, 0, 0, 0)
+                    _bg_brush.Color = Color.FromArgb(0, 255, 255, 255)
+                Case IconTheme.Red
+                    _fill_brush.Color = Color.FromArgb(160, 255, 76, 76)
+                    _bg_brush.Color = Color.FromArgb(0, 255, 255, 255)
+                Case IconTheme.Custom
+                    _fill_brush.Color = Color.FromArgb(160, _fill_brush.Color.R, _fill_brush.Color.G, _fill_brush.Color.B)
+                    _bg_brush.Color = Color.FromArgb(0, 255, 255, 255)
+            End Select
+        End Sub
+
         Private Sub RefreshAnim()
             If PART_Path Is Nothing Then Return
-
+            ' Transition handles animation automatically
             If IsPointerOver Then
                 Select Case ButtonTheme
                     Case IconTheme.Color
-                        AnimationHelper.color(_fill_brush, Color.Parse("#0b5bcb"), 120)
+                        _fill_brush.Color = Color.Parse("#0b5bcb")
                     Case IconTheme.White
-                        AnimationHelper.color(_bg_brush, Color.FromArgb(50, 255, 255, 255), 120)
-                        AnimationHelper.color(_fill_brush, Color.Parse("#eaf2fe"), 120)
+                        _bg_brush.Color = Color.FromArgb(50, 255, 255, 255)
+                        _fill_brush.Color = Color.Parse("#eaf2fe")
                     Case IconTheme.Black
-                        AnimationHelper.color(_fill_brush, Color.FromArgb(230, 0, 0, 0), 120)
+                        _fill_brush.Color = Color.FromArgb(230, 0, 0, 0)
                     Case IconTheme.Red
-                        AnimationHelper.color(_fill_brush, Color.FromArgb(255, 255, 76, 76), 120)
+                        _fill_brush.Color = Color.FromArgb(255, 255, 76, 76)
                     Case IconTheme.Custom
-                        AnimationHelper.color(_fill_brush, Color.FromArgb(255, _fill_brush.Color.R, _fill_brush.Color.G, _fill_brush.Color.B), 120)
+                        _fill_brush.Color = Color.FromArgb(255, _fill_brush.Color.R, _fill_brush.Color.G, _fill_brush.Color.B)
                 End Select
             Else
-                Select Case ButtonTheme
-                    Case IconTheme.Color
-                        AnimationHelper.color(_fill_brush, Color.Parse("#4890f5"), 150)
-                        AnimationHelper.color(_bg_brush, Color.FromArgb(0, 255, 255, 255), 150)
-                    Case IconTheme.White
-                        AnimationHelper.color(_fill_brush, Color.FromRgb(234, 242, 254), 150)
-                        AnimationHelper.color(_bg_brush, Color.FromArgb(0, 255, 255, 255), 150)
-                    Case IconTheme.Black
-                        AnimationHelper.color(_fill_brush, Color.FromArgb(160, 0, 0, 0), 150)
-                        AnimationHelper.color(_bg_brush, Color.FromArgb(0, 255, 255, 255), 150)
-                    Case IconTheme.Red
-                        AnimationHelper.color(_fill_brush, Color.FromArgb(160, 255, 76, 76), 150)
-                        AnimationHelper.color(_bg_brush, Color.FromArgb(0, 255, 255, 255), 150)
-                    Case IconTheme.Custom
-                        AnimationHelper.color(_fill_brush, Color.FromArgb(160, _fill_brush.Color.R, _fill_brush.Color.G, _fill_brush.Color.B), 150)
-                        AnimationHelper.color(_bg_brush, Color.FromArgb(0, 255, 255, 255), 150)
-                End Select
+                apply_idle_colors()
             End If
         End Sub
 
         Protected Overrides Sub OnPointerEntered(ByVal e As PointerEventArgs)
             MyBase.OnPointerEntered(e)
+            _hover_timer.Start()
             RefreshAnim()
         End Sub
 
         Protected Overrides Sub OnPointerExited(ByVal e As PointerEventArgs)
             MyBase.OnPointerExited(e)
+            _hover_timer.Stop()
             _is_mouse_down = False
             If PART_Back IsNot Nothing Then
                 AnimationHelper.scale_to(PART_Back, 1.0, 250, 0, AnimationHelper.ease_out_fluent)
