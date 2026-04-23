@@ -73,14 +73,19 @@ dotnet test             # 运行测试
 - **Windows**：透明效果不工作（Avalonia 已知限制），`TransparencyLevelHint` 和 `ExtendClientAreaToDecorationsHint` 都无法实现透明。PCL-CE 用 WPF + DWM 原生 API 实现透明，与 Avalonia 机制不同
 - 标题栏拖拽：`WindowDecorations="None"` 时，需要手动处理 `PointerPressed` 实现拖拽。注意按钮点击会冒泡到标题栏，需向上遍历视觉树检测是否有 Command 属性，避免按钮被拖拽拦截
 
-## Windows 远程调试
+## 远程调试
 
-Windows 测试机：`192.168.1.113`，用户 `admin`，密码 `2328`
+**每次修改完 GUI 代码后，必须在三个环境（Mac、Windows、Linux）都启动测试。**
+
+### Mac（本机）
+```bash
+dotnet run --project GUI
+```
+
+### Windows
+测试机：`192.168.1.113`，用户 `admin`，密码 `2328`
 
 ```bash
-# SSH 连接
-sshpass -p 2328 ssh admin@192.168.1.113
-
 # 复制文件到 Windows
 sshpass -p 2328 scp <本地文件> admin@192.168.1.113:"C:/Users/admin/Projects/BonjourMC/<路径>"
 
@@ -98,6 +103,28 @@ sshpass -p 2328 ssh admin@192.168.1.113 "type C:\Users\admin\Projects\BonjourMC\
 ```
 
 **注意**：通过 SSH 直接运行 GUI 程序，窗口不会显示在用户桌面上。必须使用 `schtasks /it` 参数在用户的交互式会话中启动。
+
+### Linux
+测试机：`10.211.55.3`，用户 `bemly`，密码 `2328`（NixOS）
+
+```bash
+# SSH 连接
+sshpass -p 2328 ssh bemly@10.211.55.3
+
+# 代理设置（如需要）
+export ALL_PROXY=http://10.211.55.1:7890
+export HTTPS_PROXY=http://10.211.55.1:7890
+export HTTP_PROXY=http://10.211.55.1:7890
+
+# dotnet 路径
+export PATH=$HOME/.dotnet:$PATH
+
+# 编译和运行
+dotnet build GUI/GUI.vbproj -c Debug
+dotnet run --project GUI
+```
+
+**注意**：NixOS 无法直接运行标准 dotnet 二进制文件，需要通过 nix-shell 或特殊配置。
 
 ## 依赖
 
