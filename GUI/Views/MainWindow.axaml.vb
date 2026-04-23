@@ -24,8 +24,22 @@ Namespace Views
             Debug.WriteLine($"[MainWindow] title_bar found: {title_bar IsNot Nothing}")
             If title_bar IsNot Nothing Then
                 AddHandler title_bar.PointerPressed, Sub(sender, e)
-                                                         Debug.WriteLine("[MainWindow] title_bar PointerPressed -> BeginMoveDrag")
-                                                         BeginMoveDrag(e)
+                                                         ' Walk up visual tree to find if click is on a button/control with Command
+                                                         Dim is_button As Boolean = False
+                                                         Dim current = TryCast(e.Source, Visual)
+                                                         While current IsNot Nothing AndAlso current IsNot title_bar
+                                                             Dim cmd_prop = current.GetType().GetProperty("Command")
+                                                             If cmd_prop IsNot Nothing Then
+                                                                 is_button = True
+                                                                 Debug.WriteLine($"[MainWindow] title_bar click on {current.GetType().Name}, skip drag")
+                                                                 Exit While
+                                                             End If
+                                                             current = TryCast(current.Parent, Visual)
+                                                         End While
+                                                         If Not is_button Then
+                                                             Debug.WriteLine("[MainWindow] title_bar PointerPressed -> BeginMoveDrag")
+                                                             BeginMoveDrag(e)
+                                                         End If
                                                      End Sub
             End If
 

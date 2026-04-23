@@ -14,6 +14,8 @@
         MinWidth="810" MinHeight="470"
         WindowStartupLocation="CenterScreen"
         WindowDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="-1"
         Background="Transparent"
         TransparencyLevelHint="Transparent">
 
