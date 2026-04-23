@@ -34,7 +34,6 @@ Partial Public Class App
             ' Ignore logging setup errors
         End Try
     End Sub
-End Class
 
     Public Overrides Sub OnFrameworkInitializationCompleted()
         Debug.WriteLine("[App] OnFrameworkInitializationCompleted: start")
