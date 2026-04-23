@@ -58,7 +58,7 @@ Namespace Controls
         End Sub
 
         ''' <summary>
-        ''' Simple fade using DispatcherTimer (no RunAsync).
+        ''' Simple fade using Dispatcher.UIThread.Post (render-phase synced).
         ''' </summary>
         Private Sub animate_fade(ByVal ctrl As Control, ByVal target_opacity As Double, ByVal duration_ms As Integer)
             Dim start_opacity = ctrl.Opacity
@@ -66,26 +66,27 @@ Namespace Controls
             Dim sw As New Stopwatch()
             sw.Start()
 
-            Dim timer As New DispatcherTimer()
-            timer.Interval = TimeSpan.FromMilliseconds(16)
-            AddHandler timer.Tick, Sub(s, e)
-                                       Dim elapsed = sw.ElapsedMilliseconds
-                                       Dim progress = Math.Min(1.0, elapsed / CDbl(duration_ms))
-                                       progress = 1 - Math.Pow(1 - progress, 3)
-                                       ctrl.Opacity = start_opacity + (target_opacity - start_opacity) * progress
-                                       If elapsed >= duration_ms Then
-                                           timer.Stop()
-                                           ctrl.Opacity = target_opacity
-                                           sw.Stop()
-                                           Debug.WriteLine($"[PageTransition] animate_fade complete: {ctrl.GetType().Name} Opacity={ctrl.Opacity}")
-                                       End If
-                                   End Sub
-            timer.Start()
+            Dim tick As Action = Nothing
+            tick = Sub()
+                       Dim elapsed = sw.ElapsedMilliseconds
+                       Dim progress = Math.Min(1.0, elapsed / CDbl(duration_ms))
+                       progress = 1 - (1 - progress) * (1 - progress) * (1 - progress)
+                       ctrl.Opacity = start_opacity + (target_opacity - start_opacity) * progress
+                       If elapsed >= duration_ms Then
+                           ctrl.Opacity = target_opacity
+                           sw.Stop()
+                           Debug.WriteLine($"[PageTransition] animate_fade complete: {ctrl.GetType().Name}")
+                       Else
+                           Dispatcher.UIThread.Post(tick, DispatcherPriority.Render)
+                       End If
+                   End Sub
+
+            Dispatcher.UIThread.Post(tick, DispatcherPriority.Render)
         End Sub
 
         ''' <summary>
         ''' Animate page enter: per-element staggered fade + slide.
-        ''' Uses a single shared timer for all elements to avoid stuttering.
+        ''' Uses Dispatcher.UIThread.Post with Render priority for frame-synced animation.
         ''' </summary>
         Private Sub animate_page_enter(ByVal page As Control)
             If page Is Nothing Then Return
@@ -97,64 +98,61 @@ Namespace Controls
             If elements.Count > 0 Then
                 page.Opacity = 1
 
-                ' Animation parameters
-                Dim stagger_ms = 30          ' ms between each element start
-                Dim fade_duration_ms = 200   ' opacity 0→1 duration
-                Dim slide_duration_ms = 400  ' translateY -16→0 duration
+                Dim stagger_ms = 30
+                Dim fade_duration_ms = 200
+                Dim slide_duration_ms = 400
 
-                ' Prepare all elements
                 For i As Integer = 0 To elements.Count - 1
                     elements(i).Opacity = 0
                     ensure_translate_transform(elements(i))
                     set_translate_y(elements(i), -16)
                 Next
 
-                ' Single stopwatch + single timer for ALL elements
                 Dim sw As New Stopwatch()
                 sw.Start()
-                Dim timer As New DispatcherTimer()
-                timer.Interval = TimeSpan.FromMilliseconds(16)
 
-                AddHandler timer.Tick, Sub(s, e)
-                                           Dim elapsed = sw.ElapsedMilliseconds
-                                           Dim all_done = True
+                Dim tick As Action = Nothing
+                tick = Sub()
+                           Dim elapsed = sw.ElapsedMilliseconds
+                           Dim all_done = True
 
-                                           For i As Integer = 0 To elements.Count - 1
-                                               Dim start_offset = i * stagger_ms
-                                               Dim elem_elapsed = elapsed - start_offset
+                           For i As Integer = 0 To elements.Count - 1
+                               Dim start_offset = i * stagger_ms
+                               Dim elem_elapsed = elapsed - start_offset
 
-                                               If elem_elapsed < 0 Then
-                                                   all_done = False
-                                                   Continue For
-                                               End If
+                               If elem_elapsed < 0 Then
+                                   all_done = False
+                                   Continue For
+                               End If
 
-                                               ' Fade
-                                               Dim fade_progress = Math.Min(1.0, elem_elapsed / CDbl(fade_duration_ms))
-                                               fade_progress = 1 - (1 - fade_progress) * (1 - fade_progress) * (1 - fade_progress)
-                                               elements(i).Opacity = fade_progress
+                               ' Fade (OutCubic)
+                               Dim fade_progress = Math.Min(1.0, elem_elapsed / CDbl(fade_duration_ms))
+                               fade_progress = 1 - (1 - fade_progress) * (1 - fade_progress) * (1 - fade_progress)
+                               elements(i).Opacity = fade_progress
 
-                                               ' Slide
-                                               Dim slide_progress = Math.Min(1.0, elem_elapsed / CDbl(slide_duration_ms))
-                                               slide_progress = 1 - (1 - slide_progress) * (1 - slide_progress)
-                                               set_translate_y(elements(i), -16.0 + 16.0 * slide_progress)
+                               ' Slide (OutQuad)
+                               Dim slide_progress = Math.Min(1.0, elem_elapsed / CDbl(slide_duration_ms))
+                               slide_progress = 1 - (1 - slide_progress) * (1 - slide_progress)
+                               set_translate_y(elements(i), -16.0 + 16.0 * slide_progress)
 
-                                               If elem_elapsed < Math.Max(fade_duration_ms, slide_duration_ms) Then
-                                                   all_done = False
-                                               Else
-                                                   elements(i).Opacity = 1
-                                                   set_translate_y(elements(i), 0)
-                                               End If
-                                           Next
+                               If elem_elapsed < Math.Max(fade_duration_ms, slide_duration_ms) Then
+                                   all_done = False
+                               Else
+                                   elements(i).Opacity = 1
+                                   set_translate_y(elements(i), 0)
+                               End If
+                           Next
 
-                                           If all_done Then
-                                               timer.Stop()
-                                               sw.Stop()
-                                               Debug.WriteLine($"[PageTransition] animate_page_enter complete: {page.GetType().Name}")
-                                           End If
-                                       End Sub
+                           If all_done Then
+                               sw.Stop()
+                               Debug.WriteLine($"[PageTransition] animate_page_enter complete: {page.GetType().Name}")
+                           Else
+                               Dispatcher.UIThread.Post(tick, DispatcherPriority.Render)
+                           End If
+                       End Sub
 
-                timer.Start()
-                Debug.WriteLine($"[PageTransition] started single timer for {elements.Count} elements")
+                Dispatcher.UIThread.Post(tick, DispatcherPriority.Render)
+                Debug.WriteLine($"[PageTransition] started render-loop for {elements.Count} elements")
             Else
                 animate_fade(page, 1.0, 300)
             End If
