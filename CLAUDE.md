@@ -57,6 +57,7 @@ dotnet test             # 运行测试
 - 所有页面 ViewModel 放在 `GUI.ViewModels` 命名空间下（扁平结构，不嵌套）
 - GUI 中访问 Launcher 类需要 `Imports Launcher`
 - **每个新功能必须加入 `Debug.WriteLine` 调试日志**，格式为 `[ClassName] message`，用于运行时排查问题
+- **每次修改完 GUI 代码后直接启动应用**：`dotnet run --project GUI`，让用户立即看到效果
 
 ## Avalonia 注意事项
 
