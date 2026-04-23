@@ -17,10 +17,10 @@ Namespace Controls
 
     ''' <summary>
     ''' Content host that animates page transitions with PCL-CE exact timing.
-    ''' Uses custom PageContent property and Panel-based display to avoid ContentControl auto-replace.
+    ''' Uses a Panel as the visual container and PageContent property for binding.
     ''' </summary>
     Public Class PageTransition
-        Inherits ContentControl
+        Inherits UserControl
 
         ' Display panel — holds current and transitioning pages
         Private ReadOnly _panel As New Panel()
@@ -30,7 +30,7 @@ Namespace Controls
         Private _last_content As Object = Nothing
         Private _pending_content As Object = Nothing
 
-        ' Styled Property for page content (avoids ContentControl auto-replace)
+        ' Styled Property for page content
         Public Shared ReadOnly PageContentProperty As StyledProperty(Of Object) =
             AvaloniaProperty.Register(Of PageTransition, Object)("PageContent", Nothing)
 
@@ -45,7 +45,6 @@ Namespace Controls
 
         Public Sub New()
             ClipToBounds = True
-            ' Set fixed Content — the display panel, never changes
             Content = _panel
         End Sub
 
@@ -68,12 +67,19 @@ Namespace Controls
             Dim new_control = TryCast(new_content, Control)
             If new_control Is Nothing Then Return
 
-            Dim old_control = get_current_page()
+            transition_to(new_control)
+        End Sub
+
+        Private Sub transition_to(ByVal new_control As Control)
+            Dim old_control As Control = Nothing
+            If _panel.Children.Count > 0 Then
+                old_control = TryCast(_panel.Children(_panel.Children.Count - 1), Control)
+            End If
 
             If old_control IsNot Nothing Then
                 _is_animating = True
 
-                ' Add new page to panel (on top, invisible)
+                ' Add new page on top (invisible)
                 new_control.Opacity = 0
                 _panel.Children.Add(new_control)
 
@@ -85,9 +91,7 @@ Namespace Controls
                 swap_timer.Interval = TimeSpan.FromMilliseconds(90)
                 AddHandler swap_timer.Tick, Sub(sender, e)
                                                 swap_timer.Stop()
-                                                ' Remove old page
                                                 _panel.Children.Remove(old_control)
-                                                ' Animate new page in
                                                 animate_page_enter(new_control)
                                                 _is_animating = False
                                                 process_pending()
@@ -100,13 +104,6 @@ Namespace Controls
             End If
         End Sub
 
-        Private Function get_current_page() As Control
-            If _panel.Children.Count > 0 Then
-                Return TryCast(_panel.Children(_panel.Children.Count - 1), Control)
-            End If
-            Return Nothing
-        End Function
-
         Private Sub process_pending()
             If _pending_content Is Nothing Then Return
             Dim pending = _pending_content
@@ -114,29 +111,7 @@ Namespace Controls
             _last_content = pending
             Dim new_control = TryCast(pending, Control)
             If new_control Is Nothing Then Return
-
-            Dim old_control = get_current_page()
-            _is_animating = True
-
-            new_control.Opacity = 0
-            _panel.Children.Add(new_control)
-
-            If old_control IsNot Nothing Then
-                animate_fade(old_control, 0.0, 80)
-            End If
-
-            Dim swap_timer As New DispatcherTimer()
-            swap_timer.Interval = TimeSpan.FromMilliseconds(90)
-            AddHandler swap_timer.Tick, Sub(sender, e)
-                                            swap_timer.Stop()
-                                            If old_control IsNot Nothing Then
-                                                _panel.Children.Remove(old_control)
-                                            End If
-                                            animate_page_enter(new_control)
-                                            _is_animating = False
-                                            process_pending()
-                                        End Sub
-            swap_timer.Start()
+            transition_to(new_control)
         End Sub
 
         ''' <summary>
@@ -152,7 +127,6 @@ Namespace Controls
             AddHandler timer.Tick, Sub(s, e)
                                        Dim elapsed = sw.ElapsedMilliseconds
                                        Dim progress = Math.Min(1.0, elapsed / CDbl(duration_ms))
-                                       ' EaseOutFluent
                                        progress = 1 - Math.Pow(1 - progress, 3)
                                        ctrl.Opacity = start_opacity + (target_opacity - start_opacity) * progress
                                        If elapsed >= duration_ms Then
@@ -179,12 +153,10 @@ Namespace Controls
 
                 Dim delay = 0
                 For Each elem As Control In elements
-                    ' Set initial state
                     elem.Opacity = 0
                     ensure_translate_transform(elem)
                     set_translate_y(elem, -16)
 
-                    ' Animate this element with delay
                     Dim captured_elem = elem
                     Dim captured_delay = delay
 
@@ -192,11 +164,8 @@ Namespace Controls
                     start_timer.Interval = TimeSpan.FromMilliseconds(captured_delay)
                     AddHandler start_timer.Tick, Sub(s, e)
                                                      start_timer.Stop()
-
-                                                     ' Fade in: 100ms
                                                      animate_fade(captured_elem, 1.0, 100)
 
-                                                     ' Slide: -16 → 0 in 600ms with OutBack easing
                                                      Dim slide_sw As New Stopwatch()
                                                      slide_sw.Start()
                                                      Dim slide_timer As New DispatcherTimer()
@@ -204,7 +173,6 @@ Namespace Controls
                                                      AddHandler slide_timer.Tick, Sub(s2, e2)
                                                                                       Dim elapsed = slide_sw.ElapsedMilliseconds
                                                                                       Dim progress = Math.Min(1.0, elapsed / 600.0)
-                                                                                      ' OutBack easing
                                                                                       Dim p = 1.5
                                                                                       progress = 1 - Math.Pow(1 - progress, p) * Math.Cos(1.5 * Math.PI * progress)
                                                                                       set_translate_y(captured_elem, -16.0 + 16.0 * progress)
@@ -217,18 +185,13 @@ Namespace Controls
                                                      slide_timer.Start()
                                                  End Sub
                     start_timer.Start()
-
                     delay += 25
                 Next
             Else
-                ' No animatable elements — simple fade in
                 animate_fade(page, 1.0, 200)
             End If
         End Sub
 
-        ''' <summary>
-        ''' Recursively collect children that should animate.
-        ''' </summary>
         Private Sub collect_animatable_children(ByVal parent As Control, ByVal result As List(Of Control), ByVal depth As Integer)
             If depth > 3 Then Return
 
@@ -237,7 +200,6 @@ Namespace Controls
                 For Each child In panel.Children
                     Dim child_control = TryCast(child, Control)
                     If child_control Is Nothing Then Continue For
-
                     If is_card_element(child_control) Then
                         result.Add(child_control)
                     Else
@@ -259,7 +221,6 @@ Namespace Controls
                 For Each child In grid.Children
                     Dim child_control = TryCast(child, Control)
                     If child_control Is Nothing Then Continue For
-
                     If is_card_element(child_control) Then
                         result.Add(child_control)
                     Else
@@ -273,7 +234,6 @@ Namespace Controls
                 For Each child In stack.Children
                     Dim child_control = TryCast(child, Control)
                     If child_control Is Nothing Then Continue For
-
                     If is_card_element(child_control) Then
                         result.Add(child_control)
                     Else
@@ -283,10 +243,6 @@ Namespace Controls
             End If
         End Sub
 
-        ''' <summary>
-        ''' Determine if a control should be treated as an animatable element.
-        ''' Extended to recognize Button and styled Border elements.
-        ''' </summary>
         Private Function is_card_element(ByVal ctrl As Control) As Boolean
             If TypeOf ctrl Is Card Then Return True
             If TypeOf ctrl Is MyListItem Then Return True
@@ -294,9 +250,7 @@ Namespace Controls
             If TypeOf ctrl Is Button Then Return True
             If TypeOf ctrl Is Border Then
                 Dim border = CType(ctrl, Border)
-                ' Card-like Border: has CornerRadius and Background
                 If border.CornerRadius.TopLeft > 0 AndAlso border.Background IsNot Nothing Then Return True
-                ' Tagged as card
                 If border.Tag IsNot Nothing AndAlso border.Tag.ToString() = "card" Then Return True
             End If
             Return False
