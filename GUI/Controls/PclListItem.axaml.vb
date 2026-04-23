@@ -14,7 +14,7 @@ Imports GUI.Animations
 
 Namespace Controls
 
-    Partial Public Class MyListItem
+    Partial Public Class PclListItem
         Inherits UserControl
 
         Private ReadOnly _rect_bg_brush As New SolidColorBrush(Color.Parse("#bee0eafd"))
@@ -36,19 +36,19 @@ Namespace Controls
         End Enum
 
         Public Shared ReadOnly TitleProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of MyListItem, String)("Title", "")
+            AvaloniaProperty.Register(Of PclListItem, String)("Title", "")
 
         Public Shared ReadOnly InfoProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of MyListItem, String)("Info", "")
+            AvaloniaProperty.Register(Of PclListItem, String)("Info", "")
 
         Public Shared ReadOnly LogoProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of MyListItem, String)("Logo", "")
+            AvaloniaProperty.Register(Of PclListItem, String)("Logo", "")
 
         Public Shared ReadOnly CheckedProperty As StyledProperty(Of Boolean) =
-            AvaloniaProperty.Register(Of MyListItem, Boolean)("Checked", False)
+            AvaloniaProperty.Register(Of PclListItem, Boolean)("Checked", False)
 
         Public Shared ReadOnly ListItemTypeProperty As StyledProperty(Of CheckType) =
-            AvaloniaProperty.Register(Of MyListItem, CheckType)("ListItemType", CheckType.None)
+            AvaloniaProperty.Register(Of PclListItem, CheckType)("ListItemType", CheckType.None)
 
         Public Property Title As String
             Get

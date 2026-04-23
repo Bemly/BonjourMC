@@ -15,9 +15,9 @@ Imports GUI.Animations
 Namespace Controls
 
     ''' <summary>
-    ''' PCL-CE MyLoading style — pickaxe mining animation with dust particles and error state.
+    ''' PCL-CE PclLoading style — pickaxe mining animation with dust particles and error state.
     ''' </summary>
-    Partial Public Class MyLoading
+    Partial Public Class PclLoading
         Inherits UserControl
 
         ' State
@@ -33,13 +33,13 @@ Namespace Controls
 
         ' Styled Properties
         Public Shared ReadOnly TextProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of MyLoading, String)("Text", "Loading")
+            AvaloniaProperty.Register(Of PclLoading, String)("Text", "Loading")
 
         Public Shared ReadOnly StateProperty As StyledProperty(Of LoadingState) =
-            AvaloniaProperty.Register(Of MyLoading, LoadingState)("State", LoadingState.Run)
+            AvaloniaProperty.Register(Of PclLoading, LoadingState)("State", LoadingState.Run)
 
         Public Shared ReadOnly HasAnimationProperty As StyledProperty(Of Boolean) =
-            AvaloniaProperty.Register(Of MyLoading, Boolean)("HasAnimation", True)
+            AvaloniaProperty.Register(Of PclLoading, Boolean)("HasAnimation", True)
 
         Public Property Text As String
             Get
