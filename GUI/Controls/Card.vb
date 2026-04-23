@@ -87,10 +87,19 @@ Namespace Controls
             Margin = New Thickness(0, 0, 0, 12)
             ClipToBounds = False
 
+            ' Use transitions for smooth, interruptible hover animations
+            _title_brush.Transitions = New Transitions() From {
+                New ColorTransition() With {.Property = SolidColorBrush.ColorProperty, .Duration = TimeSpan.FromMilliseconds(90)}
+            }
+            _swap_brush.Transitions = New Transitions() From {
+                New ColorTransition() With {.Property = SolidColorBrush.ColorProperty, .Duration = TimeSpan.FromMilliseconds(90)}
+            }
+
             AddHandler _hover_timer.Tick, Sub(s, ev)
                                               If _is_hovered AndAlso Not IsPointerOver Then
                                                   _is_hovered = False
                                                   _hover_timer.Stop()
+                                                  ' Force-reset colors directly (transition animates smoothly)
                                                   _shadow_effect.Opacity = DropShadowIdleOpacity
                                                   _title_brush.Color = Color.Parse("#343d4a")
                                                   If _swap_path IsNot Nothing Then
@@ -162,12 +171,12 @@ Namespace Controls
             AnimationHelper.fade(Me, 1.0, 90)
             animate_shadow(DropShadowHoverOpacity, 90)
 
-            ' Title color: Brush1 → Brush2, 90ms
-            AnimationHelper.color(_title_brush, Color.Parse("#0b5bcb"), 90)
+            ' Title color: Brush1 → Brush2, 90ms (transition handles animation)
+            _title_brush.Color = Color.Parse("#0b5bcb")
 
-            ' Swap arrow color, 90ms
+            ' Swap arrow color, 90ms (transition handles animation)
             If _swap_path IsNot Nothing Then
-                AnimationHelper.color(_swap_brush, Color.Parse("#0b5bcb"), 90)
+                _swap_brush.Color = Color.Parse("#0b5bcb")
             End If
         End Sub
 
@@ -180,12 +189,12 @@ Namespace Controls
             ' Shadow: 0.4 → 0.07, 90ms
             animate_shadow(DropShadowIdleOpacity, 90)
 
-            ' Title color: Brush2 → Brush1, 90ms
-            AnimationHelper.color(_title_brush, Color.Parse("#343d4a"), 90)
+            ' Title color: Brush2 → Brush1, 90ms (transition handles animation)
+            _title_brush.Color = Color.Parse("#343d4a")
 
-            ' Swap arrow color, 90ms
+            ' Swap arrow color, 90ms (transition handles animation)
             If _swap_path IsNot Nothing Then
-                AnimationHelper.color(_swap_brush, Color.Parse("#343d4a"), 90)
+                _swap_brush.Color = Color.Parse("#343d4a")
             End If
         End Sub
 

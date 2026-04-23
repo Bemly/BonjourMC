@@ -56,11 +56,24 @@ Namespace Controls
 
         Public Sub New()
             InitializeComponent()
+            ' Use transitions for smooth, interruptible hover animations
+            _border_brush.Transitions = New Transitions() From {
+                New ColorTransition() With {.Property = SolidColorBrush.ColorProperty, .Duration = TimeSpan.FromMilliseconds(100)}
+            }
+            _bg_brush.Transitions = New Transitions() From {
+                New ColorTransition() With {.Property = SolidColorBrush.ColorProperty, .Duration = TimeSpan.FromMilliseconds(100)}
+            }
             AddHandler _hover_timer.Tick, Sub(s, ev)
                                               If Not IsPointerOver Then
                                                   _hover_timer.Stop()
-                                                  RefreshColor()
-                                                  RefreshBackground()
+                                                  ' Force-reset colors directly (transition animates smoothly)
+                                                  Select Case ColorType
+                                                      Case 0 : _border_brush.Color = Color.Parse("#343d4a")
+                                                      Case 1 : _border_brush.Color = Color.Parse("#0b5bcb")
+                                                      Case 2 : _border_brush.Color = Color.Parse("#ce2111")
+                                                      Case Else : _border_brush.Color = Color.Parse("#343d4a")
+                                                  End Select
+                                                  _bg_brush.Color = Color.FromArgb(85, 255, 255, 255)
                                               End If
                                           End Sub
         End Sub
@@ -79,39 +92,35 @@ Namespace Controls
 
         Private Sub RefreshColor()
             If PART_Inner Is Nothing Then Return
-            Dim target_color As Color
+            ' Transition handles animation automatically
             If PART_Background IsNot Nothing AndAlso PART_Background.IsPointerOver Then
                 Select Case ColorType
-                    Case 0 : target_color = Color.Parse("#1370f3")
-                    Case 1 : target_color = Color.Parse("#1370f3")
-                    Case 2 : target_color = Color.Parse("#ff4c4c")
-                    Case Else : target_color = Color.Parse("#1370f3")
+                    Case 0 : _border_brush.Color = Color.Parse("#1370f3")
+                    Case 1 : _border_brush.Color = Color.Parse("#1370f3")
+                    Case 2 : _border_brush.Color = Color.Parse("#ff4c4c")
+                    Case Else : _border_brush.Color = Color.Parse("#1370f3")
                 End Select
-                AnimationHelper.color(_border_brush, target_color, 100)
             Else
                 Select Case ColorType
-                    Case 0 : target_color = Color.Parse("#343d4a")
-                    Case 1 : target_color = Color.Parse("#0b5bcb")
-                    Case 2 : target_color = Color.Parse("#ce2111")
-                    Case Else : target_color = Color.Parse("#343d4a")
+                    Case 0 : _border_brush.Color = Color.Parse("#343d4a")
+                    Case 1 : _border_brush.Color = Color.Parse("#0b5bcb")
+                    Case 2 : _border_brush.Color = Color.Parse("#ce2111")
+                    Case Else : _border_brush.Color = Color.Parse("#343d4a")
                 End Select
-                AnimationHelper.color(_border_brush, target_color, 200)
             End If
         End Sub
 
         Private Sub RefreshBackground()
             If PART_Inner Is Nothing Then Return
-            Dim target_color As Color
+            ' Transition handles animation automatically
             If PART_Background IsNot Nothing AndAlso PART_Background.IsPointerOver Then
                 If ColorType = 2 Then
-                    target_color = Color.FromArgb(128, 251, 221, 221)
+                    _bg_brush.Color = Color.FromArgb(128, 251, 221, 221)
                 Else
-                    target_color = Color.Parse("#e0eafd")
+                    _bg_brush.Color = Color.Parse("#e0eafd")
                 End If
-                AnimationHelper.color(_bg_brush, target_color, 100)
             Else
-                target_color = Color.FromArgb(85, 255, 255, 255)
-                AnimationHelper.color(_bg_brush, target_color, 200)
+                _bg_brush.Color = Color.FromArgb(85, 255, 255, 255)
             End If
         End Sub
 

@@ -127,11 +127,16 @@ Namespace Controls
 
         Public Sub New()
             InitializeComponent()
+            ' Use transition for smooth, interruptible hover animation
+            _bg_brush.Transitions = New Transitions() From {
+                New ColorTransition() With {.Property = SolidColorBrush.ColorProperty, .Duration = TimeSpan.FromMilliseconds(120)}
+            }
             AddHandler _hover_timer.Tick, Sub(s, ev)
                                               If Not IsPointerOver Then
                                                   _hover_timer.Stop()
                                                   If Not Checked Then
-                                                      If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#01eaf2fe"), 120)
+                                                      ' Force-reset color directly (transition animates smoothly)
+                                                      If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#01eaf2fe")
                                                   End If
                                               End If
                                           End Sub
@@ -189,50 +194,39 @@ Namespace Controls
         Private Sub RefreshColor(Optional ByVal animate As Boolean = True)
             If PART_Logo Is Nothing OrElse PART_Text Is Nothing Then Return
 
+            ' Transition on _bg_brush handles animation automatically
             Select Case ColorType
                 Case RadioColorType.White
                     If Checked Then
                         Dim accent = Color.Parse("#1370f3")
-                        If animate Then
-                            AnimationHelper.color(_fill_brush, accent, 120)
-                            AnimationHelper.color(_text_brush, accent, 120)
-                            If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Colors.White, 120)
-                        Else
-                            _fill_brush.Color = accent
-                            _text_brush.Color = accent
-                            If PART_Back IsNot Nothing Then _bg_brush.Color = Colors.White
-                        End If
+                        _fill_brush.Color = accent
+                        _text_brush.Color = accent
+                        If PART_Back IsNot Nothing Then _bg_brush.Color = Colors.White
                     ElseIf _is_mouse_down Then
                         _bg_brush.Color = Color.FromArgb(120, 234, 242, 254)
                     ElseIf IsPointerOver Then
                         _fill_brush.Color = Colors.White
                         _text_brush.Color = Colors.White
-                        If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.FromArgb(50, 234, 242, 254), 120)
+                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.FromArgb(50, 234, 242, 254)
                     Else
                         _fill_brush.Color = Colors.White
                         _text_brush.Color = Colors.White
-                        If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#01eaf2fe"), 120)
+                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#01eaf2fe")
                     End If
 
                 Case RadioColorType.Highlight
                     If Checked Then
-                        If animate Then
-                            AnimationHelper.color(_fill_brush, Colors.White, 120)
-                            AnimationHelper.color(_text_brush, Colors.White, 120)
-                            If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#1370f3"), 120)
-                        Else
-                            _fill_brush.Color = Colors.White
-                            _text_brush.Color = Colors.White
-                            If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#1370f3")
-                        End If
+                        _fill_brush.Color = Colors.White
+                        _text_brush.Color = Colors.White
+                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#1370f3")
                     ElseIf IsPointerOver Then
                         _fill_brush.Color = Color.Parse("#1370f3")
                         _text_brush.Color = Color.Parse("#1370f3")
-                        If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#e0eafd"), 120)
+                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#e0eafd")
                     Else
                         _fill_brush.Color = Color.Parse("#1370f3")
                         _text_brush.Color = Color.Parse("#1370f3")
-                        If PART_Back IsNot Nothing Then AnimationHelper.color(_bg_brush, Color.Parse("#01eaf2fe"), 120)
+                        If PART_Back IsNot Nothing Then _bg_brush.Color = Color.Parse("#01eaf2fe")
                     End If
             End Select
         End Sub
