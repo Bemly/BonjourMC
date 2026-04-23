@@ -34,6 +34,6 @@
                  Foreground="#d4d4d4"
                  Padding="12"
                  CornerRadius="6"
-                 Watermark="Game output will appear here..."/>
+                 PlaceholderText="Game output will appear here..."/>
     </Grid>
 </UserControl>

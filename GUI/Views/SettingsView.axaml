@@ -15,7 +15,7 @@
             <StackPanel Spacing="6">
                 <TextBlock Text="Player Name" FontWeight="SemiBold"/>
                 <TextBox Text="{Binding username, Mode=TwoWay}"
-                         Watermark="Enter your username"/>
+                         PlaceholderText="Enter your username"/>
             </StackPanel>
 
             <!-- 内存分配 -->
@@ -36,7 +36,7 @@
                 <TextBlock Text="Java Path" FontWeight="SemiBold"/>
                 <Grid ColumnDefinitions="*,Auto">
                     <TextBox Text="{Binding java_path, Mode=TwoWay}"
-                             Watermark="Auto-detect (leave empty)"/>
+                             PlaceholderText="Auto-detect (leave empty)"/>
                     <Button Grid.Column="1" Content="Browse"
                             Margin="8,0,0,0" Padding="12,6"/>
                 </Grid>
@@ -47,7 +47,7 @@
                 <TextBlock Text="Game Directory" FontWeight="SemiBold"/>
                 <Grid ColumnDefinitions="*,Auto">
                     <TextBox Text="{Binding game_dir, Mode=TwoWay}"
-                             Watermark="Default (use .minecraft)"/>
+                             PlaceholderText="Default (use .minecraft)"/>
                     <Button Grid.Column="1" Content="Browse"
                             Margin="8,0,0,0" Padding="12,6"/>
                 </Grid>

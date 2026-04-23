@@ -16,7 +16,7 @@
                 <ComboBoxItem Content="Snapshot"/>
                 <ComboBoxItem Content="All"/>
             </ComboBox>
-            <TextBox Watermark="Search versions..."
+            <TextBox PlaceholderText="Search versions..."
                      Text="{Binding search_text}"
                      Width="200"/>
             <Button Content="Refresh"
