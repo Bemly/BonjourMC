@@ -1,0 +1,277 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ============================================================
+         PCL-CE Style Color Palette + Resources
+         ============================================================ -->
+    <Styles.Resources>
+        <!-- Primary Blue Scale -->
+        <Color x:Key="Color1">#343d4a</Color>
+        <Color x:Key="Color2">#0b5bcb</Color>
+        <Color x:Key="Color3">#1370f3</Color>
+        <Color x:Key="Color4">#4890f5</Color>
+        <Color x:Key="Color5">#96c0f9</Color>
+        <Color x:Key="Color6">#d5e6fd</Color>
+        <Color x:Key="Color7">#e0eafd</Color>
+        <Color x:Key="Color8">#eaf2fe</Color>
+
+        <!-- Gray Scale -->
+        <Color x:Key="ColorGray1">#404040</Color>
+        <Color x:Key="ColorGray2">#737373</Color>
+        <Color x:Key="ColorGray3">#8c8c8c</Color>
+        <Color x:Key="ColorGray4">#a6a6a6</Color>
+        <Color x:Key="ColorGray5">#cccccc</Color>
+        <Color x:Key="ColorGray6">#ebebeb</Color>
+        <Color x:Key="ColorGray7">#f0f0f0</Color>
+        <Color x:Key="ColorGray8">#f5f5f5</Color>
+
+        <!-- Semantic Colors -->
+        <Color x:Key="ColorRed">#ff4c4c</Color>
+        <Color x:Key="ColorRedDark">#ce2111</Color>
+        <Color x:Key="ColorGreen">#4CAF50</Color>
+        <Color x:Key="ColorGreenDark">#388E3C</Color>
+        <Color x:Key="ColorOrange">#f39c12</Color>
+
+        <!-- Background Colors -->
+        <Color x:Key="ColorBg">#fbfbfb</Color>
+        <Color x:Key="ColorBgCard">#ffffff</Color>
+        <Color x:Key="ColorBgSidebar">#1a1a2e</Color>
+        <Color x:Key="ColorBgSidebarHover">#252540</Color>
+        <Color x:Key="ColorBgSidebarSelected">#2d2d44</Color>
+
+        <!-- Primary Brushes -->
+        <SolidColorBrush x:Key="Brush1" Color="{StaticResource Color1}"/>
+        <SolidColorBrush x:Key="Brush2" Color="{StaticResource Color2}"/>
+        <SolidColorBrush x:Key="Brush3" Color="{StaticResource Color3}"/>
+        <SolidColorBrush x:Key="Brush4" Color="{StaticResource Color4}"/>
+        <SolidColorBrush x:Key="Brush5" Color="{StaticResource Color5}"/>
+        <SolidColorBrush x:Key="Brush6" Color="{StaticResource Color6}"/>
+        <SolidColorBrush x:Key="Brush7" Color="{StaticResource Color7}"/>
+        <SolidColorBrush x:Key="Brush8" Color="{StaticResource Color8}"/>
+
+        <!-- Gray Brushes -->
+        <SolidColorBrush x:Key="BrushGray1" Color="{StaticResource ColorGray1}"/>
+        <SolidColorBrush x:Key="BrushGray2" Color="{StaticResource ColorGray2}"/>
+        <SolidColorBrush x:Key="BrushGray3" Color="{StaticResource ColorGray3}"/>
+        <SolidColorBrush x:Key="BrushGray4" Color="{StaticResource ColorGray4}"/>
+        <SolidColorBrush x:Key="BrushGray5" Color="{StaticResource ColorGray5}"/>
+        <SolidColorBrush x:Key="BrushGray6" Color="{StaticResource ColorGray6}"/>
+        <SolidColorBrush x:Key="BrushGray7" Color="{StaticResource ColorGray7}"/>
+        <SolidColorBrush x:Key="BrushGray8" Color="{StaticResource ColorGray8}"/>
+
+        <!-- Semantic Brushes -->
+        <SolidColorBrush x:Key="BrushRed" Color="{StaticResource ColorRed}"/>
+        <SolidColorBrush x:Key="BrushRedDark" Color="{StaticResource ColorRedDark}"/>
+        <SolidColorBrush x:Key="BrushGreen" Color="{StaticResource ColorGreen}"/>
+        <SolidColorBrush x:Key="BrushGreenDark" Color="{StaticResource ColorGreenDark}"/>
+        <SolidColorBrush x:Key="BrushOrange" Color="{StaticResource ColorOrange}"/>
+
+        <!-- Background Brushes -->
+        <SolidColorBrush x:Key="BrushBg" Color="{StaticResource ColorBg}"/>
+        <SolidColorBrush x:Key="BrushBgCard" Color="{StaticResource ColorBgCard}"/>
+        <SolidColorBrush x:Key="BrushBgSidebar" Color="{StaticResource ColorBgSidebar}"/>
+    </Styles.Resources>
+
+    <!-- ============================================================
+         Button Styles
+         ============================================================ -->
+
+    <!-- Primary Button (Blue, PCL-CE ColorBrush3) -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{StaticResource Brush3}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="{StaticResource Brush4}"/>
+    </Style>
+    <Style Selector="Button.primary:pressed">
+        <Setter Property="Background" Value="{StaticResource Brush2}"/>
+    </Style>
+
+    <!-- Danger Button (Red) -->
+    <Style Selector="Button.danger">
+        <Setter Property="Background" Value="{StaticResource BrushRed}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.danger:pointerover">
+        <Setter Property="Background" Value="{StaticResource BrushRedDark}"/>
+    </Style>
+
+    <!-- Success Button (Green) -->
+    <Style Selector="Button.success">
+        <Setter Property="Background" Value="{StaticResource BrushGreen}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.success:pointerover">
+        <Setter Property="Background" Value="{StaticResource BrushGreenDark}"/>
+    </Style>
+
+    <!-- Ghost Button (No background) -->
+    <Style Selector="Button.ghost">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource Brush3}"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Brush6}"/>
+    </Style>
+    <Style Selector="Button.ghost:pointerover">
+        <Setter Property="Background" Value="{StaticResource Brush8}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Brush4}"/>
+    </Style>
+
+    <!-- ============================================================
+         TextBox Style
+         ============================================================ -->
+    <Style Selector="TextBox">
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="10,8"/>
+        <Setter Property="Background" Value="{StaticResource BrushBgCard}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushGray5}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="{StaticResource Brush3}"/>
+    </Style>
+
+    <!-- ============================================================
+         ComboBox Style
+         ============================================================ -->
+    <Style Selector="ComboBox">
+        <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <!-- ============================================================
+         ScrollBar Style
+         ============================================================ -->
+    <Style Selector="ScrollViewer ScrollBar">
+        <Setter Property="Width" Value="8"/>
+    </Style>
+
+    <!-- ============================================================
+         Navigation Radio Button (Title Bar Tabs)
+         ============================================================ -->
+    <Style Selector="RadioButton.nav">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="#b0c4de"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Padding" Value="14,6"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Margin" Value="1,0"/>
+        <Setter Property="GroupName" Value="nav"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      FontSize="{TemplateBinding FontSize}"
+                                      FontWeight="{TemplateBinding FontWeight}"
+                                      HorizontalAlignment="Center"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="RadioButton.nav:pointerover">
+        <Setter Property="Background" Value="#20ffffff"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+    <Style Selector="RadioButton.nav:checked">
+        <Setter Property="Background" Value="#30ffffff"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <!-- ============================================================
+         Sidebar Item Button
+         ============================================================ -->
+    <Style Selector="Button.sidebar-item">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="#999999"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      FontSize="{TemplateBinding FontSize}"
+                                      FontWeight="{TemplateBinding FontWeight}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.sidebar-item:pointerover">
+        <Setter Property="Background" Value="{StaticResource BrushBgSidebarHover}"/>
+        <Setter Property="Foreground" Value="#cccccc"/>
+    </Style>
+    <Style Selector="Button.sidebar-item:pressed">
+        <Setter Property="Background" Value="{StaticResource BrushBgSidebarSelected}"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <!-- ============================================================
+         Window Control Buttons (Title Bar)
+         ============================================================ -->
+    <Style Selector="Button.window-control">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="#b0c4de"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Width" Value="36"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Width="{TemplateBinding Width}"
+                        Height="{TemplateBinding Height}">
+                    <TextBlock Text="{TemplateBinding Content}"
+                               Foreground="{TemplateBinding Foreground}"
+                               FontSize="14"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="Button.window-control:pointerover">
+        <Setter Property="Background" Value="#20ffffff"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+    <Style Selector="Button.window-control:pressed">
+        <Setter Property="Background" Value="#30ffffff"/>
+    </Style>
+
+</Styles>

@@ -1,43 +1,79 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GUI.ViewModels"
+             xmlns:ctrl="using:GUI.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
              x:Class="GUI.Views.HomeView"
-             x:DataType="vm:HomeViewModel">
+             x:DataType="vm:HomeViewModel"
+             Background="Transparent">
 
-    <Grid RowDefinitions="Auto,*,Auto" Margin="30">
-        <!-- 顶部：玩家信息 -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Margin="0,0,0,20">
-            <Border Width="48" Height="48" CornerRadius="8" Background="#3d3d5c">
-                <TextBlock Text="⛏" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Border>
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="{Binding username}" FontSize="20" FontWeight="SemiBold"/>
-                <TextBlock Text="BonjourMC Player" FontSize="12" Foreground="Gray"/>
-            </StackPanel>
+    <ScrollViewer>
+        <StackPanel Spacing="0" Margin="24,20,24,24">
+
+            <!-- ============================================================
+                 Card 1: Player Info
+                 ============================================================ -->
+            <ctrl:Card>
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Player Profile" FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource Brush1}"/>
+                    <StackPanel Orientation="Horizontal" Spacing="14">
+                        <Border Width="64" Height="64" CornerRadius="12"
+                                Background="{StaticResource Brush8}">
+                            <TextBlock Text="⛏" FontSize="32"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Spacing="4">
+                            <TextBlock Text="{Binding username}" FontSize="20" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush1}"/>
+                            <TextBlock Text="BonjourMC Player" FontSize="12"
+                                       Foreground="{StaticResource BrushGray3}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ctrl:Card>
+
+            <!-- ============================================================
+                 Card 2: Version Selection
+                 ============================================================ -->
+            <ctrl:Card>
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Launch Settings" FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource Brush1}"/>
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Game Version" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{StaticResource BrushGray2}"/>
+                        <ComboBox ItemsSource="{Binding available_versions}"
+                                  SelectedItem="{Binding selected_version}"
+                                  HorizontalAlignment="Stretch"
+                                  FontSize="14" MinHeight="36"/>
+                        <TextBlock Text="{Binding status_text}" FontSize="12"
+                                   Foreground="{StaticResource BrushGray3}"
+                                   IsVisible="{Binding !status_text, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </ctrl:Card>
+
+            <!-- ============================================================
+                 Card 3: Launch Button
+                 ============================================================ -->
+            <ctrl:Card Padding="20,24">
+                <StackPanel Spacing="12">
+                    <Button Content="▶  PLAY"
+                            Classes="success"
+                            Command="{Binding launch_command}"
+                            IsEnabled="{Binding !is_launching}"
+                            HorizontalAlignment="Stretch" Height="52"
+                            FontSize="20" FontWeight="Bold"
+                            CornerRadius="10"/>
+                    <TextBlock Text="Launch Minecraft with the selected version"
+                               FontSize="12" Foreground="{StaticResource BrushGray3}"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </ctrl:Card>
+
         </StackPanel>
-
-        <!-- 中间：版本选择 -->
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
-            <TextBlock Text="Select Version" FontSize="14" Foreground="Gray" HorizontalAlignment="Center"/>
-            <ComboBox ItemsSource="{Binding available_versions}"
-                      SelectedItem="{Binding selected_version}"
-                      Width="250" HorizontalAlignment="Center"
-                      FontSize="14"/>
-            <TextBlock Text="{Binding status_text}" FontSize="12" Foreground="Gray"
-                       HorizontalAlignment="Center" IsVisible="{Binding !status_text, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
-        </StackPanel>
-
-        <!-- 底部：PLAY 按钮 -->
-        <Button Grid.Row="2" Content="PLAY"
-                Command="{Binding launch_command}"
-                IsEnabled="{Binding !is_launching}"
-                HorizontalAlignment="Stretch" Height="56"
-                FontSize="22" FontWeight="Bold"
-                CornerRadius="10"
-                Background="#4CAF50" Foreground="White"
-                Cursor="Hand"/>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

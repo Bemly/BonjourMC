@@ -1,39 +1,55 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GUI.ViewModels"
+             xmlns:ctrl="using:GUI.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
              x:Class="GUI.Views.LogView"
-             x:DataType="vm:LogViewModel">
+             x:DataType="vm:LogViewModel"
+             Background="Transparent">
 
-    <Grid RowDefinitions="Auto,*" Margin="20">
-        <!-- 工具栏 -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
-            <TextBlock Text="Game Output" FontSize="16" FontWeight="SemiBold"
-                       VerticalAlignment="Center"/>
-            <Button Content="Clear"
-                    Command="{Binding clear_command}"
-                    FontSize="12" Padding="12,4"/>
-            <Button Content="Kill Game"
-                    Command="{Binding kill_command}"
-                    IsEnabled="{Binding is_game_running}"
-                    Background="#f44336" Foreground="White"
-                    FontSize="12" Padding="12,4"
-                    CornerRadius="4"/>
-        </StackPanel>
+    <StackPanel Spacing="0" Margin="24,20,24,24">
 
-        <!-- 日志输出 -->
-        <TextBox Grid.Row="1"
-                 Text="{Binding log_text, Mode=OneWay}"
-                 IsReadOnly="True"
-                 AcceptsReturn="True"
-                 FontFamily="Consolas, Menlo, monospace"
-                 FontSize="12"
-                 Background="#1e1e2e"
-                 Foreground="#d4d4d4"
-                 Padding="12"
-                 CornerRadius="6"
-                 PlaceholderText="Game output will appear here..."/>
-    </Grid>
+        <!-- ============================================================
+             Card 1: Toolbar
+             ============================================================ -->
+        <ctrl:Card>
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="📋" FontSize="18" VerticalAlignment="Center"/>
+                    <TextBlock Text="Game Output" FontSize="16" FontWeight="Bold"
+                               Foreground="{StaticResource Brush1}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="Clear"
+                        Classes="ghost"
+                        Command="{Binding clear_command}"
+                        FontSize="12" Padding="14,6"
+                        Margin="0,0,8,0"/>
+                <Button Grid.Column="2" Content="✕ Kill Game"
+                        Classes="danger"
+                        Command="{Binding kill_command}"
+                        IsEnabled="{Binding is_game_running}"
+                        FontSize="12" Padding="14,6"/>
+            </Grid>
+        </ctrl:Card>
+
+        <!-- ============================================================
+             Card 2: Log Output
+             ============================================================ -->
+        <ctrl:Card Padding="0" Margin="0">
+            <TextBox Text="{Binding log_text, Mode=OneWay}"
+                     IsReadOnly="True"
+                     AcceptsReturn="True"
+                     FontFamily="Consolas, Menlo, SF Mono, monospace"
+                     FontSize="12"
+                     Background="#1e1e2e"
+                     Foreground="#d4d4d4"
+                     Padding="16"
+                     CornerRadius="8"
+                     MinHeight="300"
+                     PlaceholderText="Game output will appear here..."/>
+        </ctrl:Card>
+
+    </StackPanel>
 </UserControl>

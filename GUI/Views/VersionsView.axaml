@@ -2,83 +2,121 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GUI.ViewModels"
              xmlns:m="using:Launcher.Utility.Model.Mojang"
+             xmlns:ctrl="using:GUI.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
              x:Class="GUI.Views.VersionsView"
-             x:DataType="vm:VersionsViewModel">
+             x:DataType="vm:VersionsViewModel"
+             Background="Transparent">
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="20">
-        <!-- 过滤栏 -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
-            <ComboBox SelectedItem="{Binding filter_type}" Width="120">
-                <ComboBoxItem Content="Release" IsSelected="True"/>
-                <ComboBoxItem Content="Snapshot"/>
-                <ComboBoxItem Content="All"/>
-            </ComboBox>
-            <TextBox PlaceholderText="Search versions..."
-                     Text="{Binding search_text}"
-                     Width="200"/>
-            <Button Content="Refresh"
-                    Command="{Binding refresh_command}"
-                    IsEnabled="{Binding !is_loading}"/>
-            <TextBlock Text="{Binding status_text}"
-                       Foreground="Gray" VerticalAlignment="Center"
-                       FontSize="12"/>
-        </StackPanel>
+    <Grid RowDefinitions="Auto,*" Margin="24,20,24,24">
 
-        <!-- 下载进度 -->
-        <StackPanel Grid.Row="1" Margin="0,0,0,12"
-                    IsVisible="{Binding is_downloading}">
-            <ProgressBar Value="{Binding download_progress}" Maximum="100"
-                         Height="20" CornerRadius="4"/>
-            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
-                <TextBlock Text="{Binding download_phase}" FontSize="12" Foreground="Gray"/>
-                <TextBlock Text="{Binding download_current_item}" FontSize="12"
-                           Foreground="#666" TextTrimming="CharacterEllipsis"/>
+        <!-- ============================================================
+             Card 1: Filter & Search Bar
+             ============================================================ -->
+        <ctrl:Card Grid.Row="0">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Download Versions" FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource Brush1}"/>
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+                    <ComboBox SelectedItem="{Binding filter_type}" Width="120"
+                              MinHeight="34">
+                        <ComboBoxItem Content="Release" IsSelected="True"/>
+                        <ComboBoxItem Content="Snapshot"/>
+                        <ComboBoxItem Content="All"/>
+                    </ComboBox>
+                    <TextBox Grid.Column="1" PlaceholderText="Search versions..."
+                             Text="{Binding search_text}" MinHeight="34"/>
+                    <Button Grid.Column="2" Content="⟳ Refresh"
+                            Classes="primary"
+                            Command="{Binding refresh_command}"
+                            IsEnabled="{Binding !is_loading}"
+                            MinHeight="34"/>
+                    <TextBlock Grid.Column="3" Text="{Binding status_text}"
+                               Foreground="{StaticResource BrushGray3}" VerticalAlignment="Center"
+                               FontSize="12"/>
+                </Grid>
             </StackPanel>
-        </StackPanel>
+        </ctrl:Card>
 
-        <!-- 版本列表 -->
-        <ListBox Grid.Row="2" ItemsSource="{Binding filtered_versions}"
-                 Background="Transparent" BorderThickness="0">
-            <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="m:VersionEntry">
-                    <Border Margin="0,2" Padding="12,10" CornerRadius="6"
-                            Background="#f5f5f5">
-                        <Grid ColumnDefinitions="*,Auto,Auto">
-                            <StackPanel Spacing="2">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="{Binding id}" FontWeight="SemiBold" FontSize="14"/>
-                                    <Border Background="#e0e0e0" CornerRadius="4" Padding="6,2"
-                                            IsVisible="{Binding type, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                                        <TextBlock Text="{Binding type}" FontSize="11"/>
-                                    </Border>
+        <!-- ============================================================
+             Version List + Download Progress
+             ============================================================ -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+
+            <!-- Download Progress -->
+            <Border Grid.Row="0" Background="{StaticResource Brush8}" CornerRadius="8"
+                    Padding="16,12" Margin="0,0,0,12"
+                    IsVisible="{Binding is_downloading}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Downloading..." FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush3}"/>
+                    <ProgressBar Value="{Binding download_progress}" Maximum="100"
+                                 Height="8" CornerRadius="4"
+                                 Foreground="{StaticResource Brush3}"
+                                 Background="{StaticResource Brush6}"/>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding download_phase}" FontSize="12"
+                                   Foreground="{StaticResource BrushGray2}"/>
+                        <TextBlock Text="{Binding download_current_item}" FontSize="12"
+                                   Foreground="{StaticResource BrushGray3}"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Version List -->
+            <ListBox Grid.Row="1" ItemsSource="{Binding filtered_versions}"
+                     Background="Transparent" BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="m:VersionEntry">
+                        <Border Margin="0,2" Padding="16,12" CornerRadius="8"
+                                Background="White" Tag="card">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8" OffsetY="1"
+                                                  Opacity="0.06" Color="#3c3c3c"/>
+                            </Border.Effect>
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <StackPanel Spacing="4">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding id}" FontWeight="SemiBold" FontSize="14"
+                                                   Foreground="{StaticResource Brush1}"/>
+                                        <Border Background="{StaticResource Brush8}" CornerRadius="4" Padding="8,2"
+                                                IsVisible="{Binding type, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                            <TextBlock Text="{Binding type}" FontSize="11"
+                                                       Foreground="{StaticResource Brush3}"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding release_time}" FontSize="11"
+                                               Foreground="{StaticResource BrushGray3}"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding release_time}" FontSize="11" Foreground="Gray"/>
-                            </StackPanel>
-                            <Button Grid.Column="1" Content="Download"
-                                    Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).download_command}"
-                                    CommandParameter="{Binding id}"
-                                    FontSize="12" Padding="12,4"
-                                    Background="#2196F3" Foreground="White"
-                                    CornerRadius="4" Cursor="Hand"
-                                    Margin="0,0,8,0"/>
-                            <Button Grid.Column="2" Content="Delete"
-                                    Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).delete_command}"
-                                    CommandParameter="{Binding id}"
-                                    FontSize="12" Padding="12,4"
-                                    Background="#f44336" Foreground="White"
-                                    CornerRadius="4" Cursor="Hand"/>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                                <Button Grid.Column="1" Content="⬇ Download"
+                                        Classes="primary"
+                                        Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).download_command}"
+                                        CommandParameter="{Binding id}"
+                                        FontSize="12" Padding="14,6"
+                                        Margin="0,0,8,0"/>
+                                <Button Grid.Column="2" Content="✕ Delete"
+                                        Classes="danger"
+                                        Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).delete_command}"
+                                        CommandParameter="{Binding id}"
+                                        FontSize="12" Padding="14,6"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
 
-        <!-- 加载中 -->
-        <TextBlock Grid.Row="3" Text="Loading..." FontSize="12" Foreground="Gray"
-                   HorizontalAlignment="Center" Margin="0,8,0,0"
-                   IsVisible="{Binding is_loading}"/>
+        <!-- Loading Indicator -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="12" IsVisible="{Binding is_loading}">
+            <TextBlock Text="⟳" FontSize="32" HorizontalAlignment="Center"
+                       Foreground="{StaticResource Brush3}"/>
+            <TextBlock Text="Loading versions..." FontSize="14"
+                       Foreground="{StaticResource BrushGray3}" HorizontalAlignment="Center"/>
+        </StackPanel>
     </Grid>
 </UserControl>
