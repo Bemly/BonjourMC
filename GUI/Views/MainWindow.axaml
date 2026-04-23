@@ -14,7 +14,7 @@
         WindowStartupLocation="CenterScreen"
         WindowDecorations="None"
         Background="Transparent"
-        TransparencyLevelHint="AcrylicBlur">
+        TransparencyLevelHint="Transparent">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
