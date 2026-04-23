@@ -51,7 +51,7 @@
                                 <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_snapshot}"/>
                                 <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_all}"/>
                             </ComboBox>
-                            <TextBox Grid.Column="1" PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_search}"
+                            <TextBox Grid.Column="1" Watermark="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_search}"
                                      Text="{Binding search_text}" MinHeight="34"/>
                             <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_refresh}"
                                     Classes="primary"

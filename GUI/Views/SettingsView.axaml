@@ -57,7 +57,7 @@
                                 <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player_name}" FontSize="13" FontWeight="SemiBold"
                                            Foreground="{StaticResource BrushGray2}"/>
                                 <TextBox Text="{Binding username, Mode=TwoWay}"
-                                         PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player_placeholder}"/>
+                                         Watermark="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player_placeholder}"/>
                             </StackPanel>
                         </StackPanel>
                     </ctrl:Card>
@@ -93,7 +93,7 @@
                                            Foreground="{StaticResource BrushGray2}"/>
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                     <TextBox Text="{Binding java_path, Mode=TwoWay}"
-                                             PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_java_placeholder}"/>
+                                             Watermark="{Binding Source={x:Static lang:Lang.Instance}, Path=set_java_placeholder}"/>
                                     <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=set_browse}"
                                             Classes="ghost" Padding="14,8"/>
                                 </Grid>
@@ -112,7 +112,7 @@
                                                Foreground="{StaticResource BrushGray2}"/>
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                         <TextBox Text="{Binding game_dir, Mode=TwoWay}"
-                                                 PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_game_placeholder}"/>
+                                                 Watermark="{Binding Source={x:Static lang:Lang.Instance}, Path=set_game_placeholder}"/>
                                         <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=set_browse}"
                                                 Classes="ghost" Padding="14,8"/>
                                     </Grid>

@@ -64,7 +64,7 @@
                              Padding="16"
                              CornerRadius="8"
                              MinHeight="300"
-                             PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=log_placeholder}"/>
+                             Watermark="{Binding Source={x:Static lang:Lang.Instance}, Path=log_placeholder}"/>
                 </ctrl:Card>
 
             </StackPanel>

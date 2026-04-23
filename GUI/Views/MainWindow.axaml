@@ -13,10 +13,11 @@
         Width="850" Height="500"
         MinWidth="810" MinHeight="470"
         WindowStartupLocation="CenterScreen"
-        WindowDecorations="None"
+        SystemDecorations="None"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaTitleBarHeightHint="-1"
-        Background="Transparent">
+        Background="Transparent"
+        BorderThickness="0">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
@@ -103,7 +104,7 @@
     <Border Name="PART_ResizeGrip"
             Width="40" Height="40"
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
-            Cursor="DragMove"
+            Cursor="SizeNWSE"
             Background="#02000000"
             IsHitTestVisible="True"
             Margin="0,0,0,0"/>

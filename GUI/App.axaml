@@ -11,5 +11,13 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="/Styles/Theme.axaml"/>
+
+        <!-- Fix Avalonia 12 transparency bug on Windows (#21082) -->
+        <Style Selector="Border#PART_WindowBorder">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Panel#PART_TitleBar">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
     </Application.Styles>
 </Application>
