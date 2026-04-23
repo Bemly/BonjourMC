@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GUI.ViewModels"
              xmlns:ctrl="using:GUI.Controls"
+             xmlns:lang="using:GUI.Lang"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
@@ -18,15 +19,15 @@
             <Grid ColumnDefinitions="*,Auto,Auto">
                 <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                     <TextBlock Text="📋" FontSize="18" VerticalAlignment="Center"/>
-                    <TextBlock Text="Game Output" FontSize="16" FontWeight="Bold"
+                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=log_title}" FontSize="16" FontWeight="Bold"
                                Foreground="{StaticResource Brush1}" VerticalAlignment="Center"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="Clear"
+                <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=log_clear}"
                         Classes="ghost"
                         Command="{Binding clear_command}"
                         FontSize="12" Padding="14,6"
                         Margin="0,0,8,0"/>
-                <Button Grid.Column="2" Content="✕ Kill Game"
+                <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=log_kill}"
                         Classes="danger"
                         Command="{Binding kill_command}"
                         IsEnabled="{Binding is_game_running}"
@@ -48,7 +49,7 @@
                      Padding="16"
                      CornerRadius="8"
                      MinHeight="300"
-                     PlaceholderText="Game output will appear here..."/>
+                     PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=log_placeholder}"/>
         </ctrl:Card>
 
     </StackPanel>

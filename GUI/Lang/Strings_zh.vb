@@ -1,0 +1,66 @@
+Option Explicit On
+Option Strict On
+
+Namespace Lang
+    Public Module Strings_zh
+        Public Function get_strings() As Dictionary(Of String, String)
+            Return New Dictionary(Of String, String) From {
+                {"nav_start", "启动"},
+                {"nav_download", "下载"},
+                {"nav_settings", "设置"},
+                {"nav_tools", "工具"},
+                {"home_subtitle", "BonjourMC Player"},
+                {"home_download", "下载游戏"},
+                {"home_instance", "实例选择"},
+                {"home_announce", "公告"},
+                {"home_no_announce", "暂无公告"},
+                {"ver_title", "下载版本"},
+                {"ver_release", "正式版"},
+                {"ver_snapshot", "快照版"},
+                {"ver_all", "全部"},
+                {"ver_search", "搜索版本..."},
+                {"ver_refresh", "⟳ 刷新"},
+                {"ver_downloading", "下载中..."},
+                {"ver_btn_download", "⬇ 下载"},
+                {"ver_btn_delete", "✕ 删除"},
+                {"ver_loading", "加载版本中..."},
+                {"set_player", "玩家"},
+                {"set_player_name", "玩家名称"},
+                {"set_player_placeholder", "输入你的用户名"},
+                {"set_java", "Java"},
+                {"set_memory", "内存分配"},
+                {"set_memory_format", "{0} MB"},
+                {"set_java_path", "Java 路径"},
+                {"set_java_placeholder", "自动检测（留空即可）"},
+                {"set_browse", "浏览"},
+                {"set_game", "游戏"},
+                {"set_game_dir", "游戏目录"},
+                {"set_game_placeholder", "默认（使用 .minecraft）"},
+                {"set_window_size", "窗口大小"},
+                {"set_pixels", "像素"},
+                {"set_save", "💾 保存设置"},
+                {"set_language", "语言"},
+                {"log_title", "游戏输出"},
+                {"log_clear", "清空"},
+                {"log_kill", "✕ 终止游戏"},
+                {"log_placeholder", "游戏输出将在此显示..."},
+                {"loading", "加载中"},
+                {"msg_launching", "正在启动 Minecraft {0}..."},
+                {"msg_started", "游戏已启动！"},
+                {"msg_launch_failed", "启动失败：{0}"},
+                {"msg_download_done", "下载完成！"},
+                {"msg_loading_versions", "加载版本中..."},
+                {"msg_loaded_versions", "已加载 {0} 个版本。"},
+                {"msg_load_failed", "加载失败：{0}"},
+                {"msg_downloading", "正在下载 {0}..."},
+                {"msg_download_failed", "下载失败：{0}"},
+                {"msg_deleted", "已删除 {0}。"},
+                {"msg_delete_failed", "删除失败：{0}"},
+                {"msg_settings_saved", "设置已保存！"},
+                {"log_out", "[输出]"},
+                {"log_err", "[错误]"},
+                {"log_exit", "[退出] 游戏退出，代码 {0}"}
+            }
+        End Function
+    End Module
+End Namespace

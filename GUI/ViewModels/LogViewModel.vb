@@ -27,16 +27,16 @@ Namespace ViewModels
             _kill_command = ReactiveCommand.Create(AddressOf execute_kill)
 
             AddHandler _launcher_service.on_game_output, Sub(sender, line)
-                                                             append_log("[OUT] " & line)
+                                                             append_log(Lang.Lang.Instance.log_out & " " & line)
                                                          End Sub
             AddHandler _launcher_service.on_game_error, Sub(sender, line)
-                                                            append_log("[ERR] " & line)
+                                                            append_log(Lang.Lang.Instance.log_err & " " & line)
                                                         End Sub
             AddHandler _launcher_service.on_game_exit, Sub(sender, exit_code)
                                                            Debug.WriteLine($"[LogVM] on_game_exit: code={exit_code}")
                                                            _is_game_running = False
                                                            Me.RaisePropertyChanged(NameOf(is_game_running))
-                                                           append_log($"[EXIT] Game exited with code {exit_code}")
+                                                           append_log(Lang.Lang.Instance.log_exit(exit_code))
                                                        End Sub
         End Sub
 

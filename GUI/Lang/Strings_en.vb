@@ -1,0 +1,66 @@
+Option Explicit On
+Option Strict On
+
+Namespace Lang
+    Public Module Strings_en
+        Public Function get_strings() As Dictionary(Of String, String)
+            Return New Dictionary(Of String, String) From {
+                {"nav_start", "Launch"},
+                {"nav_download", "Download"},
+                {"nav_settings", "Settings"},
+                {"nav_tools", "Tools"},
+                {"home_subtitle", "BonjourMC Player"},
+                {"home_download", "Download Game"},
+                {"home_instance", "Select Instance"},
+                {"home_announce", "Announcements"},
+                {"home_no_announce", "No announcements"},
+                {"ver_title", "Download Versions"},
+                {"ver_release", "Release"},
+                {"ver_snapshot", "Snapshot"},
+                {"ver_all", "All"},
+                {"ver_search", "Search versions..."},
+                {"ver_refresh", "⟳ Refresh"},
+                {"ver_downloading", "Downloading..."},
+                {"ver_btn_download", "⬇ Download"},
+                {"ver_btn_delete", "✕ Delete"},
+                {"ver_loading", "Loading versions..."},
+                {"set_player", "Player"},
+                {"set_player_name", "Player Name"},
+                {"set_player_placeholder", "Enter your username"},
+                {"set_java", "Java"},
+                {"set_memory", "Memory Allocation"},
+                {"set_memory_format", "{0} MB"},
+                {"set_java_path", "Java Path"},
+                {"set_java_placeholder", "Auto-detect (leave empty)"},
+                {"set_browse", "Browse"},
+                {"set_game", "Game"},
+                {"set_game_dir", "Game Directory"},
+                {"set_game_placeholder", "Default (use .minecraft)"},
+                {"set_window_size", "Window Size"},
+                {"set_pixels", "pixels"},
+                {"set_save", "💾 Save Settings"},
+                {"set_language", "Language"},
+                {"log_title", "Game Output"},
+                {"log_clear", "Clear"},
+                {"log_kill", "✕ Kill Game"},
+                {"log_placeholder", "Game output will appear here..."},
+                {"loading", "Loading"},
+                {"msg_launching", "Launching Minecraft {0}..."},
+                {"msg_started", "Game started!"},
+                {"msg_launch_failed", "Launch failed: {0}"},
+                {"msg_download_done", "Download complete!"},
+                {"msg_loading_versions", "Loading versions..."},
+                {"msg_loaded_versions", "Loaded {0} versions."},
+                {"msg_load_failed", "Failed to load: {0}"},
+                {"msg_downloading", "Downloading {0}..."},
+                {"msg_download_failed", "Download failed: {0}"},
+                {"msg_deleted", "Deleted {0}."},
+                {"msg_delete_failed", "Delete failed: {0}"},
+                {"msg_settings_saved", "Settings saved!"},
+                {"log_out", "[OUT]"},
+                {"log_err", "[ERR]"},
+                {"log_exit", "[EXIT] Game exited with code {0}"}
+            }
+        End Function
+    End Module
+End Namespace

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GUI.ViewModels"
              xmlns:ctrl="using:GUI.Controls"
+             xmlns:lang="using:GUI.Lang"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
@@ -29,19 +30,19 @@
                     </Border>
                     <TextBlock Text="{Binding username}" FontSize="15" FontWeight="SemiBold"
                                Foreground="{StaticResource Brush1}" HorizontalAlignment="Center"/>
-                    <TextBlock Text="BonjourMC Player" FontSize="11"
+                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=home_subtitle}" FontSize="11"
                                Foreground="{StaticResource BrushGray3}" HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Bottom: Download + Instance Buttons -->
                 <StackPanel Grid.Row="1" Margin="20,0,20,20" Spacing="8">
-                    <Button Content="下载游戏"
+                    <Button Content="{Binding Source={x:Static lang:Lang.Instance}, Path=home_download}"
                             Classes="primary"
                             Command="{Binding navigate_download_command}"
                             HorizontalAlignment="Stretch" Height="38"
                             FontSize="14" FontWeight="SemiBold"
                             CornerRadius="6"/>
-                    <Button Content="实例选择"
+                    <Button Content="{Binding Source={x:Static lang:Lang.Instance}, Path=home_instance}"
                             Classes="ghost"
                             Command="{Binding navigate_instance_command}"
                             HorizontalAlignment="Stretch" Height="38"
@@ -57,7 +58,7 @@
              ============================================================ -->
         <Border Grid.Column="1" Background="{StaticResource Brush8}" Margin="0">
             <StackPanel Margin="24,20,24,24" Spacing="16">
-                <TextBlock Text="公告" FontSize="16" FontWeight="Bold"
+                <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=home_announce}" FontSize="16" FontWeight="Bold"
                            Foreground="{StaticResource Brush1}"/>
                 <Border Background="{StaticResource BrushBgCard}" CornerRadius="8"
                         Padding="20">
@@ -66,7 +67,7 @@
                                           Opacity="0.06" Color="#3c3c3c"/>
                     </Border.Effect>
                     <StackPanel Spacing="8">
-                        <TextBlock Text="暂无公告" FontSize="14"
+                        <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=home_no_announce}" FontSize="14"
                                    Foreground="{StaticResource BrushGray3}"
                                    HorizontalAlignment="Center"/>
                     </StackPanel>

@@ -2,6 +2,7 @@ Option Explicit On
 Option Strict On
 
 Imports System
+Imports System.Collections.Generic
 Imports System.Diagnostics
 Imports ReactiveUI
 Imports System.Reactive
@@ -18,11 +19,18 @@ Namespace ViewModels
         Private _window_width As Integer = Config.settings.default_window_width
         Private _window_height As Integer = Config.settings.default_window_height
         Private _status_text As String = ""
+        Private _selected_language As String = "中文"
         Private ReadOnly _save_command As ReactiveCommand(Of Unit, Unit)
 
         Public Sub New()
             Debug.WriteLine("[SettingsVM] New: initializing")
             page_title = "Settings"
+            ' Set initial language display
+            If Lang.Lang.Instance.current_lang = "en-US" Then
+                _selected_language = "English"
+            Else
+                _selected_language = "中文"
+            End If
             _save_command = ReactiveCommand.Create(AddressOf execute_save)
         End Sub
 
@@ -95,9 +103,32 @@ Namespace ViewModels
             End Get
         End Property
 
+        Public ReadOnly Property available_languages As List(Of String)
+            Get
+                Return New List(Of String) From {"中文", "English"}
+            End Get
+        End Property
+
+        Public Property selected_language As String
+            Get
+                Return _selected_language
+            End Get
+            Set(value As String)
+                If _selected_language = value Then Return
+                Me.RaiseAndSetIfChanged(_selected_language, value)
+                Select Case value
+                    Case "English"
+                        Lang.Lang.Instance.set_language("en-US")
+                    Case Else
+                        Lang.Lang.Instance.set_language("zh-CN")
+                End Select
+                Debug.WriteLine($"[SettingsVM] language changed to: {value}")
+            End Set
+        End Property
+
         Private Sub execute_save()
             Debug.WriteLine($"[SettingsVM] execute_save: user={username}, mem={memory_mb}MB, java={java_path}, dir={game_dir}")
-            status_text = "Settings saved!"
+            status_text = Lang.Lang.Instance.msg_settings_saved
         End Sub
     End Class
 End Namespace

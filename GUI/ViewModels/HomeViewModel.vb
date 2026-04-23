@@ -124,15 +124,15 @@ Namespace ViewModels
             Debug.WriteLine($"[HomeVM] execute_launch: start, version={selected_version}, user={username}")
             Dispatcher.UIThread.Post(Sub()
                                          is_launching = True
-                                         status_text = $"Launching Minecraft {selected_version}..."
+                                         status_text = Lang.Lang.Instance.msg_launching(selected_version)
                                      End Sub)
             Try
                 Await _launcher_service.launch_game(username, selected_version)
                 Debug.WriteLine("[HomeVM] execute_launch: launch returned OK")
-                Dispatcher.UIThread.Post(Sub() status_text = "Game started!")
+                Dispatcher.UIThread.Post(Sub() status_text = Lang.Lang.Instance.msg_started)
             Catch ex As Exception
                 Debug.WriteLine($"[HomeVM] execute_launch: ERROR {ex.Message}")
-                Dispatcher.UIThread.Post(Sub() status_text = $"Launch failed: {ex.Message}")
+                Dispatcher.UIThread.Post(Sub() status_text = Lang.Lang.Instance.msg_launch_failed(ex.Message))
             Finally
                 Dispatcher.UIThread.Post(Sub() is_launching = False)
             End Try

@@ -19,12 +19,20 @@ Namespace Views
         Public Sub New()
             InitializeComponent()
 
-            ' Make title bar draggable (SystemDecorations="None" removes native drag)
+            ' Make title bar draggable (WindowDecorations="None" removes native drag)
             Dim title_bar = Me.FindControl(Of Border)("PART_TitleBar")
             If title_bar IsNot Nothing Then
                 AddHandler title_bar.PointerPressed, Sub(sender, e)
                                                          BeginMoveDrag(e)
                                                      End Sub
+            End If
+
+            ' Make resize grip work
+            Dim resize_grip = Me.FindControl(Of Border)("PART_ResizeGrip")
+            If resize_grip IsNot Nothing Then
+                AddHandler resize_grip.PointerPressed, Sub(sender, e)
+                                                           BeginResizeDrag(WindowEdge.SouthEast, e)
+                                                       End Sub
             End If
 
             ' Start with opacity 0 for open animation

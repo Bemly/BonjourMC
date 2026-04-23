@@ -60,7 +60,7 @@ Namespace ViewModels
                                                                                                 Debug.WriteLine($"[VersionsVM] download_progress: {e.percent:F1}% phase={e.phase} msg={e.message}")
                                                                                                 If e.phase = "done" Then
                                                                                                     is_downloading = False
-                                                                                                    status_text = "Download complete!"
+                                                                                                    status_text = Lang.Lang.Instance.msg_download_done
                                                                                                     load_installed_versions()
                                                                                                 End If
                                                                                             End Sub)
@@ -194,7 +194,7 @@ Namespace ViewModels
             Debug.WriteLine("[VersionsVM] execute_refresh: start")
             Dispatcher.UIThread.Post(Sub()
                                          is_loading = True
-                                         status_text = "Loading versions..."
+                                         status_text = Lang.Lang.Instance.msg_loading_versions
                                      End Sub)
             Try
                 Dim versions = Await _launcher_service.refresh_version_manifest()
@@ -205,11 +205,11 @@ Namespace ViewModels
                                                  _all_versions.Add(v)
                                              Next
                                              Me.RaisePropertyChanged(NameOf(filtered_versions))
-                                             status_text = $"Loaded {versions.Count} versions."
+                                             status_text = Lang.Lang.Instance.msg_loaded_versions(versions.Count)
                                          End Sub)
             Catch ex As Exception
                 Debug.WriteLine($"[VersionsVM] execute_refresh: ERROR {ex.Message}")
-                Dispatcher.UIThread.Post(Sub() status_text = $"Failed to load: {ex.Message}")
+                Dispatcher.UIThread.Post(Sub() status_text = Lang.Lang.Instance.msg_load_failed(ex.Message))
             Finally
                 Dispatcher.UIThread.Post(Sub() is_loading = False)
             End Try
@@ -222,7 +222,7 @@ Namespace ViewModels
                                          is_downloading = True
                                          download_progress = 0
                                          download_phase = "starting"
-                                         status_text = $"Downloading {version_id}..."
+                                         status_text = Lang.Lang.Instance.msg_downloading(version_id)
                                      End Sub)
             Try
                 Await _launcher_service.download_version(version_id)
@@ -230,7 +230,7 @@ Namespace ViewModels
             Catch ex As Exception
                 Debug.WriteLine($"[VersionsVM] execute_download: ERROR {ex.Message}")
                 Dispatcher.UIThread.Post(Sub()
-                                             status_text = $"Download failed: {ex.Message}"
+                                             status_text = Lang.Lang.Instance.msg_download_failed(ex.Message)
                                              is_downloading = False
                                          End Sub)
             End Try
@@ -241,11 +241,11 @@ Namespace ViewModels
             Try
                 _launcher_service.delete_version(version_id)
                 load_installed_versions()
-                status_text = $"Deleted {version_id}."
+                status_text = Lang.Lang.Instance.msg_deleted(version_id)
                 Debug.WriteLine($"[VersionsVM] execute_delete: OK")
             Catch ex As Exception
                 Debug.WriteLine($"[VersionsVM] execute_delete: ERROR {ex.Message}")
-                status_text = $"Delete failed: {ex.Message}"
+                status_text = Lang.Lang.Instance.msg_delete_failed(ex.Message)
             End Try
         End Sub
 

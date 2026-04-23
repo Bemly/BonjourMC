@@ -3,6 +3,7 @@
              xmlns:vm="using:GUI.ViewModels"
              xmlns:m="using:Launcher.Utility.Model.Mojang"
              xmlns:ctrl="using:GUI.Controls"
+             xmlns:lang="using:GUI.Lang"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="560"
@@ -17,18 +18,18 @@
              ============================================================ -->
         <ctrl:Card Grid.Row="0">
             <StackPanel Spacing="12">
-                <TextBlock Text="Download Versions" FontSize="16" FontWeight="Bold"
+                <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_title}" FontSize="16" FontWeight="Bold"
                            Foreground="{StaticResource Brush1}"/>
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
                     <ComboBox SelectedItem="{Binding filter_type}" Width="120"
                               MinHeight="34">
-                        <ComboBoxItem Content="Release" IsSelected="True"/>
-                        <ComboBoxItem Content="Snapshot"/>
-                        <ComboBoxItem Content="All"/>
+                        <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_release}" IsSelected="True"/>
+                        <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_snapshot}"/>
+                        <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_all}"/>
                     </ComboBox>
-                    <TextBox Grid.Column="1" PlaceholderText="Search versions..."
+                    <TextBox Grid.Column="1" PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_search}"
                              Text="{Binding search_text}" MinHeight="34"/>
-                    <Button Grid.Column="2" Content="⟳ Refresh"
+                    <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_refresh}"
                             Classes="primary"
                             Command="{Binding refresh_command}"
                             IsEnabled="{Binding !is_loading}"
@@ -50,7 +51,7 @@
                     Padding="16,12" Margin="0,0,0,12"
                     IsVisible="{Binding is_downloading}">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Downloading..." FontSize="13" FontWeight="SemiBold"
+                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_downloading}" FontSize="13" FontWeight="SemiBold"
                                Foreground="{StaticResource Brush3}"/>
                     <ProgressBar Value="{Binding download_progress}" Maximum="100"
                                  Height="8" CornerRadius="4"
@@ -92,13 +93,13 @@
                                     <TextBlock Text="{Binding release_time}" FontSize="11"
                                                Foreground="{StaticResource BrushGray3}"/>
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="⬇ Download"
+                                <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_btn_download}"
                                         Classes="primary"
                                         Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).download_command}"
                                         CommandParameter="{Binding id}"
                                         FontSize="12" Padding="14,6"
                                         Margin="0,0,8,0"/>
-                                <Button Grid.Column="2" Content="✕ Delete"
+                                <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_btn_delete}"
                                         Classes="danger"
                                         Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).delete_command}"
                                         CommandParameter="{Binding id}"
@@ -115,7 +116,7 @@
                     Spacing="12" IsVisible="{Binding is_loading}">
             <TextBlock Text="⟳" FontSize="32" HorizontalAlignment="Center"
                        Foreground="{StaticResource Brush3}"/>
-            <TextBlock Text="Loading versions..." FontSize="14"
+            <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_loading}" FontSize="14"
                        Foreground="{StaticResource BrushGray3}" HorizontalAlignment="Center"/>
         </StackPanel>
     </Grid>
