@@ -101,51 +101,10 @@
             <!-- ============================================================
                  Content Area
                  ============================================================ -->
-            <Grid Grid.Row="1" ColumnDefinitions="200,*">
-
-                <!-- Left Sidebar -->
-                <Border Grid.Column="0" Background="#d2fbfbfb"
-                        CornerRadius="0,0,0,6">
-                    <StackPanel Margin="0,20,0,0">
-                        <!-- User Avatar Area -->
-                        <StackPanel Margin="20,0,20,24" Spacing="8">
-                            <Border Width="56" Height="56" CornerRadius="12"
-                                    Background="#e0eafd" HorizontalAlignment="Center">
-                                <Path Data="M52.1,164.5c-1.4,0-3.1-0.5-4.2-1.3c-2.6-1.7-4-4.2-4-7V43.8c0-2.9,1.6-5.8,4.1-7c1.2-0.8,2.7-1.2,4.1-1.2c1.5,0,2.9,0.4,4.2,1.2L153.1,93c0,0,0.1,0,0.1,0.1c2.6,1.7,4,4.2,4,7c0,3-1.7,5.8-4.2,7.1l-96.8,56.2C55.1,164,53.5,164.5,52.1,164.5z M60.4,142.1l72.1-42.1L60.4,58.2V142.1z"
-                                      Fill="{StaticResource Brush3}" Stretch="Uniform"
-                                      Width="28" Height="28"
-                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <TextBlock Text="{Binding username}"
-                                       FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{StaticResource Brush1}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="BonjourMC Player"
-                                       FontSize="11" Foreground="{StaticResource BrushGray3}"
-                                       HorizontalAlignment="Center"/>
-                        </StackPanel>
-
-                        <!-- Sidebar Divider -->
-                        <Border Height="1" Background="{StaticResource BrushGray6}" Margin="20,0,20,16"/>
-
-                        <!-- Navigation Items (PCL-CE style) -->
-                        <StackPanel Spacing="2" Margin="12,0">
-                            <Button Classes="sidebar-item" Content="⌂  Home"
-                                    Command="{Binding navigate_home_command}"/>
-                            <Button Classes="sidebar-item" Content="⬇  Versions"
-                                    Command="{Binding navigate_versions_command}"/>
-                            <Button Classes="sidebar-item" Content="⚙  Settings"
-                                    Command="{Binding navigate_settings_command}"/>
-                            <Button Classes="sidebar-item" Content="📋  Logs"
-                                    Command="{Binding navigate_logs_command}"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- Right Content with Page Transition -->
-                <ctrl:PageTransition Grid.Column="1"
-                                     Content="{Binding selected_page}"
-                                     Margin="0"/>
-            </Grid>
+            <!-- Content Area -->
+            <ctrl:PageTransition Grid.Row="1"
+                                 Content="{Binding selected_page}"
+                                 Margin="0"/>
         </Grid>
     </Border>
 </Window>
