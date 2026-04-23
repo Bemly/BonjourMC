@@ -164,12 +164,12 @@ Namespace Controls
             ' Shadow: 0.4 → 0.07, 90ms
             animate_shadow(DropShadowIdleOpacity, 90)
 
-            ' Title color: Brush2 → Brush1, 90ms
-            AnimationHelper.color(_title_brush, Color.Parse("#343d4a"), 90)
+            ' Title color: set directly (no animation) to prevent stuck hover on fast mouse movement
+            _title_brush.Color = Color.Parse("#343d4a")
 
-            ' Swap arrow color, 90ms
+            ' Swap arrow color
             If _swap_path IsNot Nothing Then
-                AnimationHelper.color(_swap_brush, Color.Parse("#343d4a"), 90)
+                _swap_brush.Color = Color.Parse("#343d4a")
             End If
         End Sub
 

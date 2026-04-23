@@ -86,7 +86,8 @@ Namespace Controls
                     Case 2 : target_color = Color.Parse("#ce2111")
                     Case Else : target_color = Color.Parse("#343d4a")
                 End Select
-                AnimationHelper.color(_border_brush, target_color, 200)
+                ' Set directly on exit to prevent stuck hover
+                _border_brush.Color = target_color
             End If
         End Sub
 
@@ -102,7 +103,8 @@ Namespace Controls
                 AnimationHelper.color(_bg_brush, target_color, 100)
             Else
                 target_color = Color.FromArgb(85, 255, 255, 255)
-                AnimationHelper.color(_bg_brush, target_color, 200)
+                ' Set directly on exit to prevent stuck hover
+                _bg_brush.Color = target_color
             End If
         End Sub
 
