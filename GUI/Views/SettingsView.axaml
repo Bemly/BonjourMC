@@ -10,131 +10,147 @@
              x:DataType="vm:SettingsViewModel"
              Background="Transparent">
 
-    <ScrollViewer>
-        <StackPanel Spacing="0" Margin="24,20,24,24">
+    <Grid ColumnDefinitions="Auto,*">
 
-            <!-- ============================================================
-                 Card 0: Language
-                 ============================================================ -->
-            <ctrl:Card>
-                <StackPanel Spacing="14">
-                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=lbl_language}" FontSize="16" FontWeight="Bold"
-                               Foreground="{StaticResource Brush1}"/>
-                    <ComboBox ItemsSource="{Binding available_languages}"
-                              SelectedItem="{Binding selected_language}"
-                              MinHeight="34" HorizontalAlignment="Stretch"/>
+        <!-- ============================================================
+             Left Panel: Category Selection
+             ============================================================ -->
+        <Border Grid.Column="0" Background="Transparent" MinWidth="140" Margin="0,0,0,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="0" Margin="0,12,0,0">
+                    <ctrl:PclListItem Name="ItemLanguage" Title="语言" ListItemType="RadioBox" Checked="True"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemPlayer" Title="玩家" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemJava" Title="Java" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemGame" Title="游戏" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
                 </StackPanel>
-            </ctrl:Card>
+            </ScrollViewer>
+        </Border>
 
-            <!-- ============================================================
-                 Card 1: Player Settings
-                 ============================================================ -->
-            <ctrl:Card>
-                <StackPanel Spacing="14">
-                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player}" FontSize="16" FontWeight="Bold"
-                               Foreground="{StaticResource Brush1}"/>
-                    <StackPanel Spacing="6">
-                        <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player_name}" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{StaticResource BrushGray2}"/>
-                        <TextBox Text="{Binding username, Mode=TwoWay}"
-                                 PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player_placeholder}"/>
-                    </StackPanel>
-                </StackPanel>
-            </ctrl:Card>
+        <!-- ============================================================
+             Right Panel: Content
+             ============================================================ -->
+        <Border Grid.Column="1" Background="Transparent">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="0" Margin="20,12,24,24">
 
-            <!-- ============================================================
-                 Card 2: Java Settings
-                 ============================================================ -->
-            <ctrl:Card>
-                <StackPanel Spacing="14">
-                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_java}" FontSize="16" FontWeight="Bold"
-                               Foreground="{StaticResource Brush1}"/>
-
-                    <!-- Memory Allocation -->
-                    <StackPanel Spacing="6">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_memory}" FontSize="13" FontWeight="SemiBold"
-                                       Foreground="{StaticResource BrushGray2}"/>
-                            <TextBlock Text="{Binding memory_mb, StringFormat='{}{0} MB'}"
-                                       FontSize="13" Foreground="{StaticResource Brush3}"
-                                       VerticalAlignment="Center"/>
+                    <!-- Language -->
+                    <ctrl:Card IsVisible="{Binding is_language_selected}">
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=lbl_language}" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource Brush1}"/>
+                            <ComboBox ItemsSource="{Binding available_languages}"
+                                      SelectedItem="{Binding selected_language}"
+                                      MinHeight="34" HorizontalAlignment="Stretch"/>
                         </StackPanel>
-                        <Slider Minimum="512" Maximum="16384"
-                                Value="{Binding memory_mb, Mode=TwoWay}"
-                                TickFrequency="512" IsSnapToTickEnabled="True"/>
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <TextBlock Text="512 MB" FontSize="11" Foreground="{StaticResource BrushGray4}"/>
-                            <TextBlock Text="16384 MB" FontSize="11" Foreground="{StaticResource BrushGray4}"
-                                       HorizontalAlignment="Right"/>
+                    </ctrl:Card>
+
+                    <!-- Player Settings -->
+                    <ctrl:Card IsVisible="{Binding is_player_selected}">
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player}" FontSize="16" FontWeight="Bold"
+                                       Foreground="{StaticResource Brush1}"/>
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player_name}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{StaticResource BrushGray2}"/>
+                                <TextBox Text="{Binding username, Mode=TwoWay}"
+                                         PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_player_placeholder}"/>
+                            </StackPanel>
                         </StackPanel>
+                    </ctrl:Card>
+
+                    <!-- Java Settings -->
+                    <StackPanel Spacing="0" IsVisible="{Binding is_java_selected}">
+                        <ctrl:Card>
+                            <StackPanel Spacing="14">
+                                <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_java}" FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource Brush1}"/>
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_memory}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrushGray2}"/>
+                                        <TextBlock Text="{Binding memory_mb, StringFormat='{}{0} MB'}"
+                                                   FontSize="13" Foreground="{StaticResource Brush3}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <Slider Minimum="512" Maximum="16384"
+                                            Value="{Binding memory_mb, Mode=TwoWay}"
+                                            TickFrequency="512" IsSnapToTickEnabled="True"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="512 MB" FontSize="11" Foreground="{StaticResource BrushGray4}"/>
+                                        <TextBlock Text="16384 MB" FontSize="11" Foreground="{StaticResource BrushGray4}"
+                                                   HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </ctrl:Card>
+                        <ctrl:Card>
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_java_path}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{StaticResource BrushGray2}"/>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <TextBox Text="{Binding java_path, Mode=TwoWay}"
+                                             PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_java_placeholder}"/>
+                                    <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=set_browse}"
+                                            Classes="ghost" Padding="14,8"/>
+                                </Grid>
+                            </StackPanel>
+                        </ctrl:Card>
                     </StackPanel>
 
-                    <!-- Java Path -->
-                    <StackPanel Spacing="6">
-                        <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_java_path}" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{StaticResource BrushGray2}"/>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                            <TextBox Text="{Binding java_path, Mode=TwoWay}"
-                                     PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_java_placeholder}"/>
-                            <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=set_browse}"
-                                    Classes="ghost" Padding="14,8"/>
-                        </Grid>
+                    <!-- Game Settings -->
+                    <StackPanel Spacing="0" IsVisible="{Binding is_game_selected}">
+                        <ctrl:Card>
+                            <StackPanel Spacing="14">
+                                <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_game}" FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource Brush1}"/>
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_game_dir}" FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{StaticResource BrushGray2}"/>
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <TextBox Text="{Binding game_dir, Mode=TwoWay}"
+                                                 PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_game_placeholder}"/>
+                                        <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=set_browse}"
+                                                Classes="ghost" Padding="14,8"/>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </ctrl:Card>
+                        <ctrl:Card>
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_window_size}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{StaticResource BrushGray2}"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBox Text="{Binding window_width, Mode=TwoWay}" Width="100"/>
+                                    <TextBlock Text="×" VerticalAlignment="Center" FontSize="16"
+                                               Foreground="{StaticResource BrushGray3}"/>
+                                    <TextBox Text="{Binding window_height, Mode=TwoWay}" Width="100"/>
+                                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_pixels}" VerticalAlignment="Center" FontSize="12"
+                                               Foreground="{StaticResource BrushGray4}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ctrl:Card>
                     </StackPanel>
-                </StackPanel>
-            </ctrl:Card>
 
-            <!-- ============================================================
-                 Card 3: Game Settings
-                 ============================================================ -->
-            <ctrl:Card>
-                <StackPanel Spacing="14">
-                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_game}" FontSize="16" FontWeight="Bold"
-                               Foreground="{StaticResource Brush1}"/>
-
-                    <!-- Game Directory -->
-                    <StackPanel Spacing="6">
-                        <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_game_dir}" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{StaticResource BrushGray2}"/>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                            <TextBox Text="{Binding game_dir, Mode=TwoWay}"
-                                     PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=set_game_placeholder}"/>
-                            <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=set_browse}"
-                                    Classes="ghost" Padding="14,8"/>
-                        </Grid>
-                    </StackPanel>
-
-                    <!-- Window Size -->
-                    <StackPanel Spacing="6">
-                        <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_window_size}" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{StaticResource BrushGray2}"/>
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <TextBox Text="{Binding window_width, Mode=TwoWay}" Width="100"/>
-                            <TextBlock Text="×" VerticalAlignment="Center" FontSize="16"
-                                       Foreground="{StaticResource BrushGray3}"/>
-                            <TextBox Text="{Binding window_height, Mode=TwoWay}" Width="100"/>
-                            <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=set_pixels}" VerticalAlignment="Center" FontSize="12"
-                                       Foreground="{StaticResource BrushGray4}"/>
+                    <!-- Save Button (always visible) -->
+                    <ctrl:Card Padding="20,16">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button Content="{Binding Source={x:Static lang:Lang.Instance}, Path=set_save}"
+                                    Classes="primary"
+                                    Command="{Binding save_command}"
+                                    Padding="24,10" FontSize="14"/>
+                            <TextBlock Text="{Binding status_text}"
+                                       Foreground="{StaticResource BrushGreen}"
+                                       VerticalAlignment="Center" FontSize="13"
+                                       FontWeight="SemiBold"/>
                         </StackPanel>
-                    </StackPanel>
-                </StackPanel>
-            </ctrl:Card>
+                    </ctrl:Card>
 
-            <!-- ============================================================
-                 Card 4: Save Button
-                 ============================================================ -->
-            <ctrl:Card Padding="20,16">
-                <StackPanel Orientation="Horizontal" Spacing="12">
-                    <Button Content="{Binding Source={x:Static lang:Lang.Instance}, Path=set_save}"
-                            Classes="primary"
-                            Command="{Binding save_command}"
-                            Padding="24,10" FontSize="14"/>
-                    <TextBlock Text="{Binding status_text}"
-                               Foreground="{StaticResource BrushGreen}"
-                               VerticalAlignment="Center" FontSize="13"
-                               FontWeight="SemiBold"/>
                 </StackPanel>
-            </ctrl:Card>
-
-        </StackPanel>
-    </ScrollViewer>
+            </ScrollViewer>
+        </Border>
+    </Grid>
 </UserControl>

@@ -10,47 +10,64 @@
              x:DataType="vm:LogViewModel"
              Background="Transparent">
 
-    <StackPanel Spacing="0" Margin="24,20,24,24">
+    <Grid ColumnDefinitions="Auto,*">
 
         <!-- ============================================================
-             Card 1: Toolbar
+             Left Panel: Category Selection
              ============================================================ -->
-        <ctrl:Card>
-            <Grid ColumnDefinitions="*,Auto,Auto">
-                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                    <TextBlock Text="📋" FontSize="18" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=log_title}" FontSize="16" FontWeight="Bold"
-                               Foreground="{StaticResource Brush1}" VerticalAlignment="Center"/>
+        <Border Grid.Column="0" Background="Transparent" MinWidth="140">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="0" Margin="0,12,0,0">
+                    <ctrl:PclListItem Name="ItemLog" Title="游戏输出" ListItemType="RadioBox" Checked="True"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemTools" Title="工具" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemHelp" Title="帮助" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=log_clear}"
-                        Classes="ghost"
-                        Command="{Binding clear_command}"
-                        FontSize="12" Padding="14,6"
-                        Margin="0,0,8,0"/>
-                <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=log_kill}"
-                        Classes="danger"
-                        Command="{Binding kill_command}"
-                        IsEnabled="{Binding is_game_running}"
-                        FontSize="12" Padding="14,6"/>
-            </Grid>
-        </ctrl:Card>
+            </ScrollViewer>
+        </Border>
 
         <!-- ============================================================
-             Card 2: Log Output
+             Right Panel: Content
              ============================================================ -->
-        <ctrl:Card Padding="0" Margin="0">
-            <TextBox Text="{Binding log_text, Mode=OneWay}"
-                     IsReadOnly="True"
-                     AcceptsReturn="True"
-                     FontFamily="Consolas, Menlo, SF Mono, monospace"
-                     FontSize="12"
-                     Background="#1e1e2e"
-                     Foreground="#d4d4d4"
-                     Padding="16"
-                     CornerRadius="8"
-                     MinHeight="300"
-                     PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=log_placeholder}"/>
-        </ctrl:Card>
+        <Border Grid.Column="1" Background="Transparent">
+            <StackPanel Spacing="0" Margin="20,12,24,24">
 
-    </StackPanel>
+                <!-- Toolbar -->
+                <ctrl:Card>
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=log_title}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource Brush1}" VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=log_clear}"
+                                Classes="ghost"
+                                Command="{Binding clear_command}"
+                                FontSize="12" Padding="14,6"
+                                Margin="0,0,8,0"/>
+                        <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=log_kill}"
+                                Classes="danger"
+                                Command="{Binding kill_command}"
+                                IsEnabled="{Binding is_game_running}"
+                                FontSize="12" Padding="14,6"/>
+                    </Grid>
+                </ctrl:Card>
+
+                <!-- Log Output -->
+                <ctrl:Card Padding="0" Margin="0">
+                    <TextBox Text="{Binding log_text, Mode=OneWay}"
+                             IsReadOnly="True"
+                             AcceptsReturn="True"
+                             FontFamily="Consolas, Menlo, SF Mono, monospace"
+                             FontSize="12"
+                             Background="#1e1e2e"
+                             Foreground="#d4d4d4"
+                             Padding="16"
+                             CornerRadius="8"
+                             MinHeight="300"
+                             PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=log_placeholder}"/>
+                </ctrl:Card>
+
+            </StackPanel>
+        </Border>
+    </Grid>
 </UserControl>

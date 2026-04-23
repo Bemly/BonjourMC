@@ -11,113 +11,137 @@
              x:DataType="vm:VersionsViewModel"
              Background="Transparent">
 
-    <Grid RowDefinitions="Auto,*" Margin="24,20,24,24">
+    <Grid ColumnDefinitions="Auto,*">
 
         <!-- ============================================================
-             Card 1: Filter & Search Bar
+             Left Panel: Category Selection
              ============================================================ -->
-        <ctrl:Card Grid.Row="0">
-            <StackPanel Spacing="12">
-                <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_title}" FontSize="16" FontWeight="Bold"
-                           Foreground="{StaticResource Brush1}"/>
-                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
-                    <ComboBox SelectedItem="{Binding filter_type}" Width="120"
-                              MinHeight="34">
-                        <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_release}" IsSelected="True"/>
-                        <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_snapshot}"/>
-                        <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_all}"/>
-                    </ComboBox>
-                    <TextBox Grid.Column="1" PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_search}"
-                             Text="{Binding search_text}" MinHeight="34"/>
-                    <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_refresh}"
-                            Classes="primary"
-                            Command="{Binding refresh_command}"
-                            IsEnabled="{Binding !is_loading}"
-                            MinHeight="34"/>
-                    <TextBlock Grid.Column="3" Text="{Binding status_text}"
-                               Foreground="{StaticResource BrushGray3}" VerticalAlignment="Center"
-                               FontSize="12"/>
-                </Grid>
-            </StackPanel>
-        </ctrl:Card>
-
-        <!-- ============================================================
-             Version List + Download Progress
-             ============================================================ -->
-        <Grid Grid.Row="1" RowDefinitions="Auto,*">
-
-            <!-- Download Progress -->
-            <Border Grid.Row="0" Background="{StaticResource Brush8}" CornerRadius="8"
-                    Padding="16,12" Margin="0,0,0,12"
-                    IsVisible="{Binding is_downloading}">
-                <StackPanel Spacing="8">
-                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_downloading}" FontSize="13" FontWeight="SemiBold"
-                               Foreground="{StaticResource Brush3}"/>
-                    <ProgressBar Value="{Binding download_progress}" Maximum="100"
-                                 Height="8" CornerRadius="4"
-                                 Foreground="{StaticResource Brush3}"
-                                 Background="{StaticResource Brush6}"/>
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{Binding download_phase}" FontSize="12"
-                                   Foreground="{StaticResource BrushGray2}"/>
-                        <TextBlock Text="{Binding download_current_item}" FontSize="12"
-                                   Foreground="{StaticResource BrushGray3}"
-                                   TextTrimming="CharacterEllipsis"/>
-                    </StackPanel>
+        <Border Grid.Column="0" Background="Transparent" MinWidth="140">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="0" Margin="0,12,0,0">
+                    <ctrl:PclListItem Name="ItemMinecraft" Title="Minecraft" ListItemType="RadioBox" Checked="True"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemMod" Title="Mod" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemModpack" Title="整合包" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemResourcepack" Title="资源包" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
+                    <ctrl:PclListItem Name="ItemShader" Title="光影" ListItemType="RadioBox"
+                                       PointerReleased="Item_PointerReleased"/>
                 </StackPanel>
-            </Border>
+            </ScrollViewer>
+        </Border>
 
-            <!-- Version List -->
-            <ListBox Grid.Row="1" ItemsSource="{Binding filtered_versions}"
-                     Background="Transparent" BorderThickness="0"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="m:VersionEntry">
-                        <Border Margin="0,2" Padding="16,12" CornerRadius="8"
-                                Background="White" Tag="card">
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="8" OffsetY="1"
-                                                  Opacity="0.06" Color="#3c3c3c"/>
-                            </Border.Effect>
-                            <Grid ColumnDefinitions="*,Auto,Auto">
-                                <StackPanel Spacing="4">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <TextBlock Text="{Binding id}" FontWeight="SemiBold" FontSize="14"
-                                                   Foreground="{StaticResource Brush1}"/>
-                                        <Border Background="{StaticResource Brush8}" CornerRadius="4" Padding="8,2"
-                                                IsVisible="{Binding type, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                                            <TextBlock Text="{Binding type}" FontSize="11"
-                                                       Foreground="{StaticResource Brush3}"/>
-                                        </Border>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding release_time}" FontSize="11"
-                                               Foreground="{StaticResource BrushGray3}"/>
-                                </StackPanel>
-                                <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_btn_download}"
-                                        Classes="primary"
-                                        Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).download_command}"
-                                        CommandParameter="{Binding id}"
-                                        FontSize="12" Padding="14,6"
-                                        Margin="0,0,8,0"/>
-                                <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_btn_delete}"
-                                        Classes="danger"
-                                        Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).delete_command}"
-                                        CommandParameter="{Binding id}"
-                                        FontSize="12" Padding="14,6"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Grid>
+        <!-- ============================================================
+             Right Panel: Version List
+             ============================================================ -->
+        <Border Grid.Column="1" Background="Transparent">
+            <Grid RowDefinitions="Auto,*" Margin="20,12,24,24">
 
-        <!-- Loading Indicator -->
-        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Spacing="12" IsVisible="{Binding is_loading}">
-            <TextBlock Text="⟳" FontSize="32" HorizontalAlignment="Center"
-                       Foreground="{StaticResource Brush3}"/>
-            <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_loading}" FontSize="14"
-                       Foreground="{StaticResource BrushGray3}" HorizontalAlignment="Center"/>
-        </StackPanel>
+                <!-- Filter & Search Bar -->
+                <ctrl:Card Grid.Row="0">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_title}" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource Brush1}"/>
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+                            <ComboBox SelectedItem="{Binding filter_type}" Width="120"
+                                      MinHeight="34">
+                                <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_release}" IsSelected="True"/>
+                                <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_snapshot}"/>
+                                <ComboBoxItem Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_all}"/>
+                            </ComboBox>
+                            <TextBox Grid.Column="1" PlaceholderText="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_search}"
+                                     Text="{Binding search_text}" MinHeight="34"/>
+                            <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_refresh}"
+                                    Classes="primary"
+                                    Command="{Binding refresh_command}"
+                                    IsEnabled="{Binding !is_loading}"
+                                    MinHeight="34"/>
+                            <TextBlock Grid.Column="3" Text="{Binding status_text}"
+                                       Foreground="{StaticResource BrushGray3}" VerticalAlignment="Center"
+                                       FontSize="12"/>
+                        </Grid>
+                    </StackPanel>
+                </ctrl:Card>
+
+                <!-- Version List + Download Progress -->
+                <Grid Grid.Row="1" RowDefinitions="Auto,*">
+
+                    <!-- Download Progress -->
+                    <Border Grid.Row="0" Background="{StaticResource Brush8}" CornerRadius="8"
+                            Padding="16,12" Margin="0,0,0,12"
+                            IsVisible="{Binding is_downloading}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_downloading}" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush3}"/>
+                            <ProgressBar Value="{Binding download_progress}" Maximum="100"
+                                         Height="8" CornerRadius="4"
+                                         Foreground="{StaticResource Brush3}"
+                                         Background="{StaticResource Brush6}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding download_phase}" FontSize="12"
+                                           Foreground="{StaticResource BrushGray2}"/>
+                                <TextBlock Text="{Binding download_current_item}" FontSize="12"
+                                           Foreground="{StaticResource BrushGray3}"
+                                           TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Version List -->
+                    <ListBox Grid.Row="1" ItemsSource="{Binding filtered_versions}"
+                             Background="Transparent" BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="m:VersionEntry">
+                                <Border Margin="0,2" Padding="16,12" CornerRadius="8"
+                                        Background="White" Tag="card">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="8" OffsetY="1"
+                                                          Opacity="0.06" Color="#3c3c3c"/>
+                                    </Border.Effect>
+                                    <Grid ColumnDefinitions="*,Auto,Auto">
+                                        <StackPanel Spacing="4">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="{Binding id}" FontWeight="SemiBold" FontSize="14"
+                                                           Foreground="{StaticResource Brush1}"/>
+                                                <Border Background="{StaticResource Brush8}" CornerRadius="4" Padding="8,2"
+                                                        IsVisible="{Binding type, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                                    <TextBlock Text="{Binding type}" FontSize="11"
+                                                               Foreground="{StaticResource Brush3}"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding release_time}" FontSize="11"
+                                                       Foreground="{StaticResource BrushGray3}"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_btn_download}"
+                                                Classes="primary"
+                                                Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).download_command}"
+                                                CommandParameter="{Binding id}"
+                                                FontSize="12" Padding="14,6"
+                                                Margin="0,0,8,0"/>
+                                        <Button Grid.Column="2" Content="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_btn_delete}"
+                                                Classes="danger"
+                                                Command="{Binding $parent[ListBox].((vm:VersionsViewModel)DataContext).delete_command}"
+                                                CommandParameter="{Binding id}"
+                                                FontSize="12" Padding="14,6"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+
+                <!-- Loading Indicator -->
+                <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Spacing="12" IsVisible="{Binding is_loading}">
+                    <TextBlock Text="..." FontSize="32" HorizontalAlignment="Center"
+                               Foreground="{StaticResource Brush3}"/>
+                    <TextBlock Text="{Binding Source={x:Static lang:Lang.Instance}, Path=ver_loading}" FontSize="14"
+                               Foreground="{StaticResource BrushGray3}" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

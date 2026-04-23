@@ -20,6 +20,7 @@ Namespace ViewModels
         Private _window_height As Integer = Config.settings.default_window_height
         Private _status_text As String = ""
         Private _selected_language As String = "中文"
+        Private _selected_category As Integer = 0
         Private ReadOnly _save_command As ReactiveCommand(Of Unit, Unit)
 
         Public Sub New()
@@ -124,6 +125,45 @@ Namespace ViewModels
                 End Select
                 Debug.WriteLine($"[SettingsVM] language changed to: {value}")
             End Set
+        End Property
+
+        Public Property selected_category As Integer
+            Get
+                Return _selected_category
+            End Get
+            Set(value As Integer)
+                If _selected_category = value Then Return
+                Me.RaiseAndSetIfChanged(_selected_category, value)
+                RaisePropertyChanged(NameOf(is_language_selected))
+                RaisePropertyChanged(NameOf(is_player_selected))
+                RaisePropertyChanged(NameOf(is_java_selected))
+                RaisePropertyChanged(NameOf(is_game_selected))
+                Debug.WriteLine($"[SettingsVM] category changed to: {value}")
+            End Set
+        End Property
+
+        Public ReadOnly Property is_language_selected As Boolean
+            Get
+                Return _selected_category = 0
+            End Get
+        End Property
+
+        Public ReadOnly Property is_player_selected As Boolean
+            Get
+                Return _selected_category = 1
+            End Get
+        End Property
+
+        Public ReadOnly Property is_java_selected As Boolean
+            Get
+                Return _selected_category = 2
+            End Get
+        End Property
+
+        Public ReadOnly Property is_game_selected As Boolean
+            Get
+                Return _selected_category = 3
+            End Get
         End Property
 
         Private Sub execute_save()
