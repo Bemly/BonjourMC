@@ -1,4 +1,8 @@
+Option Explicit On
+Option Strict On
+
 Imports System
+Imports System.Diagnostics
 Imports ReactiveUI
 Imports System.Reactive
 Imports Launcher
@@ -14,9 +18,12 @@ Namespace ViewModels
         Private _window_width As Integer = Config.settings.default_window_width
         Private _window_height As Integer = Config.settings.default_window_height
         Private _status_text As String = ""
+        Private ReadOnly _save_command As ReactiveCommand(Of Unit, Unit)
 
         Public Sub New()
+            Debug.WriteLine("[SettingsVM] New: initializing")
             page_title = "Settings"
+            _save_command = ReactiveCommand.Create(AddressOf execute_save)
         End Sub
 
         Public Property username As String
@@ -84,11 +91,12 @@ Namespace ViewModels
 
         Public ReadOnly Property save_command As ReactiveCommand(Of Unit, Unit)
             Get
-                Return ReactiveCommand.Create(AddressOf execute_save)
+                Return _save_command
             End Get
         End Property
 
         Private Sub execute_save()
+            Debug.WriteLine($"[SettingsVM] execute_save: user={username}, mem={memory_mb}MB, java={java_path}, dir={game_dir}")
             status_text = "Settings saved!"
         End Sub
     End Class

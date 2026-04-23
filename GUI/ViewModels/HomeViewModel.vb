@@ -1,8 +1,13 @@
+Option Explicit On
+Option Strict On
+
 Imports System
 Imports System.Collections.Generic
+Imports System.Diagnostics
 Imports System.Threading.Tasks
 Imports ReactiveUI
 Imports System.Reactive
+Imports Avalonia.Threading
 Imports Launcher
 
 Namespace ViewModels
@@ -15,19 +20,24 @@ Namespace ViewModels
         Private _available_versions As List(Of String) = New List(Of String)()
         Private _is_launching As Boolean = False
         Private _status_text As String = ""
+        Private ReadOnly _launch_command As ReactiveCommand(Of Unit, Unit)
 
         Public Sub New(ByVal service As Services.LauncherService)
+            Debug.WriteLine("[HomeVM] New: initializing")
             _launcher_service = service
             page_title = "Home"
+            _launch_command = ReactiveCommand.CreateFromTask(AddressOf execute_launch)
             load_installed_versions()
         End Sub
 
         Private Sub load_installed_versions()
+            Debug.WriteLine("[HomeVM] load_installed_versions: start")
             _available_versions = _launcher_service.get_installed_versions()
             Me.RaisePropertyChanged(NameOf(available_versions))
             If _available_versions.Count > 0 Then
                 selected_version = _available_versions(0)
             End If
+            Debug.WriteLine($"[HomeVM] load_installed_versions: found {_available_versions.Count} versions")
         End Sub
 
         Public Property username As String
@@ -74,21 +84,24 @@ Namespace ViewModels
 
         Public ReadOnly Property launch_command As ReactiveCommand(Of Unit, Unit)
             Get
-                Return ReactiveCommand.CreateFromTask(AddressOf execute_launch)
+                Return _launch_command
             End Get
         End Property
 
         Private Async Function execute_launch() As Task
             If String.IsNullOrEmpty(selected_version) OrElse is_launching Then Return
+            Debug.WriteLine($"[HomeVM] execute_launch: start, version={selected_version}, user={username}")
             is_launching = True
             status_text = $"Launching Minecraft {selected_version}..."
             Try
                 Await _launcher_service.launch_game(username, selected_version)
-                status_text = "Game started!"
+                Debug.WriteLine("[HomeVM] execute_launch: launch returned OK")
+                Dispatcher.UIThread.Post(Sub() status_text = "Game started!")
             Catch ex As Exception
-                status_text = $"Launch failed: {ex.Message}"
+                Debug.WriteLine($"[HomeVM] execute_launch: ERROR {ex.Message}")
+                Dispatcher.UIThread.Post(Sub() status_text = $"Launch failed: {ex.Message}")
             Finally
-                is_launching = False
+                Dispatcher.UIThread.Post(Sub() is_launching = False)
             End Try
         End Function
 
@@ -96,8 +109,10 @@ Namespace ViewModels
         ''' 刷新已安装版本列表
         ''' </summary>
         Public Sub refresh_versions()
+            Debug.WriteLine("[HomeVM] refresh_versions: start")
             _available_versions = _launcher_service.get_installed_versions()
             Me.RaisePropertyChanged(NameOf(available_versions))
+            Debug.WriteLine($"[HomeVM] refresh_versions: found {_available_versions.Count} versions")
         End Sub
     End Class
 End Namespace

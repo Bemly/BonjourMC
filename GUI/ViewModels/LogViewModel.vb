@@ -1,4 +1,8 @@
+Option Explicit On
+Option Strict On
+
 Imports System
+Imports System.Diagnostics
 Imports System.Text
 Imports ReactiveUI
 Imports System.Reactive
@@ -11,10 +15,16 @@ Namespace ViewModels
         Private _log_text As String = ""
         Private _is_game_running As Boolean = False
         Private _log_builder As New StringBuilder()
+        Private ReadOnly _clear_command As ReactiveCommand(Of Unit, Unit)
+        Private ReadOnly _kill_command As ReactiveCommand(Of Unit, Unit)
 
         Public Sub New(ByVal service As Services.LauncherService)
+            Debug.WriteLine("[LogVM] New: initializing")
             _launcher_service = service
             page_title = "Logs"
+
+            _clear_command = ReactiveCommand.Create(AddressOf execute_clear)
+            _kill_command = ReactiveCommand.Create(AddressOf execute_kill)
 
             AddHandler _launcher_service.on_game_output, Sub(sender, line)
                                                              append_log("[OUT] " & line)
@@ -23,6 +33,7 @@ Namespace ViewModels
                                                             append_log("[ERR] " & line)
                                                         End Sub
             AddHandler _launcher_service.on_game_exit, Sub(sender, exit_code)
+                                                           Debug.WriteLine($"[LogVM] on_game_exit: code={exit_code}")
                                                            _is_game_running = False
                                                            Me.RaisePropertyChanged(NameOf(is_game_running))
                                                            append_log($"[EXIT] Game exited with code {exit_code}")
@@ -49,13 +60,13 @@ Namespace ViewModels
 
         Public ReadOnly Property clear_command As ReactiveCommand(Of Unit, Unit)
             Get
-                Return ReactiveCommand.Create(AddressOf execute_clear)
+                Return _clear_command
             End Get
         End Property
 
         Public ReadOnly Property kill_command As ReactiveCommand(Of Unit, Unit)
             Get
-                Return ReactiveCommand.Create(AddressOf execute_kill)
+                Return _kill_command
             End Get
         End Property
 
@@ -67,11 +78,13 @@ Namespace ViewModels
         End Sub
 
         Private Sub execute_clear()
+            Debug.WriteLine("[LogVM] execute_clear: clearing log")
             _log_builder.Clear()
             log_text = ""
         End Sub
 
         Private Sub execute_kill()
+            Debug.WriteLine("[LogVM] execute_kill: killing game")
             _launcher_service.kill_game()
         End Sub
     End Class

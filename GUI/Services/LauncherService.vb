@@ -2,6 +2,7 @@ Option Explicit On
 Option Strict On
 
 Imports System
+Imports System.Diagnostics
 Imports System.IO
 Imports System.Collections.Generic
 Imports System.Threading.Tasks
@@ -26,6 +27,7 @@ Namespace Services
         ''' 加载版本清单
         ''' </summary>
         Public Async Function load_version_manifest() As Task(Of List(Of VersionEntry))
+            Debug.WriteLine("[LauncherService] load_version_manifest: start")
             If _cached_manifest IsNot Nothing Then Return _cached_manifest
 
             Dim manifests_pth = Path.GetFullPath(Config.file.mc, Environment.CurrentDirectory) &
@@ -50,6 +52,7 @@ Namespace Services
             Next
 
             _cached_manifest = versions
+            Debug.WriteLine($"[LauncherService] load_version_manifest: loaded {versions.Count} versions")
             Return versions
         End Function
 
@@ -57,6 +60,7 @@ Namespace Services
         ''' 刷新版本清单缓存
         ''' </summary>
         Public Async Function refresh_version_manifest() As Task(Of List(Of VersionEntry))
+            Debug.WriteLine("[LauncherService] refresh_version_manifest: clearing cache")
             _cached_manifest = Nothing
             Return Await load_version_manifest()
         End Function
@@ -65,6 +69,7 @@ Namespace Services
         ''' 获取已安装版本列表
         ''' </summary>
         Public Function get_installed_versions() As List(Of String)
+            Debug.WriteLine("[LauncherService] get_installed_versions: scanning")
             Dim versions = New List(Of String)()
             Dim versions_dir = Path.GetFullPath(Config.file.mc, Environment.CurrentDirectory) & "versions/"
             If Directory.Exists(versions_dir) Then
@@ -76,6 +81,7 @@ Namespace Services
                     End If
                 Next
             End If
+            Debug.WriteLine($"[LauncherService] get_installed_versions: found {versions.Count}")
             Return versions
         End Function
 
@@ -91,6 +97,7 @@ Namespace Services
         ''' 下载指定版本
         ''' </summary>
         Public Async Function download_version(ByVal version As String) As Task
+            Debug.WriteLine($"[LauncherService] download_version: start, version={version}")
             Dim mc As New Java.Client.Download.Mojang.Minecraft(is_compatible_mode:=True)
 
             AddHandler mc.on_progress, Sub(sender, e)
@@ -102,16 +109,21 @@ Namespace Services
 
             mc.set_version(version)
             Await mc.install()
+            Debug.WriteLine($"[LauncherService] download_version: completed for {version}")
         End Function
 
         ''' <summary>
         ''' 删除指定版本
         ''' </summary>
         Public Sub delete_version(ByVal version As String)
+            Debug.WriteLine($"[LauncherService] delete_version: version={version}")
             Dim version_dir = Path.GetFullPath(Config.file.mc, Environment.CurrentDirectory) &
                 "versions/" & version
             If Directory.Exists(version_dir) Then
                 Directory.Delete(version_dir, True)
+                Debug.WriteLine($"[LauncherService] delete_version: deleted {version_dir}")
+            Else
+                Debug.WriteLine($"[LauncherService] delete_version: directory not found")
             End If
         End Sub
 
@@ -121,7 +133,11 @@ Namespace Services
         Public Async Function launch_game(ByVal username As String, ByVal version As String,
                                           Optional ByVal memory_mb As Integer = 4096,
                                           Optional ByVal java_path As String = Nothing) As Task
-            If _is_game_running Then Return
+            Debug.WriteLine($"[LauncherService] launch_game: user={username}, ver={version}, mem={memory_mb}MB")
+            If _is_game_running Then
+                Debug.WriteLine("[LauncherService] launch_game: already running, skipping")
+                Return
+            End If
 
             _current_setup = New Java.Client.Setup()
             _current_setup.set_username(username).set_version(version).set_memory(memory_mb)
@@ -149,8 +165,12 @@ Namespace Services
         ''' 终止游戏
         ''' </summary>
         Public Sub kill_game()
+            Debug.WriteLine("[LauncherService] kill_game: killing")
             If _current_setup IsNot Nothing Then
                 _current_setup.kill()
+                Debug.WriteLine("[LauncherService] kill_game: sent kill signal")
+            Else
+                Debug.WriteLine("[LauncherService] kill_game: no setup to kill")
             End If
         End Sub
 

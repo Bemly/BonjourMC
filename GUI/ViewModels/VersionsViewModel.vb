@@ -1,10 +1,15 @@
+Option Explicit On
+Option Strict On
+
 Imports System
 Imports System.Collections.Generic
 Imports System.Collections.ObjectModel
+Imports System.Diagnostics
 Imports System.Linq
 Imports System.Threading.Tasks
 Imports ReactiveUI
 Imports System.Reactive
+Imports Avalonia.Threading
 Imports Launcher.Utility.Model.Mojang
 
 Namespace ViewModels
@@ -22,22 +27,34 @@ Namespace ViewModels
         Private _status_text As String = ""
         Private _is_loading As Boolean = False
 
+        Private ReadOnly _refresh_command As ReactiveCommand(Of Unit, Unit)
+        Private ReadOnly _download_command As ReactiveCommand(Of String, Unit)
+        Private ReadOnly _delete_command As ReactiveCommand(Of String, Unit)
+
         Public Sub New(ByVal service As Services.LauncherService)
+            Debug.WriteLine("[VersionsVM] New: initializing")
             _launcher_service = service
             page_title = "Versions"
 
+            _refresh_command = ReactiveCommand.CreateFromTask(AddressOf execute_refresh)
+            _download_command = ReactiveCommand.CreateFromTask(Of String)(AddressOf execute_download)
+            _delete_command = ReactiveCommand.Create(Of String)(AddressOf execute_delete)
+
             AddHandler _launcher_service.on_download_progress, Sub(sender, e)
-                                                                   _download_progress = e.percent
-                                                                   _download_phase = e.phase
-                                                                   _download_current_item = e.message
-                                                                   Me.RaisePropertyChanged(NameOf(download_progress))
-                                                                   Me.RaisePropertyChanged(NameOf(download_phase))
-                                                                   Me.RaisePropertyChanged(NameOf(download_current_item))
-                                                                   If e.phase = "done" Then
-                                                                       is_downloading = False
-                                                                       status_text = "Download complete!"
-                                                                       load_installed_versions()
-                                                                   End If
+                                                                   Dispatcher.UIThread.Post(Sub()
+                                                                                                _download_progress = e.percent
+                                                                                                _download_phase = e.phase
+                                                                                                _download_current_item = e.message
+                                                                                                Me.RaisePropertyChanged(NameOf(download_progress))
+                                                                                                Me.RaisePropertyChanged(NameOf(download_phase))
+                                                                                                Me.RaisePropertyChanged(NameOf(download_current_item))
+                                                                                                Debug.WriteLine($"[VersionsVM] download_progress: {e.percent:F1}% phase={e.phase} msg={e.message}")
+                                                                                                If e.phase = "done" Then
+                                                                                                    is_downloading = False
+                                                                                                    status_text = "Download complete!"
+                                                                                                    load_installed_versions()
+                                                                                                End If
+                                                                                            End Sub)
                                                                End Sub
         End Sub
 
@@ -52,6 +69,7 @@ Namespace ViewModels
                 Return _filter_type
             End Get
             Set(value As String)
+                Debug.WriteLine($"[VersionsVM] filter_type: changed to {value}")
                 Me.RaiseAndSetIfChanged(_filter_type, value)
                 Me.RaisePropertyChanged(NameOf(filtered_versions))
             End Set
@@ -147,65 +165,83 @@ Namespace ViewModels
 
         Public ReadOnly Property refresh_command As ReactiveCommand(Of Unit, Unit)
             Get
-                Return ReactiveCommand.CreateFromTask(AddressOf execute_refresh)
+                Return _refresh_command
             End Get
         End Property
 
         Public ReadOnly Property download_command As ReactiveCommand(Of String, Unit)
             Get
-                Return ReactiveCommand.CreateFromTask(Of String)(AddressOf execute_download)
+                Return _download_command
             End Get
         End Property
 
         Public ReadOnly Property delete_command As ReactiveCommand(Of String, Unit)
             Get
-                Return ReactiveCommand.Create(Of String)(AddressOf execute_delete)
+                Return _delete_command
             End Get
         End Property
 
         Private Async Function execute_refresh() As Task
-            is_loading = True
-            status_text = "Loading versions..."
+            Debug.WriteLine("[VersionsVM] execute_refresh: start")
+            Dispatcher.UIThread.Post(Sub()
+                                         is_loading = True
+                                         status_text = "Loading versions..."
+                                     End Sub)
             Try
                 Dim versions = Await _launcher_service.refresh_version_manifest()
-                _all_versions.Clear()
-                For Each v In versions
-                    _all_versions.Add(v)
-                Next
-                Me.RaisePropertyChanged(NameOf(filtered_versions))
-                status_text = $"Loaded {versions.Count} versions."
+                Debug.WriteLine($"[VersionsVM] execute_refresh: got {versions.Count} versions")
+                Dispatcher.UIThread.Post(Sub()
+                                             _all_versions.Clear()
+                                             For Each v In versions
+                                                 _all_versions.Add(v)
+                                             Next
+                                             Me.RaisePropertyChanged(NameOf(filtered_versions))
+                                             status_text = $"Loaded {versions.Count} versions."
+                                         End Sub)
             Catch ex As Exception
-                status_text = $"Failed to load: {ex.Message}"
+                Debug.WriteLine($"[VersionsVM] execute_refresh: ERROR {ex.Message}")
+                Dispatcher.UIThread.Post(Sub() status_text = $"Failed to load: {ex.Message}")
             Finally
-                is_loading = False
+                Dispatcher.UIThread.Post(Sub() is_loading = False)
             End Try
         End Function
 
         Private Async Function execute_download(ByVal version_id As String) As Task
             If is_downloading Then Return
-            is_downloading = True
-            download_progress = 0
-            download_phase = "starting"
-            status_text = $"Downloading {version_id}..."
+            Debug.WriteLine($"[VersionsVM] execute_download: start, version={version_id}")
+            Dispatcher.UIThread.Post(Sub()
+                                         is_downloading = True
+                                         download_progress = 0
+                                         download_phase = "starting"
+                                         status_text = $"Downloading {version_id}..."
+                                     End Sub)
             Try
                 Await _launcher_service.download_version(version_id)
+                Debug.WriteLine($"[VersionsVM] execute_download: download returned OK for {version_id}")
             Catch ex As Exception
-                status_text = $"Download failed: {ex.Message}"
-                is_downloading = False
+                Debug.WriteLine($"[VersionsVM] execute_download: ERROR {ex.Message}")
+                Dispatcher.UIThread.Post(Sub()
+                                             status_text = $"Download failed: {ex.Message}"
+                                             is_downloading = False
+                                         End Sub)
             End Try
         End Function
 
         Private Sub execute_delete(ByVal version_id As String)
+            Debug.WriteLine($"[VersionsVM] execute_delete: version={version_id}")
             Try
                 _launcher_service.delete_version(version_id)
                 load_installed_versions()
                 status_text = $"Deleted {version_id}."
+                Debug.WriteLine($"[VersionsVM] execute_delete: OK")
             Catch ex As Exception
+                Debug.WriteLine($"[VersionsVM] execute_delete: ERROR {ex.Message}")
                 status_text = $"Delete failed: {ex.Message}"
             End Try
         End Sub
 
         Private Sub load_installed_versions()
+            Debug.WriteLine("[VersionsVM] load_installed_versions: refreshing")
             Me.RaisePropertyChanged(NameOf(installed_versions))
         End Sub
     End Class

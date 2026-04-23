@@ -9,6 +9,7 @@ Imports Avalonia.Controls
 Imports Avalonia.Media
 Imports Avalonia.Styling
 Imports GUI.Animations
+Imports GUI.ViewModels
 
 Namespace Views
     Partial Public Class MainWindow
@@ -34,6 +35,13 @@ Namespace Views
 
         Protected Overrides Sub OnOpened(ByVal e As EventArgs)
             MyBase.OnOpened(e)
+
+            ' Wire up close animation to ViewModel
+            Dim vm = TryCast(DataContext, MainWindowViewModel)
+            If vm IsNot Nothing Then
+                vm.on_close_action = Sub() animate_window_close()
+            End If
+
             animate_window_open()
         End Sub
 
