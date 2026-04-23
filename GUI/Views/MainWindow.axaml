@@ -78,7 +78,7 @@
                         <!-- Minimize button -->
                         <ctrl:MyIconButton Width="28" Height="28" Margin="0,0,4,0"
                                             ButtonTheme="White" LogoScale="0.72"
-                                            Logo="F1 M0,0 h15 v2 h-15 v-2 Z"
+                                            Logo="F1 M3,9 h14 v2 h-14 v-2 Z"
                                             Command="{Binding minimize_command}"/>
                         <!-- Close button -->
                         <ctrl:MyIconButton Width="28" Height="28"
