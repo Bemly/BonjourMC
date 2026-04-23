@@ -16,9 +16,9 @@ Imports GUI.Animations
 Namespace Controls
 
     ''' <summary>
-    ''' PCL-CE PclIconButton style — circular icon button with scale bounce on click.
+    ''' PCL-CE MyIconButton style — circular icon button with scale bounce on click.
     ''' </summary>
-    Partial Public Class PclIconButton
+    Partial Public Class MyIconButton
         Inherits UserControl
 
         ' Instance brushes for animation
@@ -40,16 +40,16 @@ Namespace Controls
 
         ' Styled Properties
         Public Shared ReadOnly LogoProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of PclIconButton, String)("Logo", "")
+            AvaloniaProperty.Register(Of MyIconButton, String)("Logo", "")
 
         Public Shared ReadOnly LogoScaleProperty As StyledProperty(Of Double) =
-            AvaloniaProperty.Register(Of PclIconButton, Double)("LogoScale", 1.0)
+            AvaloniaProperty.Register(Of MyIconButton, Double)("LogoScale", 1.0)
 
         Public Shared ReadOnly ButtonThemeProperty As StyledProperty(Of IconTheme) =
-            AvaloniaProperty.Register(Of PclIconButton, IconTheme)("ButtonTheme", IconTheme.Color)
+            AvaloniaProperty.Register(Of MyIconButton, IconTheme)("ButtonTheme", IconTheme.Color)
 
         Public Shared ReadOnly CommandProperty As StyledProperty(Of ICommand) =
-            AvaloniaProperty.Register(Of PclIconButton, ICommand)("Command", Nothing)
+            AvaloniaProperty.Register(Of MyIconButton, ICommand)("Command", Nothing)
 
         Public Property Logo As String
             Get

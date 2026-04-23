@@ -1,4 +1,4 @@
-<UserControl x:Class="GUI.Controls.PclIconButton"
+<UserControl x:Class="GUI.Controls.MyIconButton"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="Transparent">
@@ -6,7 +6,7 @@
             Cursor="Hand" ClipToBounds="False">
         <Border Name="PART_Back" CornerRadius="1000"
                 RenderTransformOrigin="0.5,0.5" BorderThickness="0.001" IsHitTestVisible="False">
-            <Path Name="PART_Path" Stretch="Uniform" Margin="8,8,5,5" RenderTransformOrigin="0.5,0.5">
+            <Path Name="PART_Path" Stretch="Uniform" Margin="5" RenderTransformOrigin="0.5,0.5">
                 <Path.RenderTransform>
                     <ScaleTransform />
                 </Path.RenderTransform>

@@ -1,4 +1,4 @@
-<UserControl x:Class="GUI.Controls.PclListItem"
+<UserControl x:Class="GUI.Controls.MyListItem"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="Transparent">

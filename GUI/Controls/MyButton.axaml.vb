@@ -14,9 +14,9 @@ Imports GUI.Animations
 Namespace Controls
 
     ''' <summary>
-    ''' PCL-CE PclButton style with scale squash on press and color transitions.
+    ''' PCL-CE MyButton style with scale squash on press and color transitions.
     ''' </summary>
-    Partial Public Class PclButton
+    Partial Public Class MyButton
         Inherits UserControl
 
         ' Instance brushes for animation
@@ -30,10 +30,10 @@ Namespace Controls
 
         ' Styled Properties
         Public Shared ReadOnly TextProperty As StyledProperty(Of String) =
-            AvaloniaProperty.Register(Of PclButton, String)("Text", "")
+            AvaloniaProperty.Register(Of MyButton, String)("Text", "")
 
         Public Shared ReadOnly ColorTypeProperty As StyledProperty(Of Integer) =
-            AvaloniaProperty.Register(Of PclButton, Integer)("ColorType", 0)
+            AvaloniaProperty.Register(Of MyButton, Integer)("ColorType", 0)
 
         Public Property Text As String
             Get
