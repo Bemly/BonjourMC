@@ -7,6 +7,7 @@ Imports System.Diagnostics
 Imports System.Threading.Tasks
 Imports ReactiveUI
 Imports System.Reactive
+Imports System.Reactive.Linq
 Imports Avalonia.Threading
 Imports Launcher
 
@@ -26,7 +27,11 @@ Namespace ViewModels
             Debug.WriteLine("[HomeVM] New: initializing")
             _launcher_service = service
             page_title = "Home"
-            _launch_command = ReactiveCommand.CreateFromTask(AddressOf execute_launch)
+            _launch_command = ReactiveCommand.Create(
+                Sub()
+                    If String.IsNullOrEmpty(selected_version) OrElse is_launching Then Return
+                    Dim unused = execute_launch()
+                End Sub)
             load_installed_versions()
         End Sub
 
@@ -91,8 +96,10 @@ Namespace ViewModels
         Private Async Function execute_launch() As Task
             If String.IsNullOrEmpty(selected_version) OrElse is_launching Then Return
             Debug.WriteLine($"[HomeVM] execute_launch: start, version={selected_version}, user={username}")
-            is_launching = True
-            status_text = $"Launching Minecraft {selected_version}..."
+            Dispatcher.UIThread.Post(Sub()
+                                         is_launching = True
+                                         status_text = $"Launching Minecraft {selected_version}..."
+                                     End Sub)
             Try
                 Await _launcher_service.launch_game(username, selected_version)
                 Debug.WriteLine("[HomeVM] execute_launch: launch returned OK")

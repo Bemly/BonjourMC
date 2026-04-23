@@ -1,0 +1,19 @@
+<UserControl x:Class="GUI.Controls.MyIconButton"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Border Name="PART_Outer" CornerRadius="1000" Background="#01eaf2fe" BorderThickness="0.001"
+            Cursor="Hand" ClipToBounds="False">
+        <Border Name="PART_Back" CornerRadius="1000"
+                RenderTransformOrigin="0.5,0.5" BorderThickness="0.001" IsHitTestVisible="False">
+            <Path Name="PART_Path" Stretch="Uniform" Margin="5" RenderTransformOrigin="0.5,0.5">
+                <Path.RenderTransform>
+                    <ScaleTransform />
+                </Path.RenderTransform>
+            </Path>
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+        </Border>
+    </Border>
+</UserControl>

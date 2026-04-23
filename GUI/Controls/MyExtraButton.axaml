@@ -1,0 +1,23 @@
+<UserControl x:Class="GUI.Controls.MyExtraButton"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid Name="PART_Grid" Width="40" Height="0" RenderTransformOrigin="0.5,0.5"
+          ClipToBounds="False" Cursor="Hand">
+        <Grid.RenderTransform>
+            <ScaleTransform ScaleX="0" ScaleY="0"/>
+        </Grid.RenderTransform>
+        <Border Name="PART_Click" CornerRadius="1000" IsHitTestVisible="True"/>
+        <Grid Name="PART_Scale" Margin="0,10,0,0" RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+                <ScaleTransform/>
+            </Grid.RenderTransform>
+            <Border Name="PART_Color" CornerRadius="1000" Background="#1370f3">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.2" Color="#3c3c3c"/>
+                </Border.Effect>
+            </Border>
+            <Path Name="PART_Icon" Stretch="Uniform" Margin="12" Fill="#eaf2fe"/>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -9,6 +9,7 @@ Imports System.Linq
 Imports System.Threading.Tasks
 Imports ReactiveUI
 Imports System.Reactive
+Imports System.Reactive.Concurrency
 Imports Avalonia.Threading
 Imports Launcher.Utility.Model.Mojang
 
@@ -36,8 +37,16 @@ Namespace ViewModels
             _launcher_service = service
             page_title = "Versions"
 
-            _refresh_command = ReactiveCommand.CreateFromTask(AddressOf execute_refresh)
-            _download_command = ReactiveCommand.CreateFromTask(Of String)(AddressOf execute_download)
+            _refresh_command = ReactiveCommand.Create(
+                Sub()
+                    If is_loading Then Return
+                    Dim unused = execute_refresh()
+                End Sub)
+            _download_command = ReactiveCommand.Create(Of String)(
+                Sub(versionId As String)
+                    If is_downloading Then Return
+                    Dim unused = execute_download(versionId)
+                End Sub)
             _delete_command = ReactiveCommand.Create(Of String)(AddressOf execute_delete)
 
             AddHandler _launcher_service.on_download_progress, Sub(sender, e)

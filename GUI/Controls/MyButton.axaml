@@ -1,0 +1,15 @@
+<UserControl x:Class="GUI.Controls.MyButton"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Border Name="PART_Background" Background="#01eaf2fe" Cursor="Hand" ClipToBounds="False">
+        <Border Name="PART_Inner" CornerRadius="3" BorderThickness="1"
+                RenderTransformOrigin="0.5,0.5" Background="#55ffffff">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <TextBlock Name="PART_Text" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontSize="13" IsHitTestVisible="False"/>
+        </Border>
+    </Border>
+</UserControl>

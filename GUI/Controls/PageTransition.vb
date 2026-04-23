@@ -7,6 +7,7 @@ Imports Avalonia
 Imports Avalonia.Animation
 Imports Avalonia.Animation.Easings
 Imports Avalonia.Controls
+Imports Avalonia.Media
 Imports Avalonia.Styling
 Imports Avalonia.Threading
 Imports GUI.Animations
@@ -14,8 +15,9 @@ Imports GUI.Animations
 Namespace Controls
 
     ''' <summary>
-    ''' Content host that animates page transitions with PCL-CE style staggered entry/exit.
-    ''' When Content changes, old page fades out and new page cards enter with staggered delay.
+    ''' Content host that animates page transitions with PCL-CE exact timing.
+    ''' Left panel: staggered translateX from -25, 300ms OutBack, 7-15ms stagger.
+    ''' Right panel: staggered translateY from -16, 350ms OutBack, 25ms stagger.
     ''' </summary>
     Public Class PageTransition
         Inherits ContentControl
@@ -48,16 +50,21 @@ Namespace Controls
             If old_control IsNot Nothing AndAlso new_control IsNot Nothing Then
                 _is_animating = True
 
-                ' Animate old page out (fast)
+                ' Animate old page out
                 animate_page_exit(old_control)
 
-                ' Delay new page entry to let old page fade
+                ' Delay 110ms (PCL-CE pattern), then swap and animate in
                 Dim timer As New DispatcherTimer()
-                timer.Interval = TimeSpan.FromMilliseconds(80)
+                timer.Interval = TimeSpan.FromMilliseconds(110)
                 AddHandler timer.Tick, Sub(sender, e)
                                            timer.Stop()
-                                           animate_page_enter(new_control)
-                                           _is_animating = False
+                                           ' Show new page at opacity 0, then animate in
+                                           new_control.Opacity = 0
+                                           Dispatcher.UIThread.Post(Sub()
+                                                                        new_control.Opacity = 1
+                                                                        animate_page_enter(new_control)
+                                                                        _is_animating = False
+                                                                    End Sub, DispatcherPriority.Render)
                                        End Sub
                 timer.Start()
             ElseIf new_control IsNot Nothing Then
@@ -67,88 +74,105 @@ Namespace Controls
         End Sub
 
         ''' <summary>
-        ''' Animate page exit: fade out + slide up slightly.
+        ''' Animate page exit: per-element fade out + slide up (PCL-CE: 70ms per element, 15ms stagger).
         ''' </summary>
         Private Sub animate_page_exit(ByVal page As Control)
-            Dim anim As New Animation()
-            anim.Duration = TimeSpan.FromMilliseconds(70)
-            anim.FillMode = FillMode.Forward
-            anim.Easing = AnimationHelper.ease_in_fluent
+            Dim elements As New List(Of Control)()
+            collect_animatable_children(page, elements, 0)
 
-            Dim kf0 As New KeyFrame() With {.Cue = New Cue(0)}
-            add_setter(kf0, OpacityProperty, page.Opacity)
-            anim.Children.Add(kf0)
+            If elements.Count > 0 Then
+                Dim delay = 0
+                For Each elem As Control In elements
+                    Dim anim As New Animation()
+                    anim.Duration = TimeSpan.FromMilliseconds(70)
+                    anim.Delay = TimeSpan.FromMilliseconds(delay)
+                    anim.FillMode = FillMode.Forward
+                    anim.Easing = AnimationHelper.ease_in_fluent
 
-            Dim kf1 As New KeyFrame() With {.Cue = New Cue(1)}
-            add_setter(kf1, OpacityProperty, 0.0)
-            anim.Children.Add(kf1)
+                    ensure_translate_transform(elem)
 
-            Dim token = anim.RunAsync(page)
+                    Dim kf0 As New KeyFrame() With {.Cue = New Cue(0)}
+                    add_setter(kf0, OpacityProperty, elem.Opacity)
+                    add_setter(kf0, TranslateTransform.YProperty, get_translate_y(elem))
+                    anim.Children.Add(kf0)
+
+                    Dim kf1 As New KeyFrame() With {.Cue = New Cue(1)}
+                    add_setter(kf1, OpacityProperty, 0.0)
+                    add_setter(kf1, TranslateTransform.YProperty, get_translate_y(elem) - 6)
+                    anim.Children.Add(kf1)
+
+                    Dim token = anim.RunAsync(elem)
+                    delay += 15
+                Next
+            Else
+                ' Simple fade out
+                AnimationHelper.fade(page, 0.0, 70, 0, AnimationHelper.ease_in_fluent)
+            End If
         End Sub
 
         ''' <summary>
-        ''' Animate page enter: find card children, apply staggered fade+slide-up.
+        ''' Animate page enter: per-element staggered fade + slide (PCL-CE exact timing).
+        ''' Right panel: opacity 100ms OutFluent + translateY 350ms OutBack, 25ms stagger.
         ''' </summary>
         Private Sub animate_page_enter(ByVal page As Control)
             page.Opacity = 0
 
-            ' Collect all direct card children for staggered animation
-            Dim cards As New List(Of Control)()
-            collect_animatable_children(page, cards, 0)
+            Dim elements As New List(Of Control)()
+            collect_animatable_children(page, elements, 0)
 
-            If cards.Count > 0 Then
-                ' Staggered card entry
+            If elements.Count > 0 Then
+                page.Opacity = 1
+
                 Dim delay = 0
-                For Each card As Control In cards
-                    card.Opacity = 0
-                    Dim ct = TryCast(card.RenderTransform, Avalonia.Media.TranslateTransform)
-                    If ct Is Nothing Then
-                        card.RenderTransform = New Avalonia.Media.TranslateTransform(0, 16)
-                    Else
-                        ct.Y = 16
-                    End If
+                For Each elem As Control In elements
+                    ' Set initial state
+                    elem.Opacity = 0
+                    ensure_translate_transform(elem)
+                    set_translate_y(elem, -16)
 
-                    ' Fade in
+                    ' Fade in: 100ms OutFluent(Weak)
                     Dim fade_anim As New Animation()
                     fade_anim.Duration = TimeSpan.FromMilliseconds(100)
                     fade_anim.Delay = TimeSpan.FromMilliseconds(delay)
                     fade_anim.FillMode = FillMode.Forward
-                    fade_anim.Easing = AnimationHelper.ease_out_fluent
+                    fade_anim.Easing = AnimationHelper.ease_out_fluent_weak
                     Dim fade_kf0 As New KeyFrame() With {.Cue = New Cue(0)}
                     add_setter(fade_kf0, OpacityProperty, 0.0)
                     fade_anim.Children.Add(fade_kf0)
                     Dim fade_kf1 As New KeyFrame() With {.Cue = New Cue(1)}
                     add_setter(fade_kf1, OpacityProperty, 1.0)
                     fade_anim.Children.Add(fade_kf1)
-                    Dim token1 = fade_anim.RunAsync(card)
+                    Dim token1 = fade_anim.RunAsync(elem)
 
-                    ' Slide down with bounce
-                    Dim slide_anim As New Animation()
-                    slide_anim.Duration = TimeSpan.FromMilliseconds(350)
-                    slide_anim.Delay = TimeSpan.FromMilliseconds(delay)
-                    slide_anim.FillMode = FillMode.Forward
-                    slide_anim.Easing = AnimationHelper.ease_out_fluent
-                    Dim slide_kf0 As New KeyFrame() With {.Cue = New Cue(0)}
-                    add_setter(slide_kf0, Avalonia.Media.TranslateTransform.YProperty, 16.0)
-                    slide_anim.Children.Add(slide_kf0)
-                    Dim slide_kf1 As New KeyFrame() With {.Cue = New Cue(1)}
-                    add_setter(slide_kf1, Avalonia.Media.TranslateTransform.YProperty, 0.0)
-                    slide_anim.Children.Add(slide_kf1)
-                    Dim token2 = slide_anim.RunAsync(card)
+                    ' Slide down: 5px in 250ms OutFluent
+                    Dim slide1 As New Animation()
+                    slide1.Duration = TimeSpan.FromMilliseconds(250)
+                    slide1.Delay = TimeSpan.FromMilliseconds(delay)
+                    slide1.FillMode = FillMode.Forward
+                    slide1.Easing = AnimationHelper.ease_out_fluent
+                    Dim slide1_kf0 As New KeyFrame() With {.Cue = New Cue(0)}
+                    add_setter(slide1_kf0, TranslateTransform.YProperty, -16.0)
+                    slide1.Children.Add(slide1_kf0)
+                    Dim slide1_kf1 As New KeyFrame() With {.Cue = New Cue(1)}
+                    add_setter(slide1_kf1, TranslateTransform.YProperty, -11.0) ' -16 + 5 = -11
+                    slide1.Children.Add(slide1_kf1)
+                    Dim token2 = slide1.RunAsync(elem)
+
+                    ' Continue to 0: 350ms OutBack
+                    AnimationHelper.delayed_code(Sub()
+                                                     AnimationHelper.translate_y(elem, 11, 350, 0, AnimationHelper.ease_out_back)
+                                                 End Sub, delay + 250)
 
                     delay += 25
                 Next
-
-                ' Fade in the page itself immediately
-                page.Opacity = 1
             Else
-                ' No cards — simple fade in
+                ' No animatable elements — simple fade in
                 AnimationHelper.fade(page, 1.0, 200, 0, AnimationHelper.ease_out_fluent)
             End If
         End Sub
 
         ''' <summary>
-        ''' Recursively collect children that should animate (cards, panels with content).
+        ''' Recursively collect children that should animate.
         ''' </summary>
         Private Sub collect_animatable_children(ByVal parent As Control, ByVal result As List(Of Control), ByVal depth As Integer)
             If depth > 3 Then Return
@@ -205,16 +229,35 @@ Namespace Controls
         End Sub
 
         ''' <summary>
-        ''' Determine if a control should be treated as an animatable card.
+        ''' Determine if a control should be treated as an animatable element.
         ''' </summary>
         Private Function is_card_element(ByVal ctrl As Control) As Boolean
             If TypeOf ctrl Is Card Then Return True
+            If TypeOf ctrl Is MyListItem Then Return True
+            If TypeOf ctrl Is MyButton Then Return True
             If TypeOf ctrl Is Border Then
                 Dim border = CType(ctrl, Border)
                 If border.Tag IsNot Nothing AndAlso border.Tag.ToString() = "card" Then Return True
             End If
             Return False
         End Function
+
+        Private Sub ensure_translate_transform(ByVal target As Visual)
+            If target.RenderTransform Is Nothing OrElse Not TypeOf target.RenderTransform Is TranslateTransform Then
+                target.RenderTransform = New TranslateTransform(0, 0)
+            End If
+        End Sub
+
+        Private Function get_translate_y(ByVal target As Visual) As Double
+            Dim tt = TryCast(target.RenderTransform, TranslateTransform)
+            If tt IsNot Nothing Then Return tt.Y
+            Return 0
+        End Function
+
+        Private Sub set_translate_y(ByVal target As Visual, ByVal value As Double)
+            Dim tt = TryCast(target.RenderTransform, TranslateTransform)
+            If tt IsNot Nothing Then tt.Y = value
+        End Sub
 
     End Class
 

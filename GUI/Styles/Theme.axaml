@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:GUI.Controls">
 
     <!-- ============================================================
          PCL-CE Style Color Palette + Resources
@@ -274,6 +275,53 @@
     </Style>
     <Style Selector="Button.window-control:pressed">
         <Setter Property="Background" Value="#30ffffff"/>
+    </Style>
+
+    <!-- ============================================================
+         MyButton Styles
+         ============================================================ -->
+    <Style Selector="controls|MyButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="3"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- ============================================================
+         MyIconButton Styles
+         ============================================================ -->
+    <Style Selector="controls|MyIconButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="1000"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- ============================================================
+         MyRadioButton Styles
+         ============================================================ -->
+    <Style Selector="controls|MyRadioButton">
+        <Setter Property="Background" Value="#01eaf2fe"/>
+        <Setter Property="CornerRadius" Value="13.5"/>
+        <Setter Property="MinHeight" Value="27"/>
+        <Setter Property="MaxHeight" Value="27"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- ============================================================
+         MyListItem Styles
+         ============================================================ -->
+    <Style Selector="controls|MyListItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Height" Value="42"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- ============================================================
+         MyExtraButton Styles
+         ============================================================ -->
+    <Style Selector="controls|MyExtraButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Cursor" Value="Hand"/>
     </Style>
 
 </Styles>
