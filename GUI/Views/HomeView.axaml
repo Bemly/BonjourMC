@@ -9,71 +9,70 @@
              x:DataType="vm:HomeViewModel"
              Background="Transparent">
 
-    <ScrollViewer>
-        <StackPanel Spacing="0" Margin="24,20,24,24">
+    <Grid ColumnDefinitions="280,*">
 
-            <!-- ============================================================
-                 Card 1: Player Info
-                 ============================================================ -->
-            <ctrl:Card>
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Player Profile" FontSize="16" FontWeight="Bold"
-                               Foreground="{StaticResource Brush1}"/>
-                    <StackPanel Orientation="Horizontal" Spacing="14">
-                        <Border Width="64" Height="64" CornerRadius="12"
-                                Background="{StaticResource Brush8}">
-                            <TextBlock Text="⛏" FontSize="32"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <StackPanel VerticalAlignment="Center" Spacing="4">
-                            <TextBlock Text="{Binding username}" FontSize="20" FontWeight="SemiBold"
-                                       Foreground="{StaticResource Brush1}"/>
-                            <TextBlock Text="BonjourMC Player" FontSize="12"
-                                       Foreground="{StaticResource BrushGray3}"/>
-                        </StackPanel>
-                    </StackPanel>
+        <!-- ============================================================
+             Left Panel (White background — PCL-CE style)
+             ============================================================ -->
+        <Border Grid.Column="0" Background="#ffffff" CornerRadius="0,0,0,6">
+            <Grid RowDefinitions="*,Auto">
+
+                <!-- Top: MC Avatar + User Info -->
+                <StackPanel Grid.Row="0" VerticalAlignment="Center"
+                            HorizontalAlignment="Center" Spacing="10">
+                    <Border Width="64" Height="64" CornerRadius="12"
+                            Background="{StaticResource Brush8}" HorizontalAlignment="Center">
+                        <Path Data="M52.1,164.5c-1.4,0-3.1-0.5-4.2-1.3c-2.6-1.7-4-4.2-4-7V43.8c0-2.9,1.6-5.8,4.1-7c1.2-0.8,2.7-1.2,4.1-1.2c1.5,0,2.9,0.4,4.2,1.2L153.1,93c0,0,0.1,0,0.1,0.1c2.6,1.7,4,4.2,4,7c0,3-1.7,5.8-4.2,7.1l-96.8,56.2C55.1,164,53.5,164.5,52.1,164.5z M60.4,142.1l72.1-42.1L60.4,58.2V142.1z"
+                              Fill="{StaticResource Brush3}" Stretch="Uniform"
+                              Width="32" Height="32"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="{Binding username}" FontSize="15" FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush1}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="BonjourMC Player" FontSize="11"
+                               Foreground="{StaticResource BrushGray3}" HorizontalAlignment="Center"/>
                 </StackPanel>
-            </ctrl:Card>
 
-            <!-- ============================================================
-                 Card 2: Version Selection
-                 ============================================================ -->
-            <ctrl:Card>
-                <StackPanel Spacing="14">
-                    <TextBlock Text="Launch Settings" FontSize="16" FontWeight="Bold"
-                               Foreground="{StaticResource Brush1}"/>
+                <!-- Bottom: Download + Instance Buttons -->
+                <StackPanel Grid.Row="1" Margin="20,0,20,20" Spacing="8">
+                    <Button Content="下载游戏"
+                            Classes="primary"
+                            Command="{Binding navigate_download_command}"
+                            HorizontalAlignment="Stretch" Height="38"
+                            FontSize="14" FontWeight="SemiBold"
+                            CornerRadius="6"/>
+                    <Button Content="实例选择"
+                            Classes="ghost"
+                            Command="{Binding navigate_instance_command}"
+                            HorizontalAlignment="Stretch" Height="38"
+                            FontSize="14" FontWeight="SemiBold"
+                            CornerRadius="6"/>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+        <!-- ============================================================
+             Right Panel (Light blue — PCL-CE announcements)
+             ============================================================ -->
+        <Border Grid.Column="1" Background="{StaticResource Brush8}" Margin="0">
+            <StackPanel Margin="24,20,24,24" Spacing="16">
+                <TextBlock Text="公告" FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource Brush1}"/>
+                <Border Background="{StaticResource BrushBgCard}" CornerRadius="8"
+                        Padding="20">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" OffsetY="1"
+                                          Opacity="0.06" Color="#3c3c3c"/>
+                    </Border.Effect>
                     <StackPanel Spacing="8">
-                        <TextBlock Text="Game Version" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{StaticResource BrushGray2}"/>
-                        <ComboBox ItemsSource="{Binding available_versions}"
-                                  SelectedItem="{Binding selected_version}"
-                                  HorizontalAlignment="Stretch"
-                                  FontSize="14" MinHeight="36"/>
-                        <TextBlock Text="{Binding status_text}" FontSize="12"
+                        <TextBlock Text="暂无公告" FontSize="14"
                                    Foreground="{StaticResource BrushGray3}"
-                                   IsVisible="{Binding status_text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                   HorizontalAlignment="Center"/>
                     </StackPanel>
-                </StackPanel>
-            </ctrl:Card>
+                </Border>
+            </StackPanel>
+        </Border>
 
-            <!-- ============================================================
-                 Card 3: Launch Button
-                 ============================================================ -->
-            <ctrl:Card Padding="20,24">
-                <StackPanel Spacing="12">
-                    <Button Content="▶  PLAY"
-                            Classes="success"
-                            Command="{Binding launch_command}"
-                            IsEnabled="{Binding !is_launching}"
-                            HorizontalAlignment="Stretch" Height="52"
-                            FontSize="20" FontWeight="Bold"
-                            CornerRadius="10"/>
-                    <TextBlock Text="Launch Minecraft with the selected version"
-                               FontSize="12" Foreground="{StaticResource BrushGray3}"
-                               HorizontalAlignment="Center"/>
-                </StackPanel>
-            </ctrl:Card>
-
-        </StackPanel>
-    </ScrollViewer>
+    </Grid>
 </UserControl>

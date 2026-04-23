@@ -36,7 +36,13 @@ Namespace ViewModels
         Public Sub New()
             Debug.WriteLine("[MainWindowVM] New: initializing")
             _launcher_service = New Services.LauncherService()
-            _home_vm = New HomeViewModel(_launcher_service)
+            _home_vm = New HomeViewModel(_launcher_service, Sub(page)
+                                                                Select Case page
+                                                                    Case "download", "instance"
+                                                                        Debug.WriteLine($"[MainWindowVM] navigate from Home: {page} -> Versions")
+                                                                        selected_page = _versions_vm
+                                                                End Select
+                                                            End Sub)
             _versions_vm = New VersionsViewModel(_launcher_service)
             _settings_vm = New SettingsViewModel()
             _log_vm = New LogViewModel(_launcher_service)

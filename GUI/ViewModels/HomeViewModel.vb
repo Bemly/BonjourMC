@@ -16,21 +16,35 @@ Namespace ViewModels
         Inherits ViewModelBase
 
         Private _launcher_service As Services.LauncherService
+        Private _navigate_action As Action(Of String)
         Private _username As String = Config.settings.default_username
         Private _selected_version As String = ""
         Private _available_versions As List(Of String) = New List(Of String)()
         Private _is_launching As Boolean = False
         Private _status_text As String = ""
         Private ReadOnly _launch_command As ReactiveCommand(Of Unit, Unit)
+        Private ReadOnly _navigate_download_command As ReactiveCommand(Of Unit, Unit)
+        Private ReadOnly _navigate_instance_command As ReactiveCommand(Of Unit, Unit)
 
-        Public Sub New(ByVal service As Services.LauncherService)
+        Public Sub New(ByVal service As Services.LauncherService, ByVal navigate_action As Action(Of String))
             Debug.WriteLine("[HomeVM] New: initializing")
             _launcher_service = service
+            _navigate_action = navigate_action
             page_title = "Home"
             _launch_command = ReactiveCommand.Create(
                 Sub()
                     If String.IsNullOrEmpty(selected_version) OrElse is_launching Then Return
                     Dim unused = execute_launch()
+                End Sub)
+            _navigate_download_command = ReactiveCommand.Create(
+                Sub()
+                    Debug.WriteLine("[HomeVM] navigate: download")
+                    _navigate_action.Invoke("download")
+                End Sub)
+            _navigate_instance_command = ReactiveCommand.Create(
+                Sub()
+                    Debug.WriteLine("[HomeVM] navigate: instance")
+                    _navigate_action.Invoke("instance")
                 End Sub)
             load_installed_versions()
         End Sub
@@ -90,6 +104,18 @@ Namespace ViewModels
         Public ReadOnly Property launch_command As ReactiveCommand(Of Unit, Unit)
             Get
                 Return _launch_command
+            End Get
+        End Property
+
+        Public ReadOnly Property navigate_download_command As ReactiveCommand(Of Unit, Unit)
+            Get
+                Return _navigate_download_command
+            End Get
+        End Property
+
+        Public ReadOnly Property navigate_instance_command As ReactiveCommand(Of Unit, Unit)
+            Get
+                Return _navigate_instance_command
             End Get
         End Property
 

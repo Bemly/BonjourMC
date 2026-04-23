@@ -12,6 +12,7 @@
         Width="850" Height="500"
         MinWidth="810" MinHeight="470"
         WindowStartupLocation="CenterScreen"
+        WindowDecorations="None"
         Background="Transparent"
         TransparencyLevelHint="AcrylicBlur">
 
@@ -34,7 +35,7 @@
             <!-- ============================================================
                  Title Bar (48px, PCL-CE style with ColorBrush3 background)
                  ============================================================ -->
-            <Border Grid.Row="0" Background="{StaticResource Brush3}" CornerRadius="6,6,0,0">
+            <Border Name="PART_TitleBar" Grid.Row="0" Background="{StaticResource Brush3}" CornerRadius="6,6,0,0">
                 <Grid ColumnDefinitions="Auto,*,Auto">
                     <!-- Logo Area (PCL + CE badge) -->
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="0"
