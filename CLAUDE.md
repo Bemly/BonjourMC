@@ -85,24 +85,24 @@ dotnet run --project GUI
 ### Windows
 测试机：`192.168.1.113`，用户 `admin`，密码 `2328`
 
-```bash
-# 复制文件到 Windows
-sshpass -p 2328 scp <本地文件> admin@192.168.1.113:"C:/Users/admin/Projects/BonjourMC/<路径>"
+**重要**：用户 `23287` 登录在 session 3，需要将 GUI 复制到共享目录并以 `23287` 用户运行。
 
+```bash
 # 编译
 sshpass -p 2328 ssh admin@192.168.1.113 "C:\Users\admin\AppData\Local\Microsoft\dotnet\dotnet.exe build C:\Users\admin\Projects\BonjourMC\GUI\GUI.vbproj -c Debug"
 
-# 在用户桌面会话中启动 GUI（必须用 schtasks，SSH 直接运行的窗口看不到）
-sshpass -p 2328 ssh admin@192.168.1.113 'schtasks /create /tn "BonjourMC" /tr "C:\Users\admin\Projects\BonjourMC\GUI\bin\Debug\net8.0\GUI.exe" /sc once /st 00:00 /ru admin /it /f && schtasks /run /tn "BonjourMC" && schtasks /delete /tn "BonjourMC" /f'
+# 复制到共享目录（用户 23287 可访问）
+sshpass -p 2328 ssh admin@192.168.1.113 "xcopy C:\Users\admin\Projects\BonjourMC\GUI\bin\Debug\net8.0\* C:\Users\Public\BonjourMC\ /Y /E"
 
-# 杀掉 GUI 进程
-sshpass -p 2328 ssh admin@192.168.1.113 "taskkill /F /IM GUI.exe"
+# 杀掉旧进程
+sshpass -p 2328 ssh admin@192.168.1.113 "taskkill /F /IM GUI.exe 2>nul" || true
+
+# 以用户 23287 运行（session 3）
+sshpass -p 2328 ssh admin@192.168.1.113 'schtasks /create /tn "BonjourMC" /tr "C:\Users\Public\BonjourMC\GUI.exe" /sc once /st 00:00 /ru 23287 /it /f && schtasks /run /tn "BonjourMC" && schtasks /delete /tn "BonjourMC" /f'
 
 # 读取调试日志
-sshpass -p 2328 ssh admin@192.168.1.113 "type C:\Users\admin\Projects\BonjourMC\GUI\bin\Debug\net8.0\bonjourmc_debug.log"
+sshpass -p 2328 ssh admin@192.168.1.113 "type C:\Users\Public\BonjourMC\bonjourmc_debug.log"
 ```
-
-**注意**：通过 SSH 直接运行 GUI 程序，窗口不会显示在用户桌面上。必须使用 `schtasks /it` 参数在用户的交互式会话中启动。
 
 ### Linux
 测试机：`10.211.55.3`，用户 `bemly`，密码 `2328`（NixOS）

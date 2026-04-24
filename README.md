@@ -74,7 +74,29 @@ dotnet test
 ## 环境要求
 
 - .NET 8.0 SDK
-- macOS（主要目标平台，支持跨平台）
+- macOS / Windows / Linux（跨平台支持）
+
+## 测试
+
+项目支持三端测试：Mac（本机）、Windows（远程）、Linux（远程）。
+
+```bash
+# Mac 测试
+dotnet run --project GUI
+
+# Windows 测试（远程）
+# 1. 编译
+sshpass -p 2328 ssh admin@192.168.1.113 "C:\Users\admin\AppData\Local\Microsoft\dotnet\dotnet.exe build C:\Users\admin\Projects\BonjourMC\GUI\GUI.vbproj -c Debug"
+# 2. 复制到共享目录
+sshpass -p 2328 ssh admin@192.168.1.113 "xcopy C:\Users\admin\Projects\BonjourMC\GUI\bin\Debug\net8.0\* C:\Users\Public\BonjourMC\ /Y /E"
+# 3. 运行（用户 23287，session 3）
+sshpass -p 2328 ssh admin@192.168.1.113 'schtasks /create /tn "BonjourMC" /tr "C:\Users\Public\BonjourMC\GUI.exe" /sc once /st 00:00 /ru 23287 /it /f && schtasks /run /tn "BonjourMC" && schtasks /delete /tn "BonjourMC" /f'
+# 4. 读取日志
+sshpass -p 2328 ssh admin@192.168.1.113 "type C:\Users\Public\BonjourMC\bonjourmc_debug.log"
+
+# Linux 测试（远程，需要代理）
+sshpass -p 2328 ssh bemly@10.211.55.3 "export ALL_PROXY=http://10.211.55.1:7890 && dotnet run --project GUI"
+```
 
 ## 命名规范
 
